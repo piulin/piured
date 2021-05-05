@@ -14,6 +14,8 @@ class Composer {
         this.song = song;
         this.speed = speed ;
 
+        this.stepAnimationRate = 24 ;
+
 
     }
 
@@ -24,6 +26,11 @@ class Composer {
         this.level = level ;
 
         this.bpms = this.song.levels[level].meta['BPMS'] ;
+
+        // Keeps
+        this.lastStepTimeStamp = 0.0;
+        this.animationPosition = 0 ;
+
 
         // Space to the right or left of a given step.
         const stepShift = 4/5;
@@ -95,7 +102,9 @@ class Composer {
 
         // Get receptor
         let receptor = this.receptorFactory.getReceptor();
+        receptor.position.z = -0.0001;
         this.receptor = receptor;
+
 
         this.steps = steps ;
         return [steps, receptor];
@@ -105,6 +114,13 @@ class Composer {
 
     update(delta) {
 
+        this.updateStepsPosition(delta) ;
+        this.updateStepsAnimation(delta) ;
+        this.updateReceptorAnimation(delta) ;
+
+    }
+
+    updateStepsPosition(delta) {
         // const bpm = this.song.meta [ 'BPMS']
         // const bpm = 143 ;
         // const beatsPerSecond = bpm / 60 ;
@@ -121,6 +137,63 @@ class Composer {
         this.steps.position.y = yDisplacement* this.speed ;
 
         // console.log(audioTime);
+    }
+
+    updateReceptorAnimation(delta) {
+
+
+        const bpm = this.bpms[0][1] ;
+        const beatsPerSecond = bpm / 60 ;
+        const secondsPerBeat = 60 / bpm ;
+
+        const audioTime = this.song.getCurrentAudioTime() ;
+
+        if ( audioTime < 0 ) {
+            this.receptor.material.uniforms.activeColorContribution.value = 0 ;
+            return ;
+        }
+
+        const timeInBeat = Math.abs(  audioTime % secondsPerBeat  ) ;
+        const normalizedTimeInBeat = beatsPerSecond * timeInBeat ;
+        let opacityLevel = (1 - normalizedTimeInBeat) ;
+        // if (opacityLevel > 0.9 ) {
+        //     opacityLevel = 1 ;
+        // }
+
+        // f(x) = 1/(1+(x/(1-x))^(- <beta>))
+        const beta = 1.5 ;
+        const outputOpacityLevel = 1/(1+ Math.pow( (opacityLevel/(1-opacityLevel)), (- beta)) )
+
+        // to dump the energy over time
+        // this.activeReceptor.material.opacity = outputOpacityLevel ;
+        this.receptor.material.uniforms.activeColorContribution.value = opacityLevel*opacityLevel ;
+
+        // console.log(this.activeReceptor.material.opacity) ;
+
+
+
+
+    }
+
+    updateStepsAnimation(delta) {
+
+        let timeStamp = this.lastStepTimeStamp + delta;
+
+        let movement = timeStamp*this.stepAnimationRate ;
+
+        if ( movement > 1 ) {
+
+            this.animationPosition = (this.animationPosition + 1)%6 ;
+            const col = this.animationPosition % 3 ;
+            // in UV cordinates, the first row is the lowest one.
+            const row = Math.floor( this.animationPosition / 3 ) ;
+
+            this.stepFactory.changeTexturePosition(col,row) ;
+
+            this.lastStepTimeStamp = 0 ;
+        } else {
+            this.lastStepTimeStamp += delta ;
+        }
 
     }
 

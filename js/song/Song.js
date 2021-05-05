@@ -19,14 +19,7 @@ class Song {
         // $.get(pathToSSCFile, this.parse.bind(this), 'text');
 
         // Not that convenient way of reading files from disk.
-        $.ajax(
-            {
-                url: pathToSSCFile,
-                success: this.loadSSC.bind(this),
-                dataType: 'text',
-                async: false
-            }
-        ) ;
+        readFileContent(pathToSSCFile,this.loadSSC.bind(this)) ;
 
 
     }

@@ -17,6 +17,14 @@ class StepFactory {
         this.downRightMap = new THREE.TextureLoader().load(noteskinPath + '/DownRight TapNote 3x2.PNG') ;
 
 
+        // to accurately represent the colors
+        this.downLeftMap.encoding = THREE.sRGBEncoding;
+        this.upLeftMap.encoding = THREE.sRGBEncoding;
+        this.centerMap.encoding = THREE.sRGBEncoding;
+        this.upRightMap.encoding = THREE.sRGBEncoding;
+        this.downRightMap.encoding = THREE.sRGBEncoding;
+
+
         // This acts as UV mapping.
         this.downLeftMap.repeat.set(1/3,1/2);
         this.upLeftMap.repeat.set(1/3,1/2);
@@ -66,6 +74,16 @@ class StepFactory {
         }
 
     }
+
+    changeTexturePosition(col, row) {
+        this.downLeftMap.offset.set(  col * (1/3), row * (1/2) );
+        this.upLeftMap.offset.set(col * (1/3), row * (1/2));
+        this.centerMap.offset.set(col * (1/3), row * (1/2));
+        this.upRightMap.offset.set(col * (1/3), row * (1/2));
+        this.downRightMap.offset.set(col * (1/3), row * (1/2));
+    }
+
+
 }
 
 

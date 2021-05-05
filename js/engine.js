@@ -33,15 +33,18 @@ class Engine {
 
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true});
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.gammaInput = true;
+
         this.renderer.gammaOutput = true;
-
         // Important for HiDPI devices.
+
+
         this.renderer.setPixelRatio( window.devicePixelRatio );
-
-
         this.renderer.setSize( canvasWidth, canvasHeight );
-        this.renderer.setClearColor(new THREE.Color(0xffffff));
+        // this.renderer.setClearColor(new THREE.Color(0xffffff));
+
+        this.renderer.setClearColor(new THREE.Color(0x000000));
 
         this.cameraControls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
         this.cameraControls.target = focus ;
@@ -74,16 +77,17 @@ class Engine {
     start ( ) {
 
         // let song = new Song('songs/bc/dp.ssc');
-        let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc');
+        // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc');
+        // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc');
+        let song = new Song('songs/pd/A20 - Power of Dreams.ssc');
         // let song = new Song('songs/bc/105 - Black Cat.ssc');
         song.play() ;
 
         this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,4);
-        // this.composer = new Composer(song, 'noteskins/FIESTA/HD/' ,4);
+        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4);
 
         // Get the steps and receptor in position
-        let [steps, receptor] = this.composer.run(7) ;
-
+        let [steps, receptor] = this.composer.run(5) ;
 
         this.scene.add(steps) ;
         this.scene.add(receptor) ;
@@ -112,6 +116,7 @@ class Engine {
         // It is the amount of time since last call to render.
         var delta = this.clock.getDelta();
 
+
         // Update position of the steps
         this.composer.update(delta) ;
 
@@ -122,7 +127,7 @@ class Engine {
 
     showGrids() {
         // Background grid and axes. Grid step size is 1, axes cross at 0, 0
-        Coordinates.drawGrid({size:100,scale:1,orientation:"z", scene: this.scene});
+        // Coordinates.drawGrid({size:100,scale:1,orientation:"z", scene: this.scene});
         // Coordinates.drawAxes({axisLength:11,axisOrientation:"x",axisRadius:0.04});
         // Coordinates.drawAxes({axisLength:11,axisOrientation:"z",axisRadius:0.04});
     }
