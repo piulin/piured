@@ -14,7 +14,7 @@ class Composer {
         this.song = song;
         this.speed = speed ;
 
-        this.stepAnimationRate = 24 ;
+        this.stepAnimationRate = 25 ;
 
 
     }
@@ -22,10 +22,14 @@ class Composer {
     // Returns 3DObject containing the steps of the level.
     run (level) {
 
+        this.forceSync = true;
         // Save the level.
         this.level = level ;
 
         this.bpms = this.song.levels[level].meta['BPMS'] ;
+
+        this.receptorZDepth = -0.0001 ;
+        this.holdZDepth = -0.00001 ;
 
         // Keeps
         this.lastStepTimeStamp = 0.0;
@@ -44,6 +48,15 @@ class Composer {
         const noteData = this.song.levels[level] ;
 
         // i loops the bars
+
+
+        let beginningDownRightHoldYPosition = 2 ;
+        let beginningUpRightHoldYPosition = 2 ;
+        let beginningCenterHoldYPosition = 2 ;
+        let beginningUpLeftHoldYPosition = 2 ;
+        let beginningDownLeftHoldYPosition = 2 ;
+
+
         for (var i = 0 ; i < noteData.measures.length ; i++ ) {
             const measure = noteData.measures[i] ;
 
@@ -54,47 +67,53 @@ class Composer {
                 const note = measure[j] ;
 
                 // TODO: check what happens with tuplet (e.g. triplets) lol
-                const currentYPosition = - (4*i + 4*j/notesInBar)* this.speed ;
+                const currentYPosition = - (4*i + 4*j/notesInBar) * this.speed ;
 
                 // dl
-                if ( note[0] === '1' ) {
-                    let step = this.stepFactory.getStep('dl');
-                    step.position.y = currentYPosition ;
-                    step.position.x = -2*(stepShift - stepOverlap) ;
-                    steps.add(step) ;
-                }
+                beginningDownLeftHoldYPosition = this.processNote(
+                    note[0],
+                    'dl',
+                    currentYPosition,
+                    -2*(stepShift - stepOverlap),
+                    beginningDownLeftHoldYPosition,
+                    steps) ;
 
-                // ul
-                if ( note[1] === '1' ) {
-                    let step = this.stepFactory.getStep('ul');
-                    step.position.y = currentYPosition ;
-                    step.position.x = -(stepShift - stepOverlap) ;
-                    steps.add(step) ;
-                }
+
+                //ul
+                beginningUpLeftHoldYPosition = this.processNote(
+                    note[1],
+                    'ul',
+                    currentYPosition,
+                    -(stepShift - stepOverlap),
+                    beginningUpLeftHoldYPosition,
+                    steps) ;
 
                 // c
-                if ( note[2] === '1' ) {
-                    let step = this.stepFactory.getStep('c');
-                    step.position.y = currentYPosition ;
-                    step.position.x = 0 ;
-                    steps.add(step) ;
-                }
+                beginningCenterHoldYPosition = this.processNote(
+                    note[2],
+                    'c',
+                    currentYPosition,
+                    0,
+                    beginningCenterHoldYPosition,
+                    steps) ;
 
                 // ur
-                if ( note[3] === '1' ) {
-                    let step = this.stepFactory.getStep('ur');
-                    step.position.y = currentYPosition ;
-                    step.position.x = (stepShift - stepOverlap) ;
-                    steps.add(step) ;
-                }
+                beginningUpRightHoldYPosition = this.processNote(
+                    note[3],
+                    'ur',
+                    currentYPosition,
+                    (stepShift - stepOverlap),
+                    beginningUpRightHoldYPosition,
+                    steps) ;
 
                 // dr
-                if ( note[4] === '1' ) {
-                    let step = this.stepFactory.getStep('dr');
-                    step.position.y = currentYPosition ;
-                    step.position.x = 2*(stepShift - stepOverlap) ;
-                    steps.add(step) ;
-                }
+                beginningDownRightHoldYPosition = this.processNote(
+                    note[4],
+                    'dr',
+                    currentYPosition,
+                    2*(stepShift - stepOverlap),
+                    beginningDownRightHoldYPosition,
+                    steps) ;
 
             }
 
@@ -102,13 +121,51 @@ class Composer {
 
         // Get receptor
         let receptor = this.receptorFactory.getReceptor();
-        receptor.position.z = -0.0001;
+        receptor.position.z = this.receptorZDepth;
         this.receptor = receptor;
 
 
         this.steps = steps ;
         return [steps, receptor];
 
+    }
+
+    processNote(note, kind, currentYPosition, XStepPosition , beginningHoldYPosition, steps ) {
+
+        // Process tapNote
+        if ( note === '1' || note === '2' ) {
+            let step = this.stepFactory.getStep(kind);
+            step.position.y = currentYPosition ;
+            step.position.x = XStepPosition ;
+            steps.add(step) ;
+
+            if (note === '2') {
+                beginningHoldYPosition = currentYPosition ;
+            }
+
+        }
+
+        // Process hold and endNote
+        if ( note === '3' ) {
+            let hold = this.stepFactory.getHold(kind) ;
+            let holdScale = beginningHoldYPosition - currentYPosition ;
+            hold.position.z = this.holdZDepth ;
+            hold.scale.y = holdScale ;
+            // -0.5 to shift it to the center
+            hold.position.y = beginningHoldYPosition - holdScale*0.5 ;
+            hold.position.x = XStepPosition ;
+            steps.add(hold) ;
+
+
+            let endNote = this.stepFactory.getHoldEndNote(kind);
+            endNote.position.y = currentYPosition ;
+            endNote.position.x = XStepPosition ;
+            steps.add(endNote) ;
+
+        }
+
+        // can't be updated by reference
+        return beginningHoldYPosition ;
     }
 
 
@@ -129,14 +186,51 @@ class Composer {
         // this.steps.position.y += yDisplacement* this.speed ;
 
 
+        const audiotime = this.song.getCurrentAudioTime(this.level) ;
+        if ( audiotime < 0 ) {
+            this.updateStepsPositionAudioClockSync();
+        } else {
+            this.updateStepsPositionDelta(delta) ;
+        }
+
+        // const bpm = this.bpms[0][1] ;
+        // const beatsPerSecond = bpm / 60 ;
+        // const audioTime = this.song.getCurrentAudioTime() ;
+        // const yDisplacement = beatsPerSecond * audioTime ;
+        //
+        // this.steps.position.y = yDisplacement* this.speed ;
+        //
+        // console.log(audioTime);
+    }
+
+    isSyncWRTBeggining() {
+        const audioTime = this.song.getCurrentAudioTime(this.level) ;
+        const offset = this.song.getTotalOffset() ;
+        console.log('audioTime: ' + audioTime + ' offset:' + offset) ;
+        if (offset === audioTime || this.forceSync ) {
+            this.forceSync = true ;
+            return false ;
+        }
+        return true ;
+    }
+
+    updateStepsPositionDelta(delta) {
         const bpm = this.bpms[0][1] ;
         const beatsPerSecond = bpm / 60 ;
-        const audioTime = this.song.getCurrentAudioTime() ;
+        const yDisplacement = beatsPerSecond * delta ;
+        //
+        this.steps.position.y += yDisplacement* this.speed ;
+
+    }
+
+    updateStepsPositionAudioClockSync() {
+
+        const bpm = this.bpms[0][1] ;
+        const beatsPerSecond = bpm / 60 ;
+        const audioTime = this.song.getCurrentAudioTime(this.level) ;
         const yDisplacement = beatsPerSecond * audioTime ;
 
         this.steps.position.y = yDisplacement* this.speed ;
-
-        // console.log(audioTime);
     }
 
     updateReceptorAnimation(delta) {
@@ -146,7 +240,7 @@ class Composer {
         const beatsPerSecond = bpm / 60 ;
         const secondsPerBeat = 60 / bpm ;
 
-        const audioTime = this.song.getCurrentAudioTime() ;
+        const audioTime = this.song.getCurrentAudioTime(this.level) ;
 
         if ( audioTime < 0 ) {
             this.receptor.material.uniforms.activeColorContribution.value = 0 ;
@@ -184,11 +278,8 @@ class Composer {
         if ( movement > 1 ) {
 
             this.animationPosition = (this.animationPosition + 1)%6 ;
-            const col = this.animationPosition % 3 ;
-            // in UV cordinates, the first row is the lowest one.
-            const row = Math.floor( this.animationPosition / 3 ) ;
 
-            this.stepFactory.changeTexturePosition(col,row) ;
+            this.stepFactory.changeTexturePosition( this.animationPosition) ;
 
             this.lastStepTimeStamp = 0 ;
         } else {

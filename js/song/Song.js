@@ -117,12 +117,17 @@ class Song {
 
 
 
-    getCurrentAudioTime() {
+    getCurrentAudioTime( level ) {
         // return this.context.currentTime ;
         // console.log('Outside start time: ' + this.startTime) ;
-        return this.context.currentTime - this.delay + parseFloat(this.meta['OFFSET']) - this.startTime;
+        // this.levels[level].meta['OFFSET'] ;
+        return this.context.currentTime - this.delay + this.levels[level].meta['OFFSET'] - this.startTime;
         // return this.startTime - this.audio.context.currentTime + parseFloat(this.meta['OFFSET']);
         //return this.audio.context.currentTime + this.startTime + parseFloat(this.meta['OFFSET']);
+    }
+
+    getTotalOffset(level) {
+        return - this.delay + this.levels[level].meta['OFFSET'] - this.startTime;
     }
 
 

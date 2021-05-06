@@ -52,6 +52,10 @@ function postProcessing(meta, endIndex) {
         meta['BPMS'] = parseBPMSValue( meta['BPMS'] ) ;
     }
 
+    if ( 'OFFSET' in meta ) {
+        meta['OFFSET'] = parseFloat(meta['OFFSET']) ;
+    }
+
     return [ meta, endIndex ] ;
 }
 

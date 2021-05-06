@@ -16,7 +16,7 @@ class Engine {
 
         // Camera: Y up, X right, Z up
 
-        this.camera = new THREE.PerspectiveCamera(45, canvasRatio, 1, 40 ) ;
+        this.camera = new THREE.PerspectiveCamera(45, canvasRatio, 1, 4000 ) ;
 
         //camera = new THREE.OrthographicCamera(windowWidth/-2, windowWidth/2, windowHeight/2, windowHeight/-2, 0, 40);
 
@@ -77,14 +77,18 @@ class Engine {
     start ( ) {
 
         // let song = new Song('songs/bc/dp.ssc');
-        // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc');
-        // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc');
-        let song = new Song('songs/pd/A20 - Power of Dreams.ssc');
-        // let song = new Song('songs/bc/105 - Black Cat.ssc');
+        // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc'); // 7
+        // let song = new Song('songs/cd/B19 - Canon-D.ssc'); // 6
+        // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc'); //6
+        // let song = new Song('songs/h/B02 - Hot.ssc'); //5
+        // let song = new Song('songs/pd/A20 - Power of Dreams.ssc');
+        // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc'); // 8
+        let song = new Song('songs/bc/105 - Black Cat.ssc'); // 5
         song.play() ;
 
-        this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,4);
-        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4);
+        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,1);
+        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,2);
+        this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4);
 
         // Get the steps and receptor in position
         let [steps, receptor] = this.composer.run(5) ;
