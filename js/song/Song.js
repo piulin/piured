@@ -4,9 +4,10 @@
 
 class Song {
 
+    // TODO: remove keyboard offset.
+    constructor(pathToSSCFile, keyBoardOffset) {
 
-    constructor(pathToSSCFile) {
-
+        this.keyBoardOffset = keyBoardOffset ;
 
         this.pathToSSCFile = pathToSSCFile ;
 
@@ -57,23 +58,6 @@ class Song {
 
     play () {
 
-        // let context = new AudioContext() ;
-        // let bufferLoader = new BufferLoader(
-        //     context,
-        //     ['songs/bc/105.mp3'],
-        //     function (bufferList) {
-        //
-        //         var source1 = context.createBufferSource();
-        //         source1.buffer = bufferList[0];
-        //
-        //         source1.connect(context.destination);
-        //         source1.start(0);
-        //     }
-        // ) ;
-
-
-        // let listener = new THREE.AudioListener();
-        // this.audio = new THREE.Audio( listener );
         this.delay = 1.0 ;
         let audioLoader = new THREE.AudioLoader();
         this.startTime = 0.0 ;
@@ -82,25 +66,10 @@ class Song {
         //analyser = new THREE.AudioAnalyser( audio, 32 );
         audioLoader.load( this.getMusicPath(), this.playBack.bind(this)
 
-        //     function( buffer ) {
-        //     // audio.setBuffer( buffer );
-        //     // audio.setLoop( false );
-        //     // audio.setVolume( 1 );
-        //
-        //     // audio.context.start(audio.context.currentTime+2.0) ;
-        //
-        //     let audioBufferSourceNode = context.createBufferSource();
-        //     audioBufferSourceNode.buffer = buffer ;
-        //     audioBufferSourceNode.connect(context.destination);
-        //     startTime = context.currentTime;
-        //     audioBufferSourceNode.start(startTime + delay) ;
-        //     console.log('Start time: ' + startTime);
-        //     // audio.play();
-        //
-        // }
+
         );
 
-        // this.startTime = startTime ;
+        // this.startTime =  ;
     }
 
     // This method is called when the buffer with the song is ready.
@@ -121,7 +90,7 @@ class Song {
         // return this.context.currentTime ;
         // console.log('Outside start time: ' + this.startTime) ;
         // this.levels[level].meta['OFFSET'] ;
-        return this.context.currentTime - this.delay + this.levels[level].meta['OFFSET'] - this.startTime;
+        return this.context.currentTime - this.delay + this.levels[level].meta['OFFSET'] - this.keyBoardOffset - this.startTime;
         // return this.startTime - this.audio.context.currentTime + parseFloat(this.meta['OFFSET']);
         //return this.audio.context.currentTime + this.startTime + parseFloat(this.meta['OFFSET']);
     }

@@ -27,7 +27,7 @@ void main() {
     if ( receptorColor.a < 0.9 ) {
         discard;
     } else {
-        // Naive color mix.
+        // Naive color mix. Change color contribution
         gl_FragColor = vec4( (receptorColor.rgb + activeColor.rgb*activeColorContribution), receptorColor.a) ;
     }
 

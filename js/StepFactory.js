@@ -9,6 +9,10 @@ class StepFactory {
         //Create all 5 step prototypes. Instantiate them by cloning them when needed.
         this.stepGeometry = new THREE.PlaneGeometry( 1 , 1 , 1, 1 ) ;
 
+        this.noteskinPath = noteskinPath ;
+
+        this.holdEndNoteMapList = [] ;
+
         //Steps
         [this.downLeftMap, this.downLeftMaterial] = this.getStepMapAndMaterial(noteskinPath + '/DownLeft TapNote 3x2.PNG') ;
         [this.upLeftMap, this.upLeftMaterial] = this.getStepMapAndMaterial(noteskinPath + '/UpLeft TapNote 3x2.PNG') ;
@@ -25,11 +29,20 @@ class StepFactory {
 
 
         // Hold endNotes
-        [this.downLeftMapHoldEndNote, this.downLeftMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/DownLeft Hold 6x1.PNG') ;
-        [this.upLeftMapHoldEndNote, this.upLeftMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/UpLeft Hold 6x1.PNG') ;
-        [this.centerMapHoldEndNote, this.centerMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/Center Hold 6x1.PNG') ;
-        [this.upRightMapHoldEndNote, this.upRightMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/UpRight Hold 6x1.PNG') ;
-        [this.downRightMapHoldEndNote, this.downRightMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/DownRight Hold 6x1.PNG') ;
+
+        // this.downLeftMapHoldEndNote = this.getHoldEndNoteMap(noteskinPath + '/DownLeft Hold 6x1.PNG') ;
+        // this.upLeftMapHoldEndNote = this.getHoldEndNoteMap(noteskinPath + '/UpLeft Hold 6x1.PNG') ;
+        // this.centerMapHoldEndNote = this.getHoldEndNoteMap(noteskinPath + '/Center Hold 6x1.PNG') ;
+        // this.upRightMapHoldEndNote = this.getHoldEndNoteMap(noteskinPath + '/UpRight Hold 6x1.PNG') ;
+        // this.downRightMapHoldEndNote = this.getHoldEndNoteMap(noteskinPath + '/DownRight Hold 6x1.PNG') ;
+
+
+
+        [this.downLeftMapHoldEndNote, this.downLeftMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/DownLeft Hold 6x1.PNG', 'dl') ;
+        [this.upLeftMapHoldEndNote, this.upLeftMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/UpLeft Hold 6x1.PNG', 'ul') ;
+        [this.centerMapHoldEndNote, this.centerMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/Center Hold 6x1.PNG', 'c') ;
+        [this.upRightMapHoldEndNote, this.upRightMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/UpRight Hold 6x1.PNG', 'ur') ;
+        [this.downRightMapHoldEndNote, this.downRightMaterialHoldEndNote] = this.getHoldEndNoteMapAndMaterial(noteskinPath + '/DownRight Hold 6x1.PNG', 'dr') ;
 
 
 
@@ -79,7 +92,10 @@ class StepFactory {
         return [holdMap, holdMaterial] ;
     }
 
-    getHoldEndNoteMapAndMaterial (pathToTexture) {
+
+    getHoldEndNoteMap (pathToTexture) {
+        // let tl = new THREE.TextureLoaddAsync(pathToTexture) ;
+
         let holdEndNoteMap = new THREE.TextureLoader().load(pathToTexture) ;
 
         // to accurately represent the colors
@@ -88,15 +104,141 @@ class StepFactory {
 
         // This acts as UV mapping.
         holdEndNoteMap.repeat.set(1/6,1/3) ;
-        // myTexture.offset.set( -1, 2/3 );
+        return holdEndNoteMap ;
+    }
 
-        let holdEndNoteMaterial = new THREE.MeshBasicMaterial( { map: holdEndNoteMap, transparent: true } );
+    getHoldEndNoteMapAndMaterial (pathToTexture, kind) {
+
+        let hl = this.holdEndNoteMapList ;
+        let holdEndNoteMap = new THREE.TextureLoader().load(pathToTexture,
+
+            // When the texture is loaded, be sure to update all the generated holds. Otherwise they
+            // will not appear on screen.
+            function (){
+                for ( var i = 0 ; i < hl.length ; i++) {
+                    let m = hl [ i ] ;
+                    if ( m.kind === kind ) {
+                        m.image = holdEndNoteMap.image ;
+                        m.needsUpdate = true ;
+                    }
+                }
+
+            }) ;
+
+        // to accurately represent the colors
+        holdEndNoteMap.encoding = THREE.sRGBEncoding;
 
 
+        // // This acts as UV mapping.
+        holdEndNoteMap.repeat.set(1/6,1/3) ;
+
+
+        let holdMaterial = new THREE.MeshBasicMaterial( { map: holdEndNoteMap, transparent: true , alphaTest: 0.1 } );
         // So they can meet inbetween.
-        holdEndNoteMaterial.alphaTest = 0.1;
+        holdMaterial.alphaTest = 0.1;
 
-        return [holdEndNoteMap, holdEndNoteMaterial] ;
+        return [holdEndNoteMap, holdMaterial] ;
+
+
+        // for the shader.
+        // var uniforms = {
+        //     uNoteTexture: { type: "t", value: holdEndNoteMap },
+        //     uOffset : { type: "v2" , value: new THREE.Vector2(0,0) },
+        //     uRepeat : { type: "v2" , value: new THREE.Vector2(1/6,1/3) },
+        //     uInvisible : { type: "f" , value : 0.0 }
+        // };
+        //
+        //
+        // // let vs = document.getElementById('vertex').textContent;
+        // let vs = '';
+        // readFileContent('shaders/endNote.vert',function (content) {
+        //     vs = content ;
+        // })
+        // // let fs = document.getElementById('fragment').textContent;
+        // let fs = '' ;
+        // readFileContent('shaders/endNote.frag', function (content) {
+        //     fs = content;
+        // })
+        //
+        // var holdEndNoteMaterial = new THREE.ShaderMaterial({
+        //     uniforms: uniforms,
+        //     vertexShader: vs,
+        //     fragmentShader: fs
+        // });
+        //
+        //
+        // return [holdEndNoteMap, holdEndNoteMaterial] ;
+    }
+
+
+    getNewHoldEndNoteObject(kind) {
+
+        let mapPath ;
+        let holdEndNoteMap ;
+
+        switch (kind) {
+            case 'dl':
+                mapPath = this.noteskinPath + '/DownLeft Hold 6x1.PNG' ;
+                holdEndNoteMap = this.downLeftMapHoldEndNote.clone() ;
+                break ;
+            case 'ul':
+                mapPath = this.noteskinPath + '/UpLeft Hold 6x1.PNG' ;
+                holdEndNoteMap = this.upLeftMapHoldEndNote.clone() ;
+                break ;
+            case 'c':
+                mapPath = this.noteskinPath + '/Center Hold 6x1.PNG' ;
+                holdEndNoteMap = this.centerMapHoldEndNote.clone() ;
+                break ;
+            case 'ur':
+                mapPath = this.noteskinPath + '/UpRight Hold 6x1.PNG' ;
+                holdEndNoteMap = this.upRightMapHoldEndNote.clone() ;
+                break ;
+            case 'dr':
+                mapPath = this.noteskinPath + '/DownRight Hold 6x1.PNG' ;
+                holdEndNoteMap = this.downRightMapHoldEndNote.clone() ;
+                break ;
+        }
+
+        holdEndNoteMap.kind = kind ;
+        this.holdEndNoteMapList.push(holdEndNoteMap) ;
+
+        // let holdEndNoteMap = new THREE.TextureLoader().load(mapPath) ;
+
+        // to accurately represent the colors
+        holdEndNoteMap.encoding = THREE.sRGBEncoding;
+
+
+        // // This acts as UV mapping.
+        holdEndNoteMap.repeat.set(1/6,1/3) ;
+        //
+        //
+        let holdMaterial = new THREE.MeshBasicMaterial( { map: holdEndNoteMap, transparent: true , alphaTest: 0.1 } );
+        // // So they can meet inbetween.
+        holdMaterial.alphaTest = 0.1;
+
+        return new THREE.Mesh( this.stepGeometry, holdMaterial );
+
+
+    }
+
+    getCommonHoldEndNoteObject(kind) {
+        switch (kind) {
+            case 'dl':
+                return  new THREE.Mesh( this.stepGeometry, this.downLeftMaterialHoldEndNote );
+                break ;
+            case 'ul':
+                return  new THREE.Mesh( this.stepGeometry, this.upLeftMaterialHoldEndNote );
+                break ;
+            case 'c':
+                return  new THREE.Mesh( this.stepGeometry, this.centerMaterialHoldEndNote );
+                break ;
+            case 'ur':
+                return  new THREE.Mesh( this.stepGeometry, this.upRightMaterialHoldEndNote );
+                break ;
+            case 'dr':
+                return  new THREE.Mesh( this.stepGeometry, this.downRightMaterialHoldEndNote );
+                break ;
+        }
     }
 
     getStep(kind) {
@@ -143,24 +285,15 @@ class StepFactory {
     }
 
     getHoldEndNote(kind) {
-        switch (kind) {
-            case 'dl':
-                return  new THREE.Mesh( this.stepGeometry, this.downLeftMaterialHoldEndNote );
-                break ;
-            case 'ul':
-                return  new THREE.Mesh( this.stepGeometry, this.upLeftMaterialHoldEndNote );
-                break ;
-            case 'c':
-                return  new THREE.Mesh( this.stepGeometry, this.centerMaterialHoldEndNote );
-                break ;
-            case 'ur':
-                return  new THREE.Mesh( this.stepGeometry, this.upRightMaterialHoldEndNote );
-                break ;
-            case 'dr':
-                return  new THREE.Mesh( this.stepGeometry, this.downRightMaterialHoldEndNote );
-                break ;
-        }
+
+        return this.getNewHoldEndNoteObject(kind) ;
+
+        // this produces some glitches. We need separate textures for each end note.
+        // return this.getCommonHoldEndNoteObject(kind) ;
+
     }
+
+
 
     changeTexturePosition(animationPosition) {
 
@@ -187,6 +320,13 @@ class StepFactory {
         this.upRightMapHoldEndNote.offset.set( XOffset6x1, YOffset6x1HoldEndNote) ;
         this.downRightMapHoldEndNote.offset.set( XOffset6x1, YOffset6x1HoldEndNote) ;
 
+        // Use only with custom shader
+        // this.downLeftMaterialHoldEndNote.uniforms.uOffset.value.set( XOffset6x1, YOffset6x1HoldEndNote) ;
+        // this.upLeftMaterialHoldEndNote.uniforms.uOffset.value.set(XOffset6x1, YOffset6x1HoldEndNote) ;
+        // this.centerMaterialHoldEndNote.uniforms.uOffset.value.set( XOffset6x1, YOffset6x1HoldEndNote) ;
+        // this.upRightMaterialHoldEndNote.uniforms.uOffset.value.set( XOffset6x1, YOffset6x1HoldEndNote) ;
+        // this.downRightMaterialHoldEndNote.uniforms.uOffset.value.set( XOffset6x1, YOffset6x1HoldEndNote) ;
+
         this.downLeftMapHold.offset.set( XOffset6x1, YOffset6x1Hold) ;
         this.upLeftMapHold.offset.set(XOffset6x1, YOffset6x1Hold) ;
         this.centerMapHold.offset.set( XOffset6x1, YOffset6x1Hold) ;
@@ -194,7 +334,14 @@ class StepFactory {
         this.downRightMapHold.offset.set( XOffset6x1, YOffset6x1Hold) ;
 
 
+        // Iterate all holdEndNote items.
+        for ( var i = 0 ; i < this.holdEndNoteMapList.length ; i++ ) {
+            // console.log(i);
+            let hl = this.holdEndNoteMapList[i] ;
+            hl.offset.set( XOffset6x1, YOffset6x1HoldEndNote) ;
 
+
+        }
 
 
     }
