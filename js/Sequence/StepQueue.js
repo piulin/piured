@@ -140,6 +140,8 @@ class StepQueue {
                     this.composer.removeObjectFromSteps(step.holdObject) ;
                     this.composer.removeObjectFromSteps(step.endNoteObject) ;
 
+                    this.composer.animateTapEffect([step]) ;
+
                 }
 
                 // listActiveHolds[i] = null ;
@@ -200,11 +202,11 @@ class StepQueue {
                 }
 
             } else {
-                return null ;
+                return [null, null, null] ;
             }
 
         }
-        return null ;
+        return [null, null, null] ;
 
     }
 
@@ -224,33 +226,14 @@ class StepQueue {
 
         if (stepInfo !== null) {
 
-            // [0] is the stepTime.
-            // let stepTime = this.getStepTimeStampFromTopMostStepInfo() ;
-            // let stepTime = stepInfo.timeStamp;
-
-
-            // check if we stepped when we had to ( we are within the margins )
-
-            // const difference =  Math.abs((stepTime) - currentAudioTime) ;
-            // console.log('Difference: ' + difference)
-
-            // good! a step has been pressed on time!
-            // if (difference < this.accuracyMargin) {
 
             step.pressed = true;
-            // const length = this.getTopMostStepListLength();
-            // for (var i = 0; i < length; ++i) {
-            //
-            //     let note = this.getStepFromTopMostStepInfo(i);
-            //     if (note.kind === kind) {
-            //         note.pressed = true;
-            //         break;
-            //     }
-            //
-            // }
+
 
             // If all steps have been pressed, then we can remove them from the steps to be rendered
             if (this.areStepsInNoteListPressed(stepInfo.stepList)) {
+
+                this.composer.animateTapEffect(stepInfo.stepList) ;
 
                 this.removeNotesFromStepObject(stepInfo.stepList);
 

@@ -44,11 +44,19 @@ class Composer {
         this.animationPosition = 0 ;
 
 
+
         // Space to the right or left of a given step.
         const stepShift = 4/5;
         // Note that the receptor steps are a bit overlapped. This measure takes into
         // acount this overlap.
         const stepOverlap = 0.02 ;
+
+        // define position of the notes w.r.t. the receptor
+        this.dlXPos =  -2*(stepShift - stepOverlap) ;
+        this.ulXPos =  -(stepShift - stepOverlap) ;
+        this.cXPos =  0 ;
+        this.urXPos =  (stepShift - stepOverlap) ;
+        this.drXPos =  2*(stepShift - stepOverlap) ;
 
         // object containing all the steps of the chart.
         let steps = new THREE.Object3D();
@@ -95,7 +103,7 @@ class Composer {
                     note[0],
                     'dl',
                     currentYPosition,
-                    -2*(stepShift - stepOverlap),
+                    this.dlXPos,
                     steps,
                     currentTimeInSong) ;
 
@@ -105,7 +113,7 @@ class Composer {
                     note[1],
                     'ul',
                     currentYPosition,
-                    -(stepShift - stepOverlap),
+                    this.ulXPos,
                     steps,
                     currentTimeInSong) ;
 
@@ -114,7 +122,7 @@ class Composer {
                     note[2],
                     'c',
                     currentYPosition,
-                    0,
+                    this.cXPos,
                     steps,
                     currentTimeInSong) ;
 
@@ -123,7 +131,7 @@ class Composer {
                     note[3],
                     'ur',
                     currentYPosition,
-                    (stepShift - stepOverlap),
+                    this.urXPos,
                     steps,
                     currentTimeInSong) ;
 
@@ -132,7 +140,7 @@ class Composer {
                     note[4],
                     'dr',
                     currentYPosition,
-                    2*(stepShift - stepOverlap),
+                    this.drXPos,
                     steps,
                     currentTimeInSong) ;
 
@@ -147,17 +155,71 @@ class Composer {
         // this.addHolds() ;
 
 
-        console.log(this.stepQueue.stepQueue);
+        // console.log(this.stepQueue.stepQueue);
         // Get receptor
+        let rObject = new THREE.Object3D();
         let receptor = this.receptorFactory.getReceptor();
         receptor.position.z = this.receptorZDepth;
+
         this.receptor = receptor;
+
+        rObject.add(receptor);
+        // Set up tabs
+        this.dlTap = this.receptorFactory.getTap('dl');
+        this.dlTap.position.x = this.dlXPos ;
+        this.ulTap = this.receptorFactory.getTap('ul');
+        this.ulTap.position.x = this.ulXPos ;
+        this.cTap = this.receptorFactory.getTap('c');
+        this.cTap.position.x = this.cXPos ;
+        this.urTap = this.receptorFactory.getTap('ur');
+        this.urTap.position.x = this.urXPos ;
+        this.drTap = this.receptorFactory.getTap('dr');
+        this.drTap.position.x = this.drXPos ;
+
+
+        this.dlTap.material.opacity = 0.0 ;
+        this.ulTap.material.opacity = 0.0 ;
+        this.cTap.material.opacity = 0.0 ;
+        this.urTap.material.opacity = 0.0 ;
+        this.drTap.material.opacity = 0.0 ;
+        rObject.add(this.dlTap) ;
+        rObject.add(this.ulTap) ;
+        rObject.add(this.cTap) ;
+        rObject.add(this.urTap) ;
+        rObject.add(this.drTap) ;
+
+
+        this.dlEffect = this.stepFactory.getStepCopy('dl');
+        this.dlEffect.position.x = this.dlXPos ;
+        this.ulEffect = this.stepFactory.getStepCopy('ul');
+        this.ulEffect.position.x = this.ulXPos ;
+        this.cEffect = this.stepFactory.getStepCopy('c');
+        this.cEffect.position.x = this.cXPos ;
+        this.urEffect = this.stepFactory.getStepCopy('ur');
+        this.urEffect.position.x = this.urXPos ;
+        this.drEffect = this.stepFactory.getStepCopy('dr');
+        this.drEffect.position.x = this.drXPos ;
+
+
+        this.dlEffect.material.opacity = 0.0 ;
+        this.ulEffect.material.opacity = 0.0 ;
+        this.cEffect.material.opacity = 0.0 ;
+        this.urEffect.material.opacity = 0.0 ;
+        this.drEffect.material.opacity = 0.0 ;
+
+        rObject.add(this.dlEffect) ;
+        rObject.add(this.ulEffect) ;
+        rObject.add(this.cEffect) ;
+        rObject.add(this.urEffect) ;
+        rObject.add(this.drEffect) ;
+
 
 
         this.steps = steps ;
-        return [steps, receptor];
+        return [steps, rObject];
 
     }
+
 
     processNote(note, kind, currentYPosition, XStepPosition , steps, currentTimeInSong ) {
 
@@ -396,11 +458,79 @@ class Composer {
     }
 
 
+    animateTap(kind) {
+
+        let tap = null ;
+
+        switch (kind) {
+            case 'dl':
+                tap = this.dlTap ;
+                break ;
+            case 'ul':
+                tap = this.ulTap ;
+                break ;
+            case 'c':
+                tap = this.cTap ;
+                break ;
+            case 'ur':
+                tap = this.urTap ;
+                break ;
+            case 'dr':
+                tap = this.drTap ;
+                break ;
+        }
+
+        const time = 250 ;
+        tap.material.opacity = 1.0 ;
+        tap.scale.set(0.85,0.85) ;
+
+        new TWEEN.Tween( tap.material ).to( { opacity: 0 }, time ).start();
+        new TWEEN.Tween( tap.scale ).to( { x: 1.2, y: 1.2 }, time ).start();
+    }
+
+    animateTapEffect(arrayOfArrows) {
+
+        for ( var i = 0 ; i < arrayOfArrows.length ; ++i  ) {
+            let tapEffect = null ;
+            switch (arrayOfArrows[i].kind) {
+                case 'dl':
+                    tapEffect = this.dlEffect ;
+                    break ;
+                case 'ul':
+                    tapEffect = this.ulEffect ;
+                    break ;
+                case 'c':
+                    tapEffect = this.cEffect ;
+                    break ;
+                case 'ur':
+                    tapEffect = this.urEffect ;
+                    break ;
+                case 'dr':
+                    tapEffect = this.drEffect ;
+                    break ;
+            }
+
+            const time = 250 ;
+            tapEffect.material.opacity = 1.0 ;
+            tapEffect.scale.set(1,1) ;
+
+            new TWEEN.Tween( tapEffect.material ).to( { opacity: 0 }, time ).start();
+            new TWEEN.Tween( tapEffect.scale ).to( { x: 1.2, y: 1.2 }, time ).start();
+
+        }
+
+    }
+
+
     arrowPressed(kind) {
 
         let currentAudioTime = this.song.getCurrentAudioTime(this.level);
 
         this.stepQueue.stepPressed(kind,currentAudioTime) ;
+
+        this.animateTap(kind) ;
+
+
 
 
     }

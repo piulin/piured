@@ -13,6 +13,8 @@ class StepFactory {
 
         this.holdEndNoteMapList = [] ;
 
+        this.stepCopyList = [];
+
         //Steps
         [this.downLeftMap, this.downLeftMaterial] = this.getStepMapAndMaterial(noteskinPath + '/DownLeft TapNote 3x2.PNG') ;
         [this.upLeftMap, this.upLeftMaterial] = this.getStepMapAndMaterial(noteskinPath + '/UpLeft TapNote 3x2.PNG') ;
@@ -264,6 +266,41 @@ class StepFactory {
 
     }
 
+    getStepCopy(kind) {
+
+        // Create one step out of the five available.
+
+        let step = null ;
+        switch (kind) {
+            case 'dl':
+                let [downLeftMap, downLeftMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/DownLeft TapNote 3x2.PNG') ;
+                step =  new THREE.Mesh( this.stepGeometry, downLeftMaterial );
+                break ;
+            case 'ul':
+                let [upLeftMap, upLeftMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/UpLeft TapNote 3x2.PNG') ;
+                step =  new THREE.Mesh( this.stepGeometry, upLeftMaterial );
+                break ;
+            case 'c':
+                let [centerMap, centerMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/Center TapNote 3x2.PNG') ;
+                step =   new THREE.Mesh( this.stepGeometry, centerMaterial );
+                break ;
+            case 'ur':
+                let [upRightMap, upRightMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/UpRight TapNote 3x2.PNG') ;
+                step =   new THREE.Mesh( this.stepGeometry, upRightMaterial );
+                break ;
+            case 'dr':
+                let [downRightMap, downRightMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/DownRight TapNote 3x2.PNG') ;
+                step =   new THREE.Mesh( this.stepGeometry, downRightMaterial );
+                break ;
+        }
+
+        // in order to animate these too.
+        this.stepCopyList.push(step) ;
+
+        return step ;
+
+    }
+
     getHold(kind) {
         switch (kind) {
             case 'dl':
@@ -309,6 +346,12 @@ class StepFactory {
         this.centerMap.offset.set( XOffset3x2, YOffset3x2 );
         this.upRightMap.offset.set ( XOffset3x2, YOffset3x2 );
         this.downRightMap.offset.set( XOffset3x2, YOffset3x2 );
+
+
+        for ( var i = 0 ; i < this.stepCopyList.length ; i++ ) {
+            this.stepCopyList[i].material.map.offset.set( XOffset3x2, YOffset3x2 ) ;
+
+        }
 
         const XOffset6x1 = ((animationPosition + 3)%6)* (1/6) ;
         const YOffset6x1HoldEndNote = 0 ;
