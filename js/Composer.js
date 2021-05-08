@@ -55,11 +55,11 @@ class Composer {
 
         const noteData = this.song.levels[level] ;
 
-        this.stepQueue = new StepQueue() ;
+        this.stepQueue = new StepQueue(this, this.keyListener, this.accuracyMargin) ;
 
-        this.activeHolds = new Holds() ;
 
-        this.checkForNewHolds = true ;
+
+
 
 
         // These are mock values.
@@ -143,8 +143,6 @@ class Composer {
         this.stepQueue.cleanUpStepQueue() ;
 
 
-        this.activeHolds = new Holds() ;
-
         // maybe the song starts with a hold.
         // this.addHolds() ;
 
@@ -187,7 +185,7 @@ class Composer {
                 step.isHold = true ;
                 step.held = false ;
                 step.beginningHoldYPosition = currentYPosition ;
-                this.activeHolds.setHold(kind, step) ;
+                this.stepQueue.setHold(kind, step) ;
             }
 
         }
@@ -195,7 +193,7 @@ class Composer {
         // Process hold and endNote
         if ( note === '3' ) {
 
-            let step = this.activeHolds.getHold(kind) ;
+            let step = this.stepQueue.getHold(kind) ;
             let beginningHoldYPosition = step.beginningHoldYPosition ;
 
             let hold = this.stepFactory.getHold(kind) ;
@@ -230,7 +228,7 @@ class Composer {
         const currentAudioTime = this.song.getCurrentAudioTime(this.level);
 
         // keep track of the upcoming steps and the active holds.
-        this.updateStepQueueAndActiveHolds(currentAudioTime) ;
+        this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTime) ;
 
         // update position of the steps in the 3D word.
         this.updateStepsPosition(delta, currentAudioTime) ;
@@ -242,75 +240,6 @@ class Composer {
         this.updateReceptorAnimation(currentAudioTime) ;
 
 
-
-    }
-
-    updateStepQueueAndActiveHolds(currentAudioTime) {
-
-        //this.stepQueue.getLength() ;
-        if ( this.stepQueue.getLength() > 0 ) {
-
-            this.removeHoldsIfProceeds(currentAudioTime) ;
-
-            let stepTime = this.stepQueue.getStepTimeStampFromTopMostStepInfo() ;
-
-            const difference = (stepTime) - currentAudioTime - this.keyBoardOffset;
-            // We have a miss :(
-
-            // console.log(difference) ;
-
-            if ( difference < this.accuracyMargin && this.checkForNewHolds ) {
-                this.checkForNewHolds = false ;
-                this.addHolds() ;
-            }
-
-            if (difference < -this.accuracyMargin) {
-
-                console.log('remove first element');
-                this.stepQueue.removeFirstElement() ;
-                this.checkForNewHolds = true ;
-
-            }
-
-        }
-
-
-    }
-
-    // remove holds that reached the end.
-    removeHoldsIfProceeds(currentAudioTime) {
-
-        let listActiveHolds = this.activeHolds.asList() ;
-
-        for ( var i = 0 ; i <  listActiveHolds.length ; i++) {
-
-            let step = listActiveHolds[i] ;
-
-            if (step !== null && currentAudioTime > step.endHoldTimeStamp ) {
-                this.activeHolds.setHold(step.kind, null) ;
-                // listActiveHolds[i] = null ;
-                // console.log('removed:' + listActiveHolds[i]) ;
-            }
-
-        }
-    }
-
-    // update currentHolds using the topmost element of the stepQueue
-    addHolds() {
-
-        // add new holds
-
-        const length =  this.stepQueue.getTopMostStepListLength() ;
-        // console.log(this.stepQueue.stepQueue[0]);
-        for ( var i = 0 ; i < length ; ++i ) {
-            let note = this.stepQueue.getStepFromTopMostStepInfo(i) ;
-            if ( note.isHold ) {
-                this.activeHolds.setHold(note.kind, note);
-                // console.log('hold added:' + note.held) ;
-            }
-        }
-
-        console.log(this.activeHolds) ;
 
     }
 
@@ -330,7 +259,7 @@ class Composer {
     updateActiveHoldsPosition(delta) {
 
 
-        let listActiveHolds = this.activeHolds.asList() ;
+        let listActiveHolds = this.stepQueue.activeHolds.asList() ;
 
         for ( var i = 0 ; i <  listActiveHolds.length ; i++) {
 
@@ -338,6 +267,7 @@ class Composer {
 
             let distanceToOrigin = Math.abs (step.position.y) - this.steps.position.y ;
 
+            // check if hold is pressed.
             if ( this.keyListener.isPressed(step.kind) ) {
 
                 // update step note position
@@ -470,118 +400,19 @@ class Composer {
 
         let currentAudioTime = this.song.getCurrentAudioTime(this.level);
 
+        this.stepQueue.stepPressed(kind,currentAudioTime) ;
 
-        // keep track if there is an upcoming hold
-        this.updateHeldStepsStatus(kind, true) ;
-
-        // [0] is the stepTime.
-        let stepTime = this.stepQueue.getStepTimeStampFromTopMostStepInfo() ;
-
-        // check if we stepped when we had to ( we are within the margins )
-
-        const difference =  Math.abs((stepTime) - currentAudioTime) - this.keyBoardOffset ;
-        // console.log('Difference: ' + difference)
-
-        // good! a step has been pressed on time!
-        if ( difference < this.accuracyMargin ) {
-
-
-            const length =  this.stepQueue.getTopMostStepListLength() ;
-            for ( var i = 0 ; i < length ; ++i ) {
-
-                let note = this.stepQueue.getStepFromTopMostStepInfo(i) ;
-                if ( note.kind === kind ) {
-                    note.pressed = true ;
-                    break ;
-                }
-
-            }
-
-            // If all steps have been pressed, then we can remove them from the steps to be rendered
-            if ( this.areStepsInNoteListPressed () ) {
-
-                this.removeNotesFromStepObject() ;
-
-                // remove front
-                this.stepQueue.removeFirstElement() ;
-            }
-
-        }
 
     }
 
     arrowReleased(kind) {
 
-        this.updateHeldStepsStatus(kind, false) ;
+        this.stepQueue.stepReleased(kind) ;
 
     }
 
-    // true: step is held, false: otherwise
-    updateHeldStepsStatus(kind, status) {
-        this.updateHeldStepsStatusInStepQueue( kind, status ) ;
-        this.updateHeldStepsStatusInActiveHolds( kind, status ) ;
-    }
-
-    updateHeldStepsStatusInActiveHolds(kind,status) {
-
-        let step = this.activeHolds.getHold(kind);
-        if (step !== null ) {
-           step.held = status
-        }
-
-    }
-
-    updateHeldStepsStatusInStepQueue(kind, status) {
-        const length =  this.stepQueue.getTopMostStepListLength() ;
-        for ( var i = 0 ; i < length ; ++i ) {
-
-            let note = this.stepQueue.getStepFromTopMostStepInfo(i) ;
-            if ( note.isHold && note.kind === kind ) {
-                // console.log('updated note : ' + note.kind) ;
-                note.held = status ;
-                // console.log(note.held) ;
-                break ;
-            }
-
-        }
-    }
-
-
-    // Returns true if all the steps have been pressed
-    areStepsInNoteListPressed() {
-        const length =  this.stepQueue.getTopMostStepListLength() ;
-        for ( var i = 0 ; i < length ; ++i ) {
-
-            let note = this.stepQueue.getStepFromTopMostStepInfo(i) ;
-            if ( note.pressed === false ) {
-                if ( note.isHold && note.held ) {
-                    continue ;
-                }
-                return false ;
-            }
-        }
-        return true ;
-    }
-
-    // remove all steps in the noteList from the steps Object, so they are not rendered anymore
-    removeNotesFromStepObject() {
-        const length =  this.stepQueue.getTopMostStepListLength() ;
-        for ( var i = 0 ; i < length ; ++i ) {
-            let note = this.stepQueue.getStepFromTopMostStepInfo(i) ;
-
-            // remove the step if it's not a hold, obviously.
-            if ( note.isHold === false ) {
-                this.steps.remove(note) ;
-
-
-            // add it to the active holds early
-            } else {
-                this.activeHolds.setHold(note.kind, note) ;
-            }
-
-
-        }
-
+    removeObjectFromSteps(object) {
+        this.steps.remove(object) ;
     }
 
 

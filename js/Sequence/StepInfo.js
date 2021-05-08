@@ -5,9 +5,26 @@ class StepInfo {
 
     constructor(stepList, timeStamp) {
 
-        this.stepList = stepList ;
-        this.timeStamp = timeStamp ;
+        this._stepList = stepList;
+        this._timeStamp = timeStamp;
 
+    }
+
+
+    get stepList() {
+        return this._stepList;
+    }
+
+    set stepList(value) {
+        this._stepList = value;
+    }
+
+    get timeStamp() {
+        return this._timeStamp;
+    }
+
+    set timeStamp(value) {
+        this._timeStamp = value;
     }
 
 
