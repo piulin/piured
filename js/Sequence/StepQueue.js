@@ -101,12 +101,16 @@ class StepQueue {
 
             // if ( difference < this.accuracyMargin && this.checkForNewHolds ) {
             if ( difference < 0 && this.checkForNewHolds ) {
+
                 this.checkForNewHolds = false ;
                 this.addHolds() ;
             }
 
             // OK
             if (difference < -this.accuracyMargin) {
+
+                this.composer.comboCount = 0 ;
+                this.composer.animateJudgement('m') ;
 
                 // console.log('remove first element');
                 this.removeFirstElement() ;
@@ -141,6 +145,8 @@ class StepQueue {
                     this.composer.removeObjectFromSteps(step.endNoteObject) ;
 
                     this.composer.animateTapEffect([step]) ;
+
+                    this.composer.animateJudgement('p') ;
 
                 }
 
@@ -187,7 +193,7 @@ class StepQueue {
 
             const difference =  Math.abs((timeStamp) - currentAudioTime) ;
 
-            console.log(difference) ;
+            // console.log(difference) ;
 
             if ( difference < this.accuracyMargin ) {
 
@@ -234,6 +240,8 @@ class StepQueue {
             if (this.areStepsInNoteListPressed(stepInfo.stepList)) {
 
                 this.composer.animateTapEffect(stepInfo.stepList) ;
+
+                this.composer.animateJudgement('p') ;
 
                 this.removeNotesFromStepObject(stepInfo.stepList);
 
