@@ -5,6 +5,8 @@ class ReceptorFactory {
 
     constructor(noteskinPath) {
 
+        this.noteskinPath = noteskinPath ;
+
         let receptor_size = 1 ;
         var receptorPolygon = new THREE.PlaneGeometry( 5*receptor_size , receptor_size , 1, 1) ;
 
@@ -107,6 +109,45 @@ class ReceptorFactory {
 
 
         return new THREE.Mesh( this.tapGeometry, stepMaterial );
+    }
+
+    constructExplosion() {
+
+        let explosionMap = new THREE.TextureLoader().load(this.noteskinPath + '/StepFX 5x1.PNG') ;
+
+
+        // to accurately represent the colors
+        explosionMap.encoding = THREE.sRGBEncoding;
+
+        // This acts as UV mapping.
+        explosionMap.repeat.set(1/5,1);
+        // explosionMap.offset.set( 0 , 0 );
+        explosionMap.offset.set( 0 , 0 );
+
+        // explosionMap.blending = THREE.AdditiveBlending ;
+
+
+        let stepMaterial = new THREE.MeshBasicMaterial( { map: explosionMap, transparent: true } );
+
+        // Augment the brightness of the explosion
+        let scale = 1.5 ;
+
+        stepMaterial.color.r = scale ;
+        stepMaterial.color.g = scale ;
+        stepMaterial.color.b = scale ;
+
+        stepMaterial.blending = THREE.AdditiveBlending ;
+
+
+        // So they can meet inbetween.
+        // stepMaterial.alphaTest = 0.8;
+
+
+        let explosion =  new THREE.Mesh( this.tapGeometry, stepMaterial );
+        explosion.scale.x = 5 ;
+        explosion.scale.y = 5 ;
+
+        return explosion ;
     }
 
 

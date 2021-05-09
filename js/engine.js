@@ -77,26 +77,28 @@ class Engine {
     start ( ) {
 
 
-        const keyBoardLag = 0.00 ;
+        const keyBoardLag = 0.06 ;
+        // const keyBoardLag = 0.00 ;
 
         // let song = new Song('songs/bc/dp.ssc');
         // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc', keyBoardLag); // 7
-        // let song = new Song('songs/s/B18 - Solitary 2.ssc', keyBoardLag); // 7
-        // let song = new Song('songs/cd/B19 - Canon-D.ssc', keyBoardLag); // 6
+        // let song = new Song('songs/s/B18 - Solitary 2.ssc'); // 7
+        let song = new Song('songs/cd/B19 - Canon-D.ssc'); // 6
         // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc', keyBoardLag); //6
         // let song = new Song('songs/h/B02 - Hot.ssc', keyBoardLag); //5
-        let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag);
+        // let song = new Song('songs/bblbr/A16 - Ba Be Loo Be Ra.ssc', keyBoardLag); //4
+        // let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
         // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc', keyBoardLag); // 8
         // let song = new Song('songs/bc/105 - Black Cat.ssc', keyBoardLag); // 5
         song.play() ;
 
-        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,4, keyBoardLag);
-        this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,3, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,1, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,7, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,6, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,4, keyBoardLag);
+        this.composer = new Composer(song, 'noteskins/NXA/HD/' ,2, keyBoardLag);
 
         // Get the steps and receptor in position
-        let [steps, receptor] = this.composer.run(5) ;
+        let [steps, receptor] = this.composer.run(6) ;
 
         this.scene.add(steps) ;
         this.scene.add(receptor) ;

@@ -266,7 +266,7 @@ class StepFactory {
 
     }
 
-    getStepCopy(kind) {
+    getStepEffect(kind) {
 
         // Create one step out of the five available.
 
@@ -274,26 +274,36 @@ class StepFactory {
         switch (kind) {
             case 'dl':
                 let [downLeftMap, downLeftMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/DownLeft TapNote 3x2.PNG') ;
+                downLeftMaterial.blending = THREE.AdditiveBlending ;
+
                 step =  new THREE.Mesh( this.stepGeometry, downLeftMaterial );
                 break ;
             case 'ul':
                 let [upLeftMap, upLeftMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/UpLeft TapNote 3x2.PNG') ;
+                upLeftMaterial.blending = THREE.AdditiveBlending ;
                 step =  new THREE.Mesh( this.stepGeometry, upLeftMaterial );
                 break ;
             case 'c':
                 let [centerMap, centerMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/Center TapNote 3x2.PNG') ;
+                centerMaterial.blending = THREE.AdditiveBlending ;
                 step =   new THREE.Mesh( this.stepGeometry, centerMaterial );
                 break ;
             case 'ur':
                 let [upRightMap, upRightMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/UpRight TapNote 3x2.PNG') ;
+                upRightMaterial.blending = THREE.AdditiveBlending ;
                 step =   new THREE.Mesh( this.stepGeometry, upRightMaterial );
                 break ;
             case 'dr':
                 let [downRightMap, downRightMaterial] = this.getStepMapAndMaterial(this.noteskinPath + '/DownRight TapNote 3x2.PNG') ;
+                downRightMaterial.blending = THREE.AdditiveBlending ;
                 step =   new THREE.Mesh( this.stepGeometry, downRightMaterial );
                 break ;
         }
 
+        let scale = 100.0 ;
+        step.material.color.r = scale ;
+        step.material.color.g = scale ;
+        step.material.color.b = scale ;
         // in order to animate these too.
         this.stepCopyList.push(step) ;
 

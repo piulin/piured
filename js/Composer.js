@@ -16,6 +16,7 @@ class Composer {
         this.speed = speed ;
 
         this.stepAnimationRate = 25 ;
+        this.explosionAnimationRate = 20 ;
 
         // Set up the key listener
         this.keyListener = new KeyInput(this) ;
@@ -38,6 +39,7 @@ class Composer {
         this.holdZDepth = -0.00002 ;
         this.holdEndNoteZDepth = -0.00001 ;
         this.stepNoteZDepth = 0.00001;
+        this.ExplosionZDepth = 0.00002;
 
         // Keeps
         this.lastStepTimeStamp = 0.0;
@@ -78,6 +80,8 @@ class Composer {
         // let beginningDownLeftHoldYPosition = 2 ;
 
         // TODO: watch out when BPM changes during song. You will need to reconsider this.
+
+
         const secondsPerBeat = 60 / this.bpms[0][1] ;
 
 
@@ -165,23 +169,12 @@ class Composer {
 
         rObject.add(receptor);
         // Set up tabs
-        this.dlTap = this.receptorFactory.getTap('dl');
-        this.dlTap.position.x = this.dlXPos ;
-        this.ulTap = this.receptorFactory.getTap('ul');
-        this.ulTap.position.x = this.ulXPos ;
-        this.cTap = this.receptorFactory.getTap('c');
-        this.cTap.position.x = this.cXPos ;
-        this.urTap = this.receptorFactory.getTap('ur');
-        this.urTap.position.x = this.urXPos ;
-        this.drTap = this.receptorFactory.getTap('dr');
-        this.drTap.position.x = this.drXPos ;
+        this.dlTap = this.getTap('dl', this.dlXPos );
+        this.ulTap = this.getTap('ul', this.ulXPos );
+        this.cTap = this.getTap('c', this.cXPos );
+        this.urTap = this.getTap('ur', this.urXPos );
+        this.drTap = this.getTap('dr', this.drXPos );
 
-
-        this.dlTap.material.opacity = 0.0 ;
-        this.ulTap.material.opacity = 0.0 ;
-        this.cTap.material.opacity = 0.0 ;
-        this.urTap.material.opacity = 0.0 ;
-        this.drTap.material.opacity = 0.0 ;
         rObject.add(this.dlTap) ;
         rObject.add(this.ulTap) ;
         rObject.add(this.cTap) ;
@@ -189,23 +182,14 @@ class Composer {
         rObject.add(this.drTap) ;
 
 
-        this.dlEffect = this.stepFactory.getStepCopy('dl');
-        this.dlEffect.position.x = this.dlXPos ;
-        this.ulEffect = this.stepFactory.getStepCopy('ul');
-        this.ulEffect.position.x = this.ulXPos ;
-        this.cEffect = this.stepFactory.getStepCopy('c');
-        this.cEffect.position.x = this.cXPos ;
-        this.urEffect = this.stepFactory.getStepCopy('ur');
-        this.urEffect.position.x = this.urXPos ;
-        this.drEffect = this.stepFactory.getStepCopy('dr');
-        this.drEffect.position.x = this.drXPos ;
+        this.dlEffect = this.getEffect('dl', this.dlXPos );
+        this.ulEffect = this.getEffect('ul', this.ulXPos );
+        this.cEffect = this.getEffect('c', this.cXPos);
+        this.urEffect = this.getEffect('ur', this.urXPos);
+        this.drEffect = this.getEffect('dr', this.drXPos );
 
+        // this.dlEffect.scale.set(1.2,1.2) ;
 
-        this.dlEffect.material.opacity = 0.0 ;
-        this.ulEffect.material.opacity = 0.0 ;
-        this.cEffect.material.opacity = 0.0 ;
-        this.urEffect.material.opacity = 0.0 ;
-        this.drEffect.material.opacity = 0.0 ;
 
         rObject.add(this.dlEffect) ;
         rObject.add(this.ulEffect) ;
@@ -214,10 +198,58 @@ class Composer {
         rObject.add(this.drEffect) ;
 
 
+        // add explosion effects
+        this.dlExplosion = this.getExplosion(this.dlXPos) ;
+        // this.dlExplosion.material.opacity = 1.0 ;
+        // this.dlExplosion.material.map.offset.set(4/5,0) ;
+        rObject.add(this.dlExplosion) ;
+
+        this.ulExplosion = this.getExplosion(this.ulXPos) ;
+        rObject.add(this.ulExplosion) ;
+
+        this.cExplosion = this.getExplosion(this.cXPos) ;
+        rObject.add(this.cExplosion) ;
+
+        this.urExplosion = this.getExplosion(this.urXPos) ;
+        rObject.add(this.urExplosion) ;
+
+        this.drExplosion = this.getExplosion(this.drXPos) ;
+        rObject.add(this.drExplosion) ;
+
+
 
         this.steps = steps ;
         return [steps, rObject];
 
+    }
+
+    getTap (kind, XPosition) {
+        let tap = this.receptorFactory.getTap(kind);
+        tap.position.x = XPosition ;
+        tap.material.opacity = 0.0 ;
+        tap.tweenOpacityEffect = null ;
+        return tap ;
+    }
+
+    getEffect(kind,XPosition) {
+        let effect = this.stepFactory.getStepEffect(kind);
+        effect.position.x = XPosition ;
+        effect.material.opacity = 0.0 ;
+        effect.tweenOpacityEffect = null ;
+        return effect ;
+    }
+
+    getExplosion(XPosition) {
+
+        let explosion = this.receptorFactory.constructExplosion() ;
+        explosion.position.z = this.ExplosionZDepth ;
+        explosion.position.x = XPosition;
+        explosion.material.opacity = 0.0 ;
+        explosion.lastStepTimeStamp = 0.0 ;
+        explosion.animationPosition = 0 ;
+        explosion.animate = false ;
+
+        return explosion ;
     }
 
 
@@ -287,19 +319,23 @@ class Composer {
 
         // console.log(this.stepQueue.stepQueue[0]) ;
 
-        const currentAudioTime = this.song.getCurrentAudioTime(this.level);
+        const currentAudioTime = this.song.getCurrentAudioTime(this.level) ;
+        const currentAudioTimeCorrected = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset ;
 
         // keep track of the upcoming steps and the active holds.
-        this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTime) ;
+        this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTimeCorrected) ;
 
         // update position of the steps in the 3D word.
-        this.updateStepsPosition(delta, currentAudioTime) ;
+        this.updateStepsPosition(delta, currentAudioTimeCorrected) ;
 
         // Update animation of the steps (texture animation)
         this.updateStepsAnimation(delta) ;
 
         // Update the shader animation for the receptor
         this.updateReceptorAnimation(currentAudioTime) ;
+
+        //update explosion animations
+        this.updateExplosionAnimations(delta) ;
 
 
 
@@ -457,6 +493,41 @@ class Composer {
 
     }
 
+    updateExplosionAnimation (explosion, delta) {
+
+        if ( explosion.animate ) {
+
+            let timeStamp = explosion.lastStepTimeStamp + delta;
+
+            let movement = timeStamp * this.explosionAnimationRate;
+
+            if (movement > 1) {
+                explosion.animationPosition = (explosion.animationPosition + 1) ;
+
+                // if we reach the end of the animation, stop and reset values.
+                if (explosion.animationPosition > 4 ) {
+                    explosion.animate = false ;
+                    explosion.animationPosition = 0 ;
+                    explosion.material.opacity = 0.0 ;
+                    explosion.lastStepTimeStamp = 0 ;
+                    return ;
+                }
+                explosion.material.map.offset.set(explosion.animationPosition * (1 / 5), 0);
+                explosion.lastStepTimeStamp = 0;
+            } else {
+                explosion.lastStepTimeStamp += delta;
+            }
+        }
+    }
+
+    updateExplosionAnimations(delta){
+        this.updateExplosionAnimation(this.dlExplosion,delta) ;
+        this.updateExplosionAnimation(this.ulExplosion,delta) ;
+        this.updateExplosionAnimation(this.cExplosion,delta) ;
+        this.updateExplosionAnimation(this.urExplosion,delta) ;
+        this.updateExplosionAnimation(this.drExplosion,delta) ;
+    }
+
 
     animateTap(kind) {
 
@@ -481,10 +552,15 @@ class Composer {
         }
 
         const time = 250 ;
+        const opacityDelay = 100 ;
         tap.material.opacity = 1.0 ;
         tap.scale.set(0.85,0.85) ;
 
-        new TWEEN.Tween( tap.material ).to( { opacity: 0 }, time ).start();
+        if ( tap.tweenOpacityEffect !== null ) {
+           TWEEN.remove(tap.tweenOpacityEffect) ;
+        }
+
+        tap.tweenOpacityEffect = new TWEEN.Tween( tap.material ).to( { opacity: 0 }, time-opacityDelay ).delay(opacityDelay).start();
         new TWEEN.Tween( tap.scale ).to( { x: 1.2, y: 1.2 }, time ).start();
     }
 
@@ -492,46 +568,66 @@ class Composer {
 
         for ( var i = 0 ; i < arrayOfArrows.length ; ++i  ) {
             let tapEffect = null ;
+            let explosion = null ;
             switch (arrayOfArrows[i].kind) {
                 case 'dl':
                     tapEffect = this.dlEffect ;
+                    explosion = this.dlExplosion ;
                     break ;
                 case 'ul':
                     tapEffect = this.ulEffect ;
+                    explosion = this.ulExplosion ;
                     break ;
                 case 'c':
                     tapEffect = this.cEffect ;
+                    explosion = this.cExplosion ;
                     break ;
                 case 'ur':
                     tapEffect = this.urEffect ;
+                    explosion = this.urExplosion ;
                     break ;
                 case 'dr':
                     tapEffect = this.drEffect ;
+                    explosion = this.drExplosion ;
                     break ;
             }
 
-            const time = 250 ;
+
+            // Animate tap
+            const time = 380 ;
+            const delayOpacity = 250 ;
             tapEffect.material.opacity = 1.0 ;
             tapEffect.scale.set(1,1) ;
 
-            new TWEEN.Tween( tapEffect.material ).to( { opacity: 0 }, time ).start();
-            new TWEEN.Tween( tapEffect.scale ).to( { x: 1.2, y: 1.2 }, time ).start();
+            // for early stopping the tween
+            if ( tapEffect.tweenOpacityEffect !== null ) {
+                TWEEN.remove(tapEffect.tweenOpacityEffect) ;
+            }
+
+            tapEffect.tweenOpacityEffect = new TWEEN.Tween( tapEffect.material ).to( { opacity: 0 }, time-delayOpacity ).delay(delayOpacity).start();
+            new TWEEN.Tween( tapEffect.scale ).to( { x: 1.3, y: 1.3 }, time ).start();
+
+            // animate explosion
+
+            explosion.animate = true ;
+            explosion.material.opacity = 1.0 ;
+            explosion.animationPosition = 0 ;
+            explosion.lastStepTimeStamp = 0 ;
 
         }
 
     }
 
 
+
+
     arrowPressed(kind) {
 
-        let currentAudioTime = this.song.getCurrentAudioTime(this.level);
+        let currentAudioTime = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset;
 
         this.stepQueue.stepPressed(kind,currentAudioTime) ;
 
         this.animateTap(kind) ;
-
-
-
 
     }
 

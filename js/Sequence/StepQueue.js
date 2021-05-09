@@ -187,7 +187,7 @@ class StepQueue {
 
             const difference =  Math.abs((timeStamp) - currentAudioTime) ;
 
-            // console.log(difference) ;
+            console.log(difference) ;
 
             if ( difference < this.accuracyMargin ) {
 
