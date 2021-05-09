@@ -5,6 +5,7 @@ class JudgmentFactory {
 
     constructor() {
 
+
         // Can be perfect, great, good, bad and miss
         this._judgement = this.loadJudgment() ;
 

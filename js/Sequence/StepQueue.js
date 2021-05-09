@@ -109,9 +109,7 @@ class StepQueue {
             // OK
             if (difference < -this.accuracyMargin) {
 
-                this.composer.comboCount = 0 ;
-                this.composer.animateJudgement('m') ;
-
+                this.composer.judgmentScale.miss() ;
                 // console.log('remove first element');
                 this.removeFirstElement() ;
                 this.checkForNewHolds = true ;
@@ -202,17 +200,17 @@ class StepQueue {
                     let step = stepInfo.stepList [j] ;
 
                     if (step.kind === kind) {
-                        return [stepInfo, step, i] ;
+                        return [stepInfo, step, i, difference] ;
                     }
 
                 }
 
             } else {
-                return [null, null, null] ;
+                return [null, null, null, null] ;
             }
 
         }
-        return [null, null, null] ;
+        return [null, null, null, null] ;
 
     }
 
@@ -226,7 +224,7 @@ class StepQueue {
         this.updateHeldStepsStatus(kind, true) ;
 
 
-        let [stepInfo, step, hitIndex] = this.getFirstStepWithinMargin(currentAudioTime, kind) ;
+        let [stepInfo, step, hitIndex, difference] = this.getFirstStepWithinMargin(currentAudioTime, kind) ;
 
         // console.log(stepInfo) ;
 
@@ -236,14 +234,30 @@ class StepQueue {
             step.pressed = true;
 
 
+
+
             // If all steps have been pressed, then we can remove them from the steps to be rendered
             if (this.areStepsInNoteListPressed(stepInfo.stepList)) {
 
-                this.composer.animateTapEffect(stepInfo.stepList) ;
+                const grade = this.composer.judgmentScale.grade(difference) ;
 
-                this.composer.animateJudgement('p') ;
+                //
+                if ( grade === 'b' || grade === 'go') {
+                    if (grade === 'b') {
+                        this.composer.judgmentScale.bad() ;
+                    } else {
+                        this.composer.judgmentScale.good() ;
+                    }
 
-                this.removeNotesFromStepObject(stepInfo.stepList);
+                } else {
+
+                    this.composer.animateTapEffect(stepInfo.stepList) ;
+
+                    this.removeNotesFromStepObject(stepInfo.stepList) ;
+
+                }
+
+                this.composer.animateJudgement(grade) ;
 
                 // remove front
                 this.removeElement(hitIndex);

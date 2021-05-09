@@ -84,19 +84,22 @@ class Engine {
         // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc', keyBoardLag); // 7
         // let song = new Song('songs/s/B18 - Solitary 2.ssc'); // 7
         // let song = new Song('songs/cd/B19 - Canon-D.ssc'); // 6
-        // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc', keyBoardLag); //6
+        let song = new Song('songs/wotw/712 - Will O The Wisp.ssc', keyBoardLag); //6
         // let song = new Song('songs/h/B02 - Hot.ssc', keyBoardLag); //5
         // let song = new Song('songs/bblbr/A16 - Ba Be Loo Be Ra.ssc', keyBoardLag); //4
-        let song = new Song('songs/or/401 - Oh! Rosa.ssc', keyBoardLag); //6
+        // let song = new Song('songs/or/401 - Oh! Rosa.ssc', keyBoardLag); //6
         // let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
         // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc', keyBoardLag); // 8
         // let song = new Song('songs/bc/105 - Black Cat.ssc', keyBoardLag); // 5
+        // let song = new Song('songs/e/C08 - Emergency.ssc', keyBoardLag); // 4
         song.play() ;
 
-        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,6, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,3, keyBoardLag);
-        this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,5, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,3.5, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,2, keyBoardLag);
+        this.composer = new Composer(song, 'noteskins/NXA/HD/' ,3.5, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NX2/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,4, keyBoardLag);
 
         // Get the steps and receptor in position
         let playerCourse = this.composer.run(6) ;
