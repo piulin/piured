@@ -566,11 +566,6 @@ class Composer {
         new TWEEN.Tween( tap.scale ).to( { x: 1.2, y: 1.2 }, time ).start();
     }
 
-    animateJudgement(grade) {
-
-        this.judgmentScale.animateJudgement(grade) ;
-    }
-
     animateTapEffect(arrayOfArrows) {
 
         for ( var i = 0 ; i < arrayOfArrows.length ; ++i  ) {

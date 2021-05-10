@@ -67,6 +67,9 @@ class StepQueue {
     getTopMostStepListLength() {
         return this.stepQueue[0].stepList.length ;
     }
+    getTopMostStepsList() {
+        return this.stepQueue[0].stepList ;
+    }
 
     setHold(kind, step) {
 
@@ -83,34 +86,45 @@ class StepQueue {
     }
 
 
+    // ----------------------- THESE METHODS ARE CALLED EACH FRAME ---------------------- //
 
 
     updateStepQueueAndActiveHolds(currentAudioTime) {
 
-        //this.stepQueue.getLength() ;
-        if ( this.getLength() > 0 ) {
 
-            this.removeHoldsIfProceeds(currentAudioTime) ;
+        this.removeHoldsIfProceeds(currentAudioTime) ;
+
+        if ( this.getLength() > 0 ) {
 
             let stepTime = this.getStepTimeStampFromTopMostStepInfo() ;
 
+
+
             const difference = (stepTime) - currentAudioTime ;
-            // We have a miss :(
-
-            // console.log(difference) ;
-
-            // if ( difference < this.accuracyMargin && this.checkForNewHolds ) {
+            // this condition is met when we run over a hold. We update here the current list of holds
             if ( difference < 0 && this.checkForNewHolds ) {
+                // console.log(onlyHoldsInTopMostStepInfo) ;
 
                 this.checkForNewHolds = false ;
+
                 this.addHolds() ;
+
+
+                // if we only have holds, and all of them are being pressed beforehand, then it's a perfect!
+                if ( this.areThereOnlyHoldsInTopMostStepInfo() && this.areHoldsBeingPressed() ) {
+                    this.composer.judgmentScale.animateJudgement('p') ;
+                    this.composer.animateTapEffect(this.getTopMostStepsList()) ;
+                    this.removeFirstElement() ;
+                    this.checkForNewHolds = true ;
+                }
+
             }
 
-            // OK
-            if (difference < -this.accuracyMargin) {
+            // we count a miss, if we go beyond the time of the topmost step info, given that there are no holds there
+            if (difference < -this.accuracyMargin ) {
 
                 this.composer.judgmentScale.miss() ;
-                // console.log('remove first element');
+
                 this.removeFirstElement() ;
                 this.checkForNewHolds = true ;
 
@@ -119,6 +133,17 @@ class StepQueue {
         }
 
 
+    }
+
+    areThereOnlyHoldsInTopMostStepInfo() {
+        let len = this.getTopMostStepListLength() ;
+        for ( var i = 0 ; i <  len ; i++) {
+            let step = this.getStepFromTopMostStepInfo(i) ;
+            if (step.isHold === false) {
+                return false ;
+            }
+        }
+        return true ;
     }
 
     // remove holds that reached the end.
@@ -135,17 +160,20 @@ class StepQueue {
 
 
 
-                // if the hold is active, we can remove it from the render, i think.
-
+                // if the hold is active, we can remove it from the render and give a perfect judgment, I think.
                 if (this.keyInput.isPressed(step.kind)) {
+
                     this.composer.removeObjectFromSteps(step) ;
                     this.composer.removeObjectFromSteps(step.holdObject) ;
                     this.composer.removeObjectFromSteps(step.endNoteObject) ;
 
                     this.composer.animateTapEffect([step]) ;
 
-                    this.composer.animateJudgement('p') ;
+                    this.composer.judgmentScale.animateJudgement('p') ;
 
+                // otherwise we have a miss.
+                } else {
+                    this.composer.judgmentScale.miss() ;
                 }
 
                 // listActiveHolds[i] = null ;
@@ -154,6 +182,8 @@ class StepQueue {
 
         }
     }
+
+
 
     // update activeHolds using the topmost element of the stepQueue
     addHolds() {
@@ -173,6 +203,10 @@ class StepQueue {
         // console.log(this.activeHolds) ;
 
     }
+
+
+
+    // ----------------------- THESE METHODS ARE CALLED WHEN A KEY IS PRESSED ---------------------- //
 
 
     stepReleased(kind) {
@@ -228,12 +262,12 @@ class StepQueue {
 
         // console.log(stepInfo) ;
 
-        if (stepInfo !== null) {
+        // with the second condition, we make sure that we don't treat the holds here. Holds, if they are pressed
+        // before hand (anytime) count always as perfects.
+        if (stepInfo !== null ) {
 
 
             step.pressed = true;
-
-
 
 
             // If all steps have been pressed, then we can remove them from the steps to be rendered
@@ -252,12 +286,14 @@ class StepQueue {
                 } else {
 
                     this.composer.animateTapEffect(stepInfo.stepList) ;
+                    // also animate the holds.
+                    this.composer.animateTapEffect(this.activeHolds.asList()) ;
 
-                    this.removeNotesFromStepObject(stepInfo.stepList) ;
+                    this.composer.judgmentScale.animateJudgement(grade) ;
 
                 }
 
-                this.composer.animateJudgement(grade) ;
+                this.removeNotesFromStepObject(stepInfo.stepList) ;
 
                 // remove front
                 this.removeElement(hitIndex);
@@ -365,6 +401,7 @@ class StepQueue {
         }
 
     }
+
 
 
 }

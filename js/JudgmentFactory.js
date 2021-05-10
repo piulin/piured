@@ -208,7 +208,7 @@ class JudgmentFactory {
             const digitValue = Math.floor((currentCombo / Math.pow(10,i)) % 10); // 2
 
             const [row, col] = this.getCoordinatesForDigit(digitValue) ;
-            console.log(index) ;
+            // console.log(index) ;
             digit.material.map.offset.set(col * (1/4), row * (1/4)) ;
 
         }
