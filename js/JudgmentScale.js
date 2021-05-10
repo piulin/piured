@@ -67,7 +67,8 @@ class JudgmentScale {
 
     }
 
-    miss ( ) {
+    // TODO:
+    miss ( comboIncrement ) {
         this.comboCount = -1 ;
         this.animateJudgement('m') ;
 
@@ -84,7 +85,7 @@ class JudgmentScale {
         this.animateJudgement('go') ;
     }
 
-    animateJudgement(grade) {
+    animateJudgement(grade, comboIncrement = 1) {
         // remove scheduled tweens
         if ( this.judgment.scaleFadeTween !== null ) {
 
@@ -95,7 +96,7 @@ class JudgmentScale {
         }
 
         // update combo count
-        this.comboCount += 1 ;
+        this.comboCount += comboIncrement ;
 
 
 
@@ -128,7 +129,7 @@ class JudgmentScale {
         if ( this.comboCount > 3 ) {
 
             // this can be updated inly here.
-            this.judgmentFactory.updateNormalDigits(this.comboCount) ;
+            this.judgmentFactory.updateNormalDigits(parseInt(Math.ceil(this.comboCount))) ;
 
             if ( this.combo.tweenOpacityEffect !== null ) {
                 TWEEN.remove(this.combo.scaleFadeTween) ;

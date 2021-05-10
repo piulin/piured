@@ -5,6 +5,8 @@ class StepQueue {
 
     constructor(composer,keyInput, accuracyMargin ) {
 
+        this.tickCounts = 128 ;
+
         this.keyInput = keyInput ;
 
         this.composer = composer ;
@@ -16,6 +18,7 @@ class StepQueue {
         this.activeHolds = new Holds() ;
 
         this.checkForNewHolds = true ;
+
 
 
     }
@@ -72,7 +75,7 @@ class StepQueue {
     }
 
     setHold(kind, step) {
-
+        this.activeHolds.lastAddedHold = step ;
         this.activeHolds.setHold(kind, step) ;
 
     }
@@ -89,8 +92,34 @@ class StepQueue {
     // ----------------------- THESE METHODS ARE CALLED EACH FRAME ---------------------- //
 
 
-    updateStepQueueAndActiveHolds(currentAudioTime) {
+    updateStepQueueAndActiveHolds(currentAudioTime, delta) {
 
+        let validHold = this.findFirstValidHold(currentAudioTime);
+
+        // update hold Run.
+        if ( validHold !== null ) {
+            if (!this.activeHolds.holdRun) {
+                this.activeHolds.holdRun = true ;
+                this.activeHolds.firstHoldInHoldRun = validHold ;
+            }
+        } else {
+            this.activeHolds.holdRun = false ;
+        }
+
+
+        // Hold contribution to the combo
+        if (validHold !== null) {
+
+            this.judgeHolds(delta) ;
+
+            // Note that, to be exact, we have to add the remainder contribution of the hold that was not processed on the last
+            // frame
+        } else if (this.activeHolds.needFinishJudgment) {
+            const difference = this.activeHolds.judgmentTimeStampEndReference - this.activeHolds.cumulatedHoldTime ;
+            this.endJudgingHolds(difference) ;
+            this.activeHolds.cumulatedHoldTime = 0;
+            this.activeHolds.needFinishJudgment = false;
+        }
 
         this.removeHoldsIfProceeds(currentAudioTime) ;
 
@@ -133,6 +162,79 @@ class StepQueue {
         }
 
 
+
+
+
+    }
+
+    // the boolean end is used to compute the remainder combo left after a set of holds.
+    judgeHolds(delta) {
+
+
+        this.activeHolds.cumulatedHoldTime += delta ;
+
+
+        this.activeHolds.timeCounterJudgmentHolds += delta ;
+
+
+        const secondsPerBeat = 60 / this.composer.bpms[0][1] ;
+        const secondsPerKeyCount = secondsPerBeat/ this.tickCounts ;
+
+        const numberOfHits = Math.floor(this.activeHolds.timeCounterJudgmentHolds / secondsPerKeyCount ) ;
+
+
+        // console.log(numberOfPerfects) ;
+
+
+        if ( numberOfHits > 0 ) {
+
+
+            // case 1: holds are pressed on time
+            if (this.areHoldsBeingPressed()) {
+
+                this.composer.judgmentScale.animateJudgement('p', numberOfHits);
+                this.composer.animateTapEffect(this.activeHolds.asList());
+            // case 2: holds are not pressed. we need to give some margin to do it
+            } else  { //if (this.activeHolds.beginningHoldChunk && )
+
+                // TODO: misses should not be in the same count.
+                this.composer.judgmentScale.miss() ;
+                // case 3: holds are not pressed and we run out of the margin
+            }
+
+
+            const remainder = this.activeHolds.timeCounterJudgmentHolds % secondsPerKeyCount;
+            this.activeHolds.timeCounterJudgmentHolds = remainder;
+        }
+
+
+    }
+
+    endJudgingHolds(remainingTime) {
+
+
+            const secondsPerBeat = 60 / this.composer.bpms[0][1] ;
+            const secondsPerKeyCount = secondsPerBeat/ this.tickCounts ;
+
+            const numberOfHits = Math.floor(remainingTime / secondsPerKeyCount ) ;
+
+            console.log('end numberOfHits: ' + numberOfHits) ;
+
+
+            if (this.areHoldsBeingPressed() && this.activeHolds.wasLastKnowHoldPressed) {
+                this.composer.judgmentScale.animateJudgement('p', numberOfHits);
+                this.composer.animateTapEffect(this.activeHolds.asList());
+            } else {
+                // TODO: misses should not be in the same count.
+                this.composer.judgmentScale.miss() ;
+            }
+
+            //reset
+
+            this.activeHolds.timeCounterJudgmentHolds = 0 ;
+
+
+
     }
 
     areThereOnlyHoldsInTopMostStepInfo() {
@@ -146,10 +248,15 @@ class StepQueue {
         return true ;
     }
 
+
     // remove holds that reached the end.
     removeHoldsIfProceeds(currentAudioTime) {
 
         let listActiveHolds = this.activeHolds.asList() ;
+
+
+        // This is used to know whether the last judgment for the hold must be fail or not.
+        this.activeHolds.wasLastKnowHoldPressed = this.areHoldsBeingPressed() ;
 
         for ( var i = 0 ; i <  listActiveHolds.length ; i++) {
 
@@ -158,7 +265,11 @@ class StepQueue {
             if (step !== null && currentAudioTime > step.endHoldTimeStamp ) {
                 this.activeHolds.setHold(step.kind, null) ;
 
-
+                // save the endHoldTimeStamp to compute the remainder judgments.
+                this.activeHolds.needFinishJudgment = true ;
+                this.activeHolds.judgmentTimeStampEndReference = step.endHoldTimeStamp - this.activeHolds.firstHoldInHoldRun.beginHoldTimeStamp ;
+                // console.log('begin: ' + beginTime + ' end: ' + endTime) ;
+                // this.activeHolds.actualTotalComboValueOfHold = this.computeTotalComboContribution( beginTime, endTime ) ;
 
                 // if the hold is active, we can remove it from the render and give a perfect judgment, I think.
                 if (this.keyInput.isPressed(step.kind)) {
@@ -170,6 +281,8 @@ class StepQueue {
                     this.composer.animateTapEffect([step]) ;
 
                     this.composer.judgmentScale.animateJudgement('p') ;
+
+
 
                 // otherwise we have a miss.
                 } else {
@@ -195,7 +308,9 @@ class StepQueue {
         for ( var i = 0 ; i < length ; ++i ) {
             let note = this.getStepFromTopMostStepInfo(i) ;
             if ( note.isHold ) {
-                this.activeHolds.setHold(note.kind, note);
+                this.activeHolds.beginningHoldChunk = true ;
+                this.activeHolds.beginningHoldChunk = true ;
+                this.setHold(note.kind, note);
                 // console.log('hold added:' + note.held) ;
             }
         }
@@ -209,9 +324,10 @@ class StepQueue {
     // ----------------------- THESE METHODS ARE CALLED WHEN A KEY IS PRESSED ---------------------- //
 
 
-    stepReleased(kind) {
+    stepReleased(kind, currentAudioTime) {
 
-        this.updateHeldStepsStatus(kind, false) ;
+        this.activeHolds.lastTimeStampRelease = currentAudioTime ;
+        this.updateHeldStepsStatus( kind, false ) ;
 
     }
 
@@ -380,6 +496,42 @@ class StepQueue {
 
     }
 
+    // this means, holds that are not only in the activeHolds list, but on time to be triggered
+    findFirstValidHold (currentAudioTime) {
+
+        let listActiveHolds = this.activeHolds.asList() ;
+        for ( var i = 0 ; i <  listActiveHolds.length ; i++) {
+
+            let step = listActiveHolds[i] ;
+
+            if ( step !== null  && step.beginHoldTimeStamp <= currentAudioTime) {
+                return step ;
+            }
+
+        }
+
+        return null ;
+
+    }
+
+    // this means, holds that are not only in the activeHolds list, but on time to be triggered
+    areThereHolds (currentAudioTime) {
+
+        let listActiveHolds = this.activeHolds.asList() ;
+        for ( var i = 0 ; i <  listActiveHolds.length ; i++) {
+
+            let step = listActiveHolds[i] ;
+
+            if ( step !== null ) {
+                return true ;
+            }
+
+        }
+
+        return false ;
+
+    }
+
     // remove all steps in the noteList from the steps Object, so they are not rendered anymore
     removeNotesFromStepObject(noteList) {
 
@@ -394,7 +546,7 @@ class StepQueue {
 
                 // add it to the active holds early
             } else {
-                this.activeHolds.setHold(note.kind, note) ;
+                this.setHold(note.kind, note) ;
             }
 
 

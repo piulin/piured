@@ -30,6 +30,8 @@ class Composer {
     // Returns 3DObject containing the steps of the level.
     run (level) {
 
+        console.log(this.song) ;
+
         this.forceSync = true;
         // Save the level.
         this.level = level ;
@@ -281,6 +283,7 @@ class Composer {
                 step.isHold = true ;
                 step.held = false ;
                 step.beginningHoldYPosition = currentYPosition ;
+                step.beginHoldTimeStamp = currentTimeInSong ;
                 this.stepQueue.setHold(kind, step) ;
             }
 
@@ -325,7 +328,7 @@ class Composer {
         const currentAudioTimeCorrected = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset ;
 
         // keep track of the upcoming steps and the active holds.
-        this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTimeCorrected) ;
+        this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTimeCorrected, delta) ;
 
         // update position of the steps in the 3D word.
         this.updateStepsPosition(delta, currentAudioTimeCorrected) ;
@@ -634,8 +637,8 @@ class Composer {
     }
 
     arrowReleased(kind) {
-
-        this.stepQueue.stepReleased(kind) ;
+        let currentAudioTime = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset;
+        this.stepQueue.stepReleased(kind, currentAudioTime) ;
 
     }
 

@@ -11,6 +11,22 @@ class Holds {
         this._ur = null ;
         this._dr = null ;
 
+        this.cumulatedHoldTime = 0.0 ;
+        this.needFinishJudgment = false;
+        this.judgmentTimeStampEndReference = 0.0 ;
+        this.timeCounterJudgmentHolds = 0.0 ;
+
+        this.actualTotalComboValueOfHold = 0 ;
+        this.holdSequenceStart = null ;
+        this.wasLastKnowHoldPressed = true ;
+        this.beginningHoldChunk = false ;
+        this.lastAddedHold = null ;
+
+        this.lastTimeStampRelease = 0.0 ;
+
+        this.holdRun = false ;
+        this.firstHoldInHoldRun = null ;
+
     }
 
     setHold (kind, value) {

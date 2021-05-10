@@ -49,7 +49,11 @@ function parseSSCSection(SSCContentBySentences, startPosition, stopCondition, pa
 function postProcessing(meta, endIndex) {
 
     if ( 'BPMS' in meta ) {
-        meta['BPMS'] = parseBPMSValue( meta['BPMS'] ) ;
+        meta['BPMS'] = parseCommaSeparatedAssignments( meta['BPMS'] ) ;
+    }
+
+    if ( 'TICKCOUNTS' in meta ) {
+        meta['TICKCOUNTS'] = parseCommaSeparatedAssignments( meta['TICKCOUNTS'] ) ;
     }
 
     if ( 'OFFSET' in meta ) {
@@ -59,16 +63,16 @@ function postProcessing(meta, endIndex) {
     return [ meta, endIndex ] ;
 }
 
-function parseBPMSValue(BPMSValue) {
-    let bpmsList = [] ;
-    let bpms = BPMSValue.split(',') ;
-    for (var i = 0 ; i < bpms.length ; ++i ) {
+function parseCommaSeparatedAssignments(content) {
+    let list = [] ;
+    let commaSplit = content.split(',') ;
+    for (var i = 0 ; i < commaSplit.length ; ++i ) {
         // [0] -> timeStamp
-        // [1] -> BPM
-        let [ timeStamp, bpm ] = bpms[i].split('=') ;
-        bpmsList.push( [parseFloat(timeStamp), parseFloat(bpm)]);
+        // [1] -> value
+        let [ timeStamp, value ] = commaSplit[i].split('=') ;
+        list.push( [parseFloat(timeStamp), parseFloat(value)]);
     }
-    return bpmsList ;
+    return list ;
 }
 
 //stop condition for finding notedata sections.
