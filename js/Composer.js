@@ -43,6 +43,7 @@ class Composer {
         this.holdZDepth = -0.00002 ;
         this.holdEndNoteZDepth = -0.00001 ;
         this.stepNoteZDepth = 0.00001;
+        this.stepEffectZDepth = 0.000015;
         this.ExplosionZDepth = 0.00002;
 
 
@@ -238,6 +239,7 @@ class Composer {
     getEffect(kind,XPosition) {
         let effect = this.stepFactory.getStepEffect(kind);
         effect.position.x = XPosition ;
+        effect.position.z = this.stepEffectZDepth ;
         effect.material.opacity = 0.0 ;
         effect.tweenOpacityEffect = null ;
         return effect ;

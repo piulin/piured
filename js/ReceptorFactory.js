@@ -130,7 +130,7 @@ class ReceptorFactory {
         let stepMaterial = new THREE.MeshBasicMaterial( { map: explosionMap, transparent: true } );
 
         // Augment the brightness of the explosion
-        let scale = 1.5 ;
+        let scale = 1.0 ;
 
         stepMaterial.color.r = scale ;
         stepMaterial.color.g = scale ;

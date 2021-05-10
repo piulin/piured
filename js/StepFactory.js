@@ -300,7 +300,7 @@ class StepFactory {
                 break ;
         }
 
-        let scale = 100.0 ;
+        let scale = 1.0 ;
         step.material.color.r = scale ;
         step.material.color.g = scale ;
         step.material.color.b = scale ;

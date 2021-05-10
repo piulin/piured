@@ -5,7 +5,7 @@ class StepQueue {
 
     constructor(composer,keyInput, accuracyMargin ) {
 
-        this.tickCounts = 128 ;
+        this.tickCounts = 8 ;
 
         this.keyInput = keyInput ;
 
@@ -75,6 +75,7 @@ class StepQueue {
     }
 
     setHold(kind, step) {
+        this.activeHolds.beginningHoldChunk = true ;
         this.activeHolds.lastAddedHold = step ;
         this.activeHolds.setHold(kind, step) ;
 
@@ -110,7 +111,7 @@ class StepQueue {
         // Hold contribution to the combo
         if (validHold !== null) {
 
-            this.judgeHolds(delta) ;
+            this.judgeHolds(delta, currentAudioTime) ;
 
             // Note that, to be exact, we have to add the remainder contribution of the hold that was not processed on the last
             // frame
@@ -168,7 +169,7 @@ class StepQueue {
     }
 
     // the boolean end is used to compute the remainder combo left after a set of holds.
-    judgeHolds(delta) {
+    judgeHolds(delta, currentAudioTime) {
 
 
         this.activeHolds.cumulatedHoldTime += delta ;
@@ -189,22 +190,32 @@ class StepQueue {
         if ( numberOfHits > 0 ) {
 
 
+            let aux = this.activeHolds.timeCounterJudgmentHolds ;
+            const remainder = this.activeHolds.timeCounterJudgmentHolds % secondsPerKeyCount;
+            this.activeHolds.timeCounterJudgmentHolds = 0 ;
+
+
+            const difference =  Math.abs((this.activeHolds.lastAddedHold.beginHoldTimeStamp) - currentAudioTime) ;
             // case 1: holds are pressed on time
             if (this.areHoldsBeingPressed()) {
 
                 this.composer.judgmentScale.animateJudgement('p', numberOfHits);
                 this.composer.animateTapEffect(this.activeHolds.asList());
             // case 2: holds are not pressed. we need to give some margin to do it
-            } else  { //if (this.activeHolds.beginningHoldChunk && )
+            } else if (this.activeHolds.beginningHoldChunk && difference < this.accuracyMargin ) {
 
+                this.activeHolds.timeCounterJudgmentHolds += aux -remainder ;
+
+                // case 3: holds are not pressed and we run out of the margin
+            } else {
                 // TODO: misses should not be in the same count.
                 this.composer.judgmentScale.miss() ;
-                // case 3: holds are not pressed and we run out of the margin
+                this.activeHolds.beginningHoldChunk = false ;
             }
 
 
-            const remainder = this.activeHolds.timeCounterJudgmentHolds % secondsPerKeyCount;
-            this.activeHolds.timeCounterJudgmentHolds = remainder;
+            this.activeHolds.timeCounterJudgmentHolds += remainder;
+
         }
 
 
@@ -308,8 +319,6 @@ class StepQueue {
         for ( var i = 0 ; i < length ; ++i ) {
             let note = this.getStepFromTopMostStepInfo(i) ;
             if ( note.isHold ) {
-                this.activeHolds.beginningHoldChunk = true ;
-                this.activeHolds.beginningHoldChunk = true ;
                 this.setHold(note.kind, note);
                 // console.log('hold added:' + note.held) ;
             }
@@ -407,9 +416,9 @@ class StepQueue {
 
                     this.composer.judgmentScale.animateJudgement(grade) ;
 
-                }
+                    this.removeNotesFromStepObject(stepInfo.stepList) ;
 
-                this.removeNotesFromStepObject(stepInfo.stepList) ;
+                }
 
                 // remove front
                 this.removeElement(hitIndex);

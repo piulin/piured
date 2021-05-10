@@ -116,7 +116,7 @@ class JudgmentScale {
 
 
 
-        this.judgment.scale.set(0.90,0.90) ;
+        this.judgment.scale.set(0.95, 0.95) ;
         this.judgment.material.opacity = 1.0 ;
         this.judgment.position.y = this.judgmentYPosition +  this.judgment.scale.y / 6;
 
@@ -149,7 +149,7 @@ class JudgmentScale {
             }, diffuseAnimation).delay(diffuseTimeWait).start();
             this.combo.opacityFadeTween = new TWEEN.Tween(this.combo.material).to({opacity: 0.0}, diffuseAnimation).delay(diffuseTimeWait).start();
 
-            this.combo.scale.set(0.57, 0.57);
+            this.combo.scale.set(0.63, 0.63);
             this.combo.material.opacity = 1.0;
             this.combo.position.y = this.comboYPosition - this.combo.scale.y / 6;
 
