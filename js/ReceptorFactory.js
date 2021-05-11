@@ -60,6 +60,18 @@ class ReceptorFactory {
         this.urTap = this.constructTap(noteskinPath + '/Tap 5x2.PNG', 3/5) ;
         this.drTap = this.constructTap(noteskinPath + '/Tap 5x2.PNG', 4/5) ;
 
+
+        // save it for later. This uses a lot of memory I guess.
+        this.clonedExplosionMaps = [] ;
+        let clem = this.clonedExplosionMaps ;
+        let explosionMap = new THREE.TextureLoader().load(this.noteskinPath + '/StepFX 5x1.PNG', function () {
+            for ( var m of clem) {
+                    m.image = explosionMap.image ;
+                    m.needsUpdate = true ;
+                }
+        }) ;
+        this.explosionMap = explosionMap ;
+
     }
 
     getReceptor() {
@@ -113,16 +125,17 @@ class ReceptorFactory {
 
     constructExplosion() {
 
-        let explosionMap = new THREE.TextureLoader().load(this.noteskinPath + '/StepFX 5x1.PNG') ;
+        let explosionMap = this.explosionMap.clone() ;
+        this.clonedExplosionMaps.push(explosionMap) ;
 
 
         // to accurately represent the colors
         explosionMap.encoding = THREE.sRGBEncoding;
 
         // This acts as UV mapping.
-        explosionMap.repeat.set(1/5,1);
+        explosionMap.repeat.set(2/20,2/4);
         // explosionMap.offset.set( 0 , 0 );
-        explosionMap.offset.set( 0 , 0 );
+        explosionMap.offset.set(  1/20 , 1/4 );
 
         // explosionMap.blending = THREE.AdditiveBlending ;
 
@@ -137,15 +150,15 @@ class ReceptorFactory {
         stepMaterial.color.b = scale ;
 
         stepMaterial.blending = THREE.AdditiveBlending ;
-
+        stepMaterial.depthWrite = false ;
 
         // So they can meet inbetween.
-        // stepMaterial.alphaTest = 0.8;
+        stepMaterial.alphaTest = 0.1;
 
 
         let explosion =  new THREE.Mesh( this.tapGeometry, stepMaterial );
-        explosion.scale.x = 5 ;
-        explosion.scale.y = 5 ;
+        explosion.scale.x = 2.5 ;
+        explosion.scale.y = 2.5 ;
 
         return explosion ;
     }

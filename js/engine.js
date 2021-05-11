@@ -95,16 +95,16 @@ class Engine {
         // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc', keyBoardLag); // 8
         // let song = new Song('songs/bc/105 - Black Cat.ssc', keyBoardLag); // 5
         // let song = new Song('songs/e/C08 - Emergency.ssc', keyBoardLag); // 4
-        // let song = new Song('songs/kos/1665 - Norazo - King of Sales.ssc', keyBoardLag); // 5
-        let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc', keyBoardLag); // 5
+        let song = new Song('songs/kos/1665 - Norazo - King of Sales.ssc', keyBoardLag); // 5
+        // let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc', keyBoardLag); // 5
         // let song = new Song('songs/cw/911 - Chicken Wing.ssc', keyBoardLag); // 10
         // let song = new Song('songs/st/906 - Starian.ssc', keyBoardLag); // 7
         song.play() ;
 
-        this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,3, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,3, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/NX/HD/' ,8, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,8, keyBoardLag);
+        this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,3, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/NX2/HD/' ,3, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,3, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/FIESTAEX-BASIC/HD/' ,8, keyBoardLag);

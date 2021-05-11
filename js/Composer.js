@@ -46,7 +46,7 @@ class Composer {
         this.holdEndNoteZDepth = -0.00001 ;
         this.stepNoteZDepth = 0.00001;
         this.stepEffectZDepth = 0.000015;
-        this.ExplosionZDepth = 0.00002;
+        this.explosionZDepth = 0.0001;
 
 
         // Keeps
@@ -256,7 +256,7 @@ class Composer {
     getExplosion(XPosition) {
 
         let explosion = this.receptorFactory.constructExplosion() ;
-        explosion.position.z = this.ExplosionZDepth ;
+        explosion.position.z = this.explosionZDepth ;
         explosion.position.x = XPosition;
         explosion.material.opacity = 0.0 ;
         explosion.lastStepTimeStamp = 0.0 ;
@@ -527,7 +527,7 @@ class Composer {
                     explosion.lastStepTimeStamp = 0 ;
                     return ;
                 }
-                explosion.material.map.offset.set(explosion.animationPosition * (1 / 5), 0);
+                explosion.material.map.offset.set(explosion.animationPosition * (1 / 5) + 1/20, 1/4 );
                 explosion.lastStepTimeStamp = 0;
             } else {
                 explosion.lastStepTimeStamp += delta;
