@@ -5,7 +5,7 @@ class StepQueue {
 
     constructor(composer,keyInput, accuracyMargin ) {
 
-        this.tickCounts = 8 ;
+        this.tickCounts = 4 ;
 
         this.keyInput = keyInput ;
 
@@ -408,6 +408,10 @@ class StepQueue {
                         this.composer.judgmentScale.good() ;
                     }
 
+                    if ( step.isHold ) {
+                        this.setHold(step.kind, step) ;
+                    }
+
                 } else {
 
                     this.composer.animateTapEffect(stepInfo.stepList) ;
@@ -416,9 +420,15 @@ class StepQueue {
 
                     this.composer.judgmentScale.animateJudgement(grade) ;
 
+                    // if ( !step.isHold ) {
+
+                    // }
+
                     this.removeNotesFromStepObject(stepInfo.stepList) ;
 
                 }
+
+
 
                 // remove front
                 this.removeElement(hitIndex);
