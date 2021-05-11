@@ -23,6 +23,16 @@ class Song {
 
     }
 
+    getBMPs(level) {
+        if ( 'BPMS' in this.levels[level].meta ) {
+            return this.levels[level].meta['BPMS'] ;
+        } else {
+            return this.meta['BPMS'] ;
+        }
+    }
+
+
+
     getMusicPath() {
         return this.pathToSSCFile.substr(0, this.pathToSSCFile.lastIndexOf("/")) + '/' + this.meta['MUSIC'] ;
     }

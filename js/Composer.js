@@ -36,6 +36,8 @@ class Composer {
         // Save the level.
         this.level = level ;
 
+        this.bpmManager = new BPMManager(this.song.getBMPs(level), this.speed) ;
+
         this.bpms = this.song.levels[level].meta['BPMS'] ;
 
         // Depth of stage elements
@@ -93,10 +95,16 @@ class Composer {
             for ( var j = 0 ; j < measure.length ; j++ ) {
                 const note = measure[j] ;
 
-                // TODO: check what happens with tuplet (e.g. triplets) lol
-                const currentYPosition = - (4*i + 4*j/notesInBar) * this.speed ;
+                const [currentYPosition, currentTimeInSong] = this.bpmManager.getYShiftAndCurrentTimeInSongAtBeat(i,j,notesInBar) ;
 
-                const currentTimeInSong = (4*i + 4*j/notesInBar) * secondsPerBeat;
+                // // TODO: check what happens with tuplet (e.g. triplets) lol
+                // const currentYPositionO = - (4*i + 4*j/notesInBar) * this.speed ;
+                //
+                // const currentTimeInSongO = (4*i + 4*j/notesInBar) * secondsPerBeat;
+                //
+                // if (currentYPosition !== currentYPositionO) {
+                //     console.log('dif') ;
+                // }
 
                 this.stepQueue.addNewEntryWithTimeStampInfo(currentTimeInSong) ;
 
@@ -352,9 +360,12 @@ class Composer {
 
         // const audiotime = this.song.getCurrentAudioTime(this.level) ;
         if ( currentAudioTime < 0 ) {
+            this.lcat = currentAudioTime ;
+        // if ( true ) {
             this.updateStepsPositionAudioClockSync(currentAudioTime);
         } else {
-            this.updateStepsPositionDelta(delta) ;
+            this.lcat += delta ;
+            this.updateStepsPositionDelta(this.lcat) ;
         }
 
         this.updateActiveHoldsPosition(delta) ;
@@ -426,21 +437,18 @@ class Composer {
 
     }
 
-    updateStepsPositionDelta(delta) {
-        const bpm = this.bpms[0][1] ;
-        const beatsPerSecond = bpm / 60 ;
-        const yDisplacement = beatsPerSecond * delta ;
+    updateStepsPositionDelta(lcat) {
+
+        const yDisplacement =  this.bpmManager.getYShiftAtCurrentAudioTime(lcat) ;
         //
-        this.steps.position.y += yDisplacement* this.speed ;
+        this.steps.position.y = yDisplacement* this.speed ;
 
     }
 
     updateStepsPositionAudioClockSync(currentAudioTime) {
 
-        const bpm = this.bpms[0][1] ;
-        const beatsPerSecond = bpm / 60 ;
-        // const audioTime = this.song.getCurrentAudioTime(this.level) ;
-        const yDisplacement = beatsPerSecond * currentAudioTime ;
+
+        const yDisplacement =  this.bpmManager.getYShiftAtCurrentAudioTime(currentAudioTime) ;
 
         this.steps.position.y = yDisplacement* this.speed ;
     }
