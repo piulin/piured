@@ -69,6 +69,8 @@ class BPMManager {
          return [yShift, currentTimeInSong] ;
     }
 
+
+    // Note that YShift tells you exactly the current beat given the currentAudio time.
     getYShiftAtCurrentAudioTime(currentAudioTime) {
 
         // this is what we want to calculate.

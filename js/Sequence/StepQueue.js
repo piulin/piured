@@ -5,7 +5,6 @@ class StepQueue {
 
     constructor(composer,keyInput, accuracyMargin ) {
 
-        this.tickCounts = 4 ;
 
         this.keyInput = keyInput ;
 
@@ -93,7 +92,7 @@ class StepQueue {
     // ----------------------- THESE METHODS ARE CALLED EACH FRAME ---------------------- //
 
 
-    updateStepQueueAndActiveHolds(currentAudioTime, delta) {
+    updateStepQueueAndActiveHolds(currentAudioTime, delta, beat) {
 
         let validHold = this.findFirstValidHold(currentAudioTime);
 
@@ -107,17 +106,19 @@ class StepQueue {
             this.activeHolds.holdRun = false ;
         }
 
-
         // Hold contribution to the combo
         if (validHold !== null) {
 
-            this.judgeHolds(delta, currentAudioTime) ;
+            const tickCounts = this.composer.getTickCountAtBeat(beat) ;
+
+            this.judgeHolds(delta, currentAudioTime, tickCounts) ;
 
             // Note that, to be exact, we have to add the remainder contribution of the hold that was not processed on the last
             // frame
         } else if (this.activeHolds.needFinishJudgment) {
+            const tickCounts = this.composer.getTickCountAtBeat(beat) ;
             const difference = this.activeHolds.judgmentTimeStampEndReference - this.activeHolds.cumulatedHoldTime ;
-            this.endJudgingHolds(difference) ;
+            this.endJudgingHolds(difference, tickCounts) ;
             this.activeHolds.cumulatedHoldTime = 0;
             this.activeHolds.needFinishJudgment = false;
         }
@@ -169,7 +170,7 @@ class StepQueue {
     }
 
     // the boolean end is used to compute the remainder combo left after a set of holds.
-    judgeHolds(delta, currentAudioTime) {
+    judgeHolds(delta, currentAudioTime, tickCounts) {
 
 
         this.activeHolds.cumulatedHoldTime += delta ;
@@ -179,7 +180,8 @@ class StepQueue {
 
 
         const secondsPerBeat = 60 / this.composer.bpms[0][1] ;
-        const secondsPerKeyCount = secondsPerBeat/ this.tickCounts ;
+
+        const secondsPerKeyCount = secondsPerBeat/ tickCounts ;
 
         const numberOfHits = Math.floor(this.activeHolds.timeCounterJudgmentHolds / secondsPerKeyCount ) ;
 
@@ -221,11 +223,11 @@ class StepQueue {
 
     }
 
-    endJudgingHolds(remainingTime) {
+    endJudgingHolds(remainingTime, tickCounts) {
 
 
             const secondsPerBeat = 60 / this.composer.bpms[0][1] ;
-            const secondsPerKeyCount = secondsPerBeat/ this.tickCounts ;
+            const secondsPerKeyCount = secondsPerBeat/ tickCounts ;
 
             const numberOfHits = Math.floor(remainingTime / secondsPerKeyCount ) ;
 

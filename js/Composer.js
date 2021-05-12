@@ -335,13 +335,18 @@ class Composer {
         // console.log(this.stepQueue.stepQueue[0]) ;
 
         const currentAudioTime = this.song.getCurrentAudioTime(this.level) ;
+
+        // Corrected w.r.t. keyboard lag.
         const currentAudioTimeCorrected = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset ;
 
-        // keep track of the upcoming steps and the active holds.
-        this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTimeCorrected, delta) ;
 
         // update position of the steps in the 3D word.
-        this.updateStepsPosition(delta, currentAudioTimeCorrected) ;
+        // this also returns the current beat given the audioTime
+        const beat = this.updateStepsPositionAndGetCurrentBeat(delta, currentAudioTimeCorrected) ;
+
+        // keep track of the upcoming steps and the active holds.
+        this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTimeCorrected, delta, beat) ;
+
 
         // Update animation of the steps (texture animation)
         this.updateStepsAnimation(delta) ;
@@ -356,20 +361,23 @@ class Composer {
 
     }
 
-    updateStepsPosition(delta, currentAudioTime) {
+    getTickCountAtBeat(beat) {
+        return this.song.getTickCountAtBeat(this.level, beat) ;
+    }
 
-        // const audiotime = this.song.getCurrentAudioTime(this.level) ;
+    // We do both things at the same time to save some computational time.
+    updateStepsPositionAndGetCurrentBeat(delta, currentAudioTime) {
+        let beat = undefined ;
         if ( currentAudioTime < 0 ) {
             this.lcat = currentAudioTime ;
-        // if ( true ) {
-            this.updateStepsPositionAudioClockSync(currentAudioTime);
+            beat = this.updateStepsPositionAudioClockSync(currentAudioTime);
         } else {
             this.lcat += delta ;
-            this.updateStepsPositionDelta(this.lcat) ;
+            beat = this.updateStepsPositionDelta(this.lcat) ;
         }
 
         this.updateActiveHoldsPosition(delta) ;
-
+        return beat ;
     }
 
     updateActiveHoldsPosition(delta) {
@@ -419,7 +427,6 @@ class Composer {
 
                     // shift to the middle of the step.
                     distanceStepNoteEndNote += 0.5 ;
-                    // distanceStepNoteEndNote = distanceStepNoteEndNote > 0.65 ? distanceStepNoteEndNote : 0.65 ;
                     let difference = holdEndNote.scale.y - distanceStepNoteEndNote ;
                     holdEndNote.scale.y = distanceStepNoteEndNote ;
                     holdEndNote.position.y -= difference*0.5 ;
@@ -443,6 +450,8 @@ class Composer {
         //
         this.steps.position.y = yDisplacement* this.speed ;
 
+        return yDisplacement ;
+
     }
 
     updateStepsPositionAudioClockSync(currentAudioTime) {
@@ -451,6 +460,8 @@ class Composer {
         const yDisplacement =  this.bpmManager.getYShiftAtCurrentAudioTime(currentAudioTime) ;
 
         this.steps.position.y = yDisplacement* this.speed ;
+
+        return yDisplacement ;
     }
 
     updateReceptorAnimation(currentAudioTime) {

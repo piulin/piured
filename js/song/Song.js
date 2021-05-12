@@ -31,6 +31,31 @@ class Song {
         }
     }
 
+    getTickCounts(level) {
+        if ( 'TICKCOUNTS' in this.levels[level].meta ) {
+            return this.levels[level].meta['TICKCOUNTS'] ;
+        } else {
+            return this.meta['TICKCOUNTS'] ;
+        }
+    }
+
+    getTickCountAtBeat(level, beat) {
+
+        const tickCounts = this.getTickCounts(level) ;
+        let last = tickCounts[0][1];
+        for ( const tickCount of tickCounts ) {
+            const beatInTick = tickCount[0] ;
+            const tick = tickCount[1] ;
+            if ( beat >= beatInTick ) {
+                last = tick ;
+            } else {
+                return last ;
+            }
+
+        }
+        return last ;
+    }
+
 
 
     getMusicPath() {
