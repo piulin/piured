@@ -21,24 +21,52 @@ class Composer {
         this.explosionAnimationRate = 20 ;
 
         // Set up the key listener
-        this.keyListener = new KeyInput(this) ;
+
+
+
+        this.leftKeyMap = {
+            dl: 90,
+            ul : 81,
+            c : 83,
+            ur : 69,
+            dr: 67
+        }
+
+        this.rightKeyMap = {
+            dl: 86,
+            ul : 82,
+            c : 71,
+            ur : 89,
+            dr: 78
+        }
+        this.idLeftPad = 0 ;
+        this.idRightPad = 1 ;
+
+        // Keeps track o
+        this.lastStepTimeStamp = 0.0;
+        this.animationPosition = 0 ;
 
 
     }
 
 
-    // Returns 3DObject containing the steps of the level.
-    run (level) {
+    composeStage(level) {
 
-        console.log(this.song) ;
+        // this might change
+        this.keyListener = new KeyInput(this)  ;
+        this.keyListener.addPad(this.leftKeyMap, this.idLeftPad) ;
+        this.keyListener.addPad(this.rightKeyMap, this.idRightPad) ;
 
-        this.forceSync = true;
         // Save the level.
         this.level = level ;
 
+        // Create the bpmManager
         this.bpmManager = new BPMManager(this.song.getBMPs(level), this.speed) ;
 
         this.bpms = this.song.levels[level].meta['BPMS'] ;
+
+        // This is to be used more than once in case of a double level
+        this.stepQueue = new StepQueue(this, this.keyListener, this.accuracyMargin) ;
 
         // Depth of stage elements
         this.receptorZDepth = -0.00003 ;
@@ -48,43 +76,104 @@ class Composer {
         this.stepEffectZDepth = 0.000015;
         this.explosionZDepth = 0.0001;
 
-
-        // Keeps
-        this.lastStepTimeStamp = 0.0;
-        this.animationPosition = 0 ;
-
-
-
-
+        // define position of the notes w.r.t. the receptor
 
         // Space to the right or left of a given step.
         const stepShift = 4/5;
         // Note that the receptor steps are a bit overlapped. This measure takes into
         // acount this overlap.
         const stepOverlap = 0.02 ;
-
-        // define position of the notes w.r.t. the receptor
         this.dlXPos =  -2*(stepShift - stepOverlap) ;
         this.ulXPos =  -(stepShift - stepOverlap) ;
         this.cXPos =  0 ;
         this.urXPos =  (stepShift - stepOverlap) ;
         this.drXPos =  2*(stepShift - stepOverlap) ;
 
+        this.receptorsApart = 1.96 ;
+
+
+        let stage = new THREE.Object3D();
+        let steps = new THREE.Object3D();
+        let receptors = new THREE.Object3D();
+
+        // construct the thing TODO
+
+
+        this.padTaps = { } ;
+        this.padEffects = { } ;
+        this.padExplosions = { } ;
+        this.padSteps = {}
+
+        var [Lsteps, Lreceptor, LreceptorObject, tapsObjDict, effectObjDict, explosionObjDict] =
+            this.run(level, 0, this.idLeftPad) ;
+
+        this.padTaps[this.idLeftPad] = tapsObjDict ;
+        this.padEffects[this.idLeftPad] = effectObjDict ;
+        this.padExplosions[this.idLeftPad] = explosionObjDict ;
+        this.padSteps[this.idLeftPad] = Lsteps ;
+
+
+        steps.add(Lsteps) ;
+        receptors.add(LreceptorObject) ;
+
+        // Only for the shader
+        this.receptor = Lreceptor ;
+
+
+        // only if the level is double
+        if ( this.song.getLevelStyle(level) !== 'pump-single' ) {
+
+            Lsteps.position.x = -this.receptorsApart ;
+            LreceptorObject.position.x = -this.receptorsApart;
+
+            var [Rsteps, Rreceptor, RreceptorObject, tapsObjDict, effectObjDict, explosionObjDict] =
+                this.run(level, 5, this.idRightPad) ;
+
+            this.padTaps[this.idRightPad] = tapsObjDict ;
+            this.padEffects[this.idRightPad] = effectObjDict ;
+            this.padExplosions[this.idRightPad] = explosionObjDict ;
+            this.padSteps[this.idRightPad] = Rsteps ;
+
+
+            Rsteps.position.x = this.receptorsApart ;
+            RreceptorObject.position.x = this.receptorsApart;
+
+            steps.add(Rsteps) ;
+            receptors.add(RreceptorObject) ;
+        }
+
+
+
+
+        // TODO: merge steps into one object, same for receptor
+
+        this.steps = steps ;
+        // this.receptor = receptor;
+
+
+        let judgmentObject = this.judgmentScale.getJudgmentObject();
+        stage.add(judgmentObject) ;
+        stage.add(steps) ;
+        stage.add(receptors) ;
+
+        this.stepQueue.cleanUpStepQueue() ;
+
+        return stage ;
+    }
+
+    // Returns 3DObject containing the steps of the level.
+    run (level, stepDataOffset, padId) {
+
+
         // object containing all the steps of the chart.
         let steps = new THREE.Object3D();
 
         const noteData = this.song.levels[level] ;
 
-        this.stepQueue = new StepQueue(this, this.keyListener, this.accuracyMargin) ;
-
-
-
         // TODO: watch out when BPM changes during song. You will need to reconsider this.
 
 
-        const secondsPerBeat = 60 / this.bpms[0][1] ;
-
-
+        let listIndex = 0 ;
         // i loops the bars
         for (var i = 0 ; i < noteData.measures.length ; i++ ) {
             const measure = noteData.measures[i] ;
@@ -93,72 +182,79 @@ class Composer {
 
             // j loops the notes inside the bar
             for ( var j = 0 ; j < measure.length ; j++ ) {
+
+                listIndex += 1 ;
                 const note = measure[j] ;
 
                 const [currentYPosition, currentTimeInSong] = this.bpmManager.getYShiftAndCurrentTimeInSongAtBeat(i,j,notesInBar) ;
 
-                // // TODO: check what happens with tuplet (e.g. triplets) lol
-                // const currentYPositionO = - (4*i + 4*j/notesInBar) * this.speed ;
-                //
-                // const currentTimeInSongO = (4*i + 4*j/notesInBar) * secondsPerBeat;
-                //
-                // if (currentYPosition !== currentYPositionO) {
-                //     console.log('dif') ;
-                // }
 
-                this.stepQueue.addNewEntryWithTimeStampInfo(currentTimeInSong) ;
+                // Add only if the entry is not created already
+                if (listIndex > this.stepQueue.getLength()) {
+                    this.stepQueue.addNewEntryWithTimeStampInfo(currentTimeInSong) ;
+                }
 
                 // dl
                 this.processNote(
-                    note[0],
+                    note[0+stepDataOffset],
                     'dl',
                     currentYPosition,
                     this.dlXPos,
                     steps,
-                    currentTimeInSong) ;
+                    currentTimeInSong,
+                    listIndex -1,
+                    padId) ;
 
 
                 //ul
                 this.processNote(
-                    note[1],
+                    note[1+stepDataOffset],
                     'ul',
                     currentYPosition,
                     this.ulXPos,
                     steps,
-                    currentTimeInSong) ;
+                    currentTimeInSong,
+                    listIndex -1,
+                    padId) ;
 
                 // c
                 this.processNote(
-                    note[2],
+                    note[2+stepDataOffset],
                     'c',
                     currentYPosition,
                     this.cXPos,
                     steps,
-                    currentTimeInSong) ;
+                    currentTimeInSong,
+                    listIndex -1,
+                    padId) ;
 
                 // ur
                 this.processNote(
-                    note[3],
+                    note[3+stepDataOffset],
                     'ur',
                     currentYPosition,
                     this.urXPos,
                     steps,
-                    currentTimeInSong) ;
+                    currentTimeInSong,
+                    listIndex -1,
+                    padId) ;
 
                 // dr
                 this.processNote(
-                    note[4],
+                    note[4+stepDataOffset],
                     'dr',
                     currentYPosition,
                     this.drXPos,
                     steps,
-                    currentTimeInSong) ;
+                    currentTimeInSong,
+                    listIndex -1,
+                    padId) ;
 
             }
 
         }
 
-        this.stepQueue.cleanUpStepQueue() ;
+        // this.stepQueue.cleanUpStepQueue() ;
 
 
         // maybe the song starts with a hold.
@@ -167,72 +263,73 @@ class Composer {
 
         // console.log(this.stepQueue.stepQueue);
         // Get receptor
-        let rObject = new THREE.Object3D();
+        let receptorObject = new THREE.Object3D();
         let receptor = this.receptorFactory.getReceptor();
         receptor.position.z = this.receptorZDepth;
 
-        this.receptor = receptor;
-
-        rObject.add(receptor);
-        // Set up tabs
-        this.dlTap = this.getTap('dl', this.dlXPos );
-        this.ulTap = this.getTap('ul', this.ulXPos );
-        this.cTap = this.getTap('c', this.cXPos );
-        this.urTap = this.getTap('ur', this.urXPos );
-        this.drTap = this.getTap('dr', this.drXPos );
-
-        rObject.add(this.dlTap) ;
-        rObject.add(this.ulTap) ;
-        rObject.add(this.cTap) ;
-        rObject.add(this.urTap) ;
-        rObject.add(this.drTap) ;
 
 
-        this.dlEffect = this.getEffect('dl', this.dlXPos );
-        this.ulEffect = this.getEffect('ul', this.ulXPos );
-        this.cEffect = this.getEffect('c', this.cXPos);
-        this.urEffect = this.getEffect('ur', this.urXPos);
-        this.drEffect = this.getEffect('dr', this.drXPos );
+        receptorObject.add(receptor);
+        // Set up taps
 
-        // this.dlEffect.scale.set(1.2,1.2) ;
+        let tapsObjDict = {
+            dl: this.getTap('dl', this.dlXPos ) ,
+            ul: this.getTap('ul', this.ulXPos ),
+            c: this.getTap('c', this.cXPos ),
+            ur : this.getTap('ur', this.urXPos ),
+            dr: this.getTap('dr', this.drXPos )
+        }
 
 
-        rObject.add(this.dlEffect) ;
-        rObject.add(this.ulEffect) ;
-        rObject.add(this.cEffect) ;
-        rObject.add(this.urEffect) ;
-        rObject.add(this.drEffect) ;
+        receptorObject.add(tapsObjDict.dl) ;
+        receptorObject.add(tapsObjDict.ul) ;
+        receptorObject.add(tapsObjDict.c) ;
+        receptorObject.add(tapsObjDict.ur) ;
+        receptorObject.add(tapsObjDict.dr) ;
+
+
+        // add effect
+
+
+        let effectObjDict = {
+            dl: this.getEffect('dl', this.dlXPos ) ,
+            ul: this.getEffect('ul', this.ulXPos ),
+            c: this.getEffect('c', this.cXPos),
+            ur : this.getEffect('ur', this.urXPos),
+            dr: this.getEffect('dr', this.drXPos )
+        }
+
+
+
+        receptorObject.add(effectObjDict.dl) ;
+        receptorObject.add(effectObjDict.ul) ;
+        receptorObject.add(effectObjDict.c) ;
+        receptorObject.add(effectObjDict.ur) ;
+        receptorObject.add(effectObjDict.dr) ;
 
 
         // add explosion effects
-        this.dlExplosion = this.getExplosion(this.dlXPos) ;
+
+        let explosionObjDict = {
+            dl: this.getExplosion(this.dlXPos) ,
+            ul: this.getExplosion(this.ulXPos),
+            c: this.getExplosion(this.cXPos),
+            ur : this.getExplosion(this.urXPos),
+            dr: this.getExplosion(this.drXPos)
+        }
+
         // this.dlExplosion.material.opacity = 1.0 ;
         // this.dlExplosion.material.map.offset.set(4/5,0) ;
-        rObject.add(this.dlExplosion) ;
-
-        this.ulExplosion = this.getExplosion(this.ulXPos) ;
-        rObject.add(this.ulExplosion) ;
-
-        this.cExplosion = this.getExplosion(this.cXPos) ;
-        rObject.add(this.cExplosion) ;
-
-        this.urExplosion = this.getExplosion(this.urXPos) ;
-        rObject.add(this.urExplosion) ;
-
-        this.drExplosion = this.getExplosion(this.drXPos) ;
-        rObject.add(this.drExplosion) ;
+        receptorObject.add(explosionObjDict.dl) ;
+        receptorObject.add(explosionObjDict.ul) ;
+        receptorObject.add(explosionObjDict.c) ;
+        receptorObject.add(explosionObjDict.ur) ;
+        receptorObject.add(explosionObjDict.dr) ;
 
 
 
 
-        this.playerCourse = new THREE.Object3D() ;
-        this.playerCourse.add(steps) ;
-        this.playerCourse.add(rObject) ;
-        this.playerCourse.add(this.judgmentScale.getJudgmentObject()) ;
-
-
-        this.steps = steps ;
-        return this.playerCourse ;
+        return [steps, receptor, receptorObject, tapsObjDict, effectObjDict, explosionObjDict] ;
 
     }
 
@@ -267,7 +364,7 @@ class Composer {
     }
 
 
-    processNote(note, kind, currentYPosition, XStepPosition , steps, currentTimeInSong ) {
+    processNote(note, kind, currentYPosition, XStepPosition , steps, currentTimeInSong, index, padId ) {
 
 
         // Process tapNote
@@ -276,6 +373,7 @@ class Composer {
 
             // attributes created here (they do not exist before)
             step.kind = kind ;
+            step.padId = padId ;
             step.pressed = false ;
             step.isHold = false ;
 
@@ -287,14 +385,14 @@ class Composer {
             steps.add(step) ;
 
             // [1] add step to the stepList
-            this.stepQueue.addStepToLastStepInfo(step) ;
+            this.stepQueue.addStepToStepList(step, index) ;
 
             if (note === '2') {
                 step.isHold = true ;
                 step.held = false ;
                 step.beginningHoldYPosition = currentYPosition ;
                 step.beginHoldTimeStamp = currentTimeInSong ;
-                this.stepQueue.setHold(kind, step) ;
+                this.stepQueue.setHold(kind, padId, step) ;
             }
 
         }
@@ -302,10 +400,11 @@ class Composer {
         // Process hold and endNote
         if ( note === '3' ) {
 
-            let step = this.stepQueue.getHold(kind) ;
+            let step = this.stepQueue.getHold(kind,padId) ;
             let beginningHoldYPosition = step.beginningHoldYPosition ;
 
             let hold = this.stepFactory.getHold(kind) ;
+            hold.padId = padId ;
             let holdScale = beginningHoldYPosition - currentYPosition ;
             hold.position.z = this.holdZDepth ;
             hold.scale.y = holdScale ;
@@ -317,6 +416,7 @@ class Composer {
 
 
             let endNote = this.stepFactory.getHoldEndNote(kind);
+            endNote.padId = padId ;
             endNote.position.y = currentYPosition ;
             endNote.position.x = XStepPosition ;
             endNote.position.z = this.holdEndNoteZDepth ;
@@ -392,7 +492,7 @@ class Composer {
             let distanceToOrigin = Math.abs (step.position.y) - this.steps.position.y ;
 
             // check if hold is pressed.
-            if ( this.keyListener.isPressed(step.kind) ) {
+            if ( this.keyListener.isPressed(step.kind, step.padId) ) {
 
                 // update step note position
                 step.position.y += distanceToOrigin ;
@@ -547,33 +647,37 @@ class Composer {
     }
 
     updateExplosionAnimations(delta){
-        this.updateExplosionAnimation(this.dlExplosion,delta) ;
-        this.updateExplosionAnimation(this.ulExplosion,delta) ;
-        this.updateExplosionAnimation(this.cExplosion,delta) ;
-        this.updateExplosionAnimation(this.urExplosion,delta) ;
-        this.updateExplosionAnimation(this.drExplosion,delta) ;
+
+        for ( let explosionDic of Object.values(this.padExplosions) ) {
+            this.updateExplosionAnimation(explosionDic.dl,delta) ;
+            this.updateExplosionAnimation(explosionDic.ul,delta) ;
+            this.updateExplosionAnimation(explosionDic.c,delta) ;
+            this.updateExplosionAnimation(explosionDic.ur,delta) ;
+            this.updateExplosionAnimation(explosionDic.dr,delta) ;
+        }
+
     }
 
 
-    animateTap(kind) {
+    animateTap(kind, padId) {
 
         let tap = null ;
 
         switch (kind) {
             case 'dl':
-                tap = this.dlTap ;
+                tap = this.padTaps[padId].dl ;
                 break ;
             case 'ul':
-                tap = this.ulTap ;
+                tap = this.padTaps[padId].ul ;
                 break ;
             case 'c':
-                tap = this.cTap ;
+                tap = this.padTaps[padId].c ;
                 break ;
             case 'ur':
-                tap = this.urTap ;
+                tap = this.padTaps[padId].ur ;
                 break ;
             case 'dr':
-                tap = this.drTap ;
+                tap = this.padTaps[padId].dr ;
                 break ;
         }
 
@@ -595,26 +699,28 @@ class Composer {
         for ( var i = 0 ; i < arrayOfArrows.length ; ++i  ) {
             let tapEffect = null ;
             let explosion = null ;
-            switch (arrayOfArrows[i].kind) {
+            const kind = arrayOfArrows[i].kind ;
+            const padId = arrayOfArrows[i].padId ;
+            switch (kind) {
                 case 'dl':
-                    tapEffect = this.dlEffect ;
-                    explosion = this.dlExplosion ;
+                    tapEffect = this.padEffects[padId].dl ;
+                    explosion = this.padExplosions[padId].dl ;
                     break ;
                 case 'ul':
-                    tapEffect = this.ulEffect ;
-                    explosion = this.ulExplosion ;
+                    tapEffect = this.padEffects[padId].ul ;
+                    explosion = this.padExplosions[padId].ul ;
                     break ;
                 case 'c':
-                    tapEffect = this.cEffect ;
-                    explosion = this.cExplosion ;
+                    tapEffect = this.padEffects[padId].c ;
+                    explosion = this.padExplosions[padId].c ;
                     break ;
                 case 'ur':
-                    tapEffect = this.urEffect ;
-                    explosion = this.urExplosion ;
+                    tapEffect = this.padEffects[padId].ur ;
+                    explosion = this.padExplosions[padId].ur ;
                     break ;
                 case 'dr':
-                    tapEffect = this.drEffect ;
-                    explosion = this.drExplosion ;
+                    tapEffect = this.padEffects[padId].dr ;
+                    explosion = this.padExplosions[padId].dr ;
                     break ;
             }
 
@@ -647,24 +753,27 @@ class Composer {
 
 
 
-    arrowPressed(kind) {
+    arrowPressed(kind, padId) {
+
+        console.log('kind:' + kind + ' padId: '+padId) ;
 
         let currentAudioTime = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset;
 
-        this.stepQueue.stepPressed(kind,currentAudioTime) ;
+        this.stepQueue.stepPressed(kind, padId, currentAudioTime) ;
 
-        this.animateTap(kind) ;
+        this.animateTap(kind, padId) ;
 
     }
 
-    arrowReleased(kind) {
+    arrowReleased(kind, padId) {
         let currentAudioTime = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset;
-        this.stepQueue.stepReleased(kind, currentAudioTime) ;
+        this.stepQueue.stepReleased(kind, padId, currentAudioTime) ;
 
     }
 
     removeObjectFromSteps(object) {
-        this.steps.remove(object) ;
+        this.padSteps[object.padId].remove(object) ;
+
     }
 
 

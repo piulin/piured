@@ -56,6 +56,10 @@ class Song {
         return last ;
     }
 
+    getLevelStyle(level) {
+        return this.levels[level].meta['STEPSTYPE'] ;
+    }
+
 
 
     getMusicPath() {

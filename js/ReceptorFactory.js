@@ -54,11 +54,16 @@ class ReceptorFactory {
 
 
 
-        this.dlTap = this.constructTap(noteskinPath + '/Tap 5x2.PNG', 0) ;
-        this.ulTap = this.constructTap(noteskinPath + '/Tap 5x2.PNG', 1/5) ;
-        this.cTap = this.constructTap(noteskinPath + '/Tap 5x2.PNG', 2/5) ;
-        this.urTap = this.constructTap(noteskinPath + '/Tap 5x2.PNG', 3/5) ;
-        this.drTap = this.constructTap(noteskinPath + '/Tap 5x2.PNG', 4/5) ;
+        this.clonedTapMaps = [] ;
+        let ctms = this.clonedTapMaps ;
+        let tapMap = new THREE.TextureLoader().load(this.noteskinPath + '/Tap 5x2.PNG', function () {
+            for ( var m of ctms) {
+                m.image = tapMap.image ;
+                m.needsUpdate = true ;
+            }
+        }) ;
+        this.tapMap = tapMap ;
+
 
 
         // save it for later. This uses a lot of memory I guess.
@@ -83,26 +88,29 @@ class ReceptorFactory {
         // Create one step out of the five available.
         switch (kind) {
             case 'dl':
-                return  this.dlTap.clone() ;
+                return  this.constructTap(this.noteskinPath + '/Tap 5x2.PNG', 0) ;
                 break ;
             case 'ul':
-                return  this.ulTap.clone() ;
+                return  this.constructTap(this.noteskinPath + '/Tap 5x2.PNG', 1/5) ;
                 break ;
             case 'c':
-                return  this.cTap.clone() ;
+                return  this.constructTap(this.noteskinPath + '/Tap 5x2.PNG', 2/5)  ;
                 break ;
             case 'ur':
-                return  this.urTap.clone() ;
+                return  this.constructTap(this.noteskinPath + '/Tap 5x2.PNG', 3/5)  ;
                 break ;
             case 'dr':
-                return  this.drTap.clone() ;
+                return  this.constructTap(this.noteskinPath + '/Tap 5x2.PNG', 4/5) ;
                 break ;
         }
 
     }
 
     constructTap(pathToTexture, position) {
-        let stepMap = new THREE.TextureLoader().load(pathToTexture) ;
+
+
+        let stepMap = this.tapMap.clone() ;
+        this.clonedTapMaps.push(stepMap) ;
 
 
         // to accurately represent the colors

@@ -3,7 +3,7 @@
 class StepQueue {
 
 
-    constructor(composer,keyInput, accuracyMargin ) {
+    constructor(composer, keyInput, accuracyMargin ) {
 
 
         this.keyInput = keyInput ;
@@ -14,16 +14,16 @@ class StepQueue {
 
         this.stepQueue = [] ;
 
-        this.activeHolds = new Holds() ;
+        this.activeHolds = new HoldsState(this.keyInput.getPadIds()) ;
 
         this.checkForNewHolds = true ;
 
-
-
     }
 
+    // THESE METHODS ARE CALLED WHEN CONSTRUCTING THE SCENE.
 
-    addNewEntryWithTimeStampInfo( timeStamp ) {
+    addNewEntryWithTimeStampInfo( timeStamp, index ) {
+
 
         let stepInfo = new StepInfo([], timeStamp);
         this.stepQueue.push(stepInfo) ;
@@ -44,6 +44,10 @@ class StepQueue {
 
         this.stepQueue[this.stepQueue.length -1].stepList.push(step) ;
 
+    }
+
+    addStepToStepList ( step, index ) {
+        this.stepQueue[index].stepList.push(step) ;
     }
 
     getLength() {
@@ -73,19 +77,19 @@ class StepQueue {
         return this.stepQueue[0].stepList ;
     }
 
-    setHold(kind, step) {
+    setHold(kind, padId, step) {
         this.activeHolds.beginningHoldChunk = true ;
         this.activeHolds.lastAddedHold = step ;
-        this.activeHolds.setHold(kind, step) ;
+        this.activeHolds.setHold(kind, padId, step) ;
 
     }
 
-    getHold( kind ) {
-        return this.activeHolds.getHold(kind) ;
+    getHold( kind, padId ) {
+        return this.activeHolds.getHold(kind, padId) ;
     }
 
     resetHolds() {
-        this.activeHolds = new Holds() ;
+        this.activeHolds = new HoldsState(this.keyInput.getPadIds()) ;
     }
 
 
@@ -276,7 +280,7 @@ class StepQueue {
             let step = listActiveHolds[i] ;
 
             if (step !== null && currentAudioTime > step.endHoldTimeStamp ) {
-                this.activeHolds.setHold(step.kind, null) ;
+                this.activeHolds.setHold(step.kind, step.padId, null) ;
 
                 // save the endHoldTimeStamp to compute the remainder judgments.
                 this.activeHolds.needFinishJudgment = true ;
@@ -285,7 +289,7 @@ class StepQueue {
                 // this.activeHolds.actualTotalComboValueOfHold = this.computeTotalComboContribution( beginTime, endTime ) ;
 
                 // if the hold is active, we can remove it from the render and give a perfect judgment, I think.
-                if (this.keyInput.isPressed(step.kind)) {
+                if (this.keyInput.isPressed(step.kind, step.padId)) {
 
                     this.composer.removeObjectFromSteps(step) ;
                     this.composer.removeObjectFromSteps(step.holdObject) ;
@@ -302,8 +306,7 @@ class StepQueue {
                     this.composer.judgmentScale.miss() ;
                 }
 
-                // listActiveHolds[i] = null ;
-                // console.log('removed:' + listActiveHolds[i]) ;
+
             }
 
         }
@@ -321,7 +324,7 @@ class StepQueue {
         for ( var i = 0 ; i < length ; ++i ) {
             let note = this.getStepFromTopMostStepInfo(i) ;
             if ( note.isHold ) {
-                this.setHold(note.kind, note);
+                this.setHold(note.kind, note.padId, note);
                 // console.log('hold added:' + note.held) ;
             }
         }
@@ -335,14 +338,13 @@ class StepQueue {
     // ----------------------- THESE METHODS ARE CALLED WHEN A KEY IS PRESSED ---------------------- //
 
 
-    stepReleased(kind, currentAudioTime) {
+    stepReleased(kind, padId, currentAudioTime) {
 
-        this.activeHolds.lastTimeStampRelease = currentAudioTime ;
-        this.updateHeldStepsStatus( kind, false ) ;
+        this.updateHeldStepsStatus( kind, padId, false ) ;
 
     }
 
-    getFirstStepWithinMargin(currentAudioTime, kind) {
+    getFirstStepWithinMargin(currentAudioTime, kind, padId) {
 
         for ( var i = 0 ; i < this.stepQueue.length ; i++ ) {
 
@@ -360,7 +362,7 @@ class StepQueue {
 
                     let step = stepInfo.stepList [j] ;
 
-                    if (step.kind === kind) {
+                    if (step.kind === kind && step.padId === padId) {
                         return [stepInfo, step, i, difference] ;
                     }
 
@@ -375,17 +377,17 @@ class StepQueue {
 
     }
 
-    stepPressed(kind, currentAudioTime) {
+    stepPressed(kind, padId, currentAudioTime) {
 
 
         // keep track if there is an upcoming hold
 
 
 
-        this.updateHeldStepsStatus(kind, true) ;
+        this.updateHeldStepsStatus(kind, padId, true) ;
 
 
-        let [stepInfo, step, hitIndex, difference] = this.getFirstStepWithinMargin(currentAudioTime, kind) ;
+        let [stepInfo, step, hitIndex, difference] = this.getFirstStepWithinMargin(currentAudioTime, kind, padId) ;
 
         // console.log(stepInfo) ;
 
@@ -411,7 +413,7 @@ class StepQueue {
                     }
 
                     if ( step.isHold ) {
-                        this.setHold(step.kind, step) ;
+                        this.setHold(step.kind, step.padId, step) ;
                     }
 
                 } else {
@@ -446,14 +448,14 @@ class StepQueue {
 
 
     // true: step is held, false: otherwise
-    updateHeldStepsStatus(kind, status) {
+    updateHeldStepsStatus(kind, padId, status) {
         // this.updateHeldStepsStatusInStepQueue( kind, status ) ;
-        this.updateHeldStepsStatusInActiveHolds( kind, status ) ;
+        this.updateHeldStepsStatusInActiveHolds( kind, padId, status ) ;
     }
 
-    updateHeldStepsStatusInActiveHolds(kind,status) {
+    updateHeldStepsStatusInActiveHolds(kind, padId, status) {
 
-        let step = this.activeHolds.getHold(kind);
+        let step = this.activeHolds.getHold(kind, padId);
         if (step !== null ) {
             step.held = status
         }
@@ -484,7 +486,7 @@ class StepQueue {
 
             let note = noteList[i] ;
             if ( note.pressed === false ) {
-                if ( note.isHold && this.keyInput.isPressed(note.kind) ) {
+                if ( note.isHold && this.keyInput.isPressed(note.kind, note.padId) ) {
                     continue ;
                 }
                 return false ;
@@ -504,7 +506,7 @@ class StepQueue {
 
             let step = listActiveHolds[i] ;
 
-            if (step !== null && this.keyInput.isPressed(step.kind) ) {
+            if (step !== null && this.keyInput.isPressed(step.kind, step.padId) ) {
                 continue ;
                 // listActiveHolds[i] = null ;
                 // console.log('removed:' + listActiveHolds[i]) ;
@@ -567,7 +569,7 @@ class StepQueue {
 
                 // add it to the active holds early
             } else {
-                this.setHold(note.kind, note) ;
+                this.setHold(note.kind, note.padId, note) ;
             }
 
 

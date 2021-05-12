@@ -1,31 +1,19 @@
 "use strict"; // good practice - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
 
+// Data structure that supports the StepQueue functionality
+// It holds at a given time, the current holds and their state.
 class Holds {
 
 
-    constructor() {
+    constructor(padId) {
 
+        this.padId = padId ;
+        // These five correspond to the holds steps (Object3D)
         this._dl = null ;
         this._ul = null ;
         this._c = null ;
         this._ur = null ;
         this._dr = null ;
-
-        this.cumulatedHoldTime = 0.0 ;
-        this.needFinishJudgment = false;
-        this.judgmentTimeStampEndReference = 0.0 ;
-        this.timeCounterJudgmentHolds = 0.0 ;
-
-        this.actualTotalComboValueOfHold = 0 ;
-        this.holdSequenceStart = null ;
-        this.wasLastKnowHoldPressed = true ;
-        this.beginningHoldChunk = false ;
-        this.lastAddedHold = null ;
-
-        this.lastTimeStampRelease = 0.0 ;
-
-        this.holdRun = false ;
-        this.firstHoldInHoldRun = null ;
 
     }
 
