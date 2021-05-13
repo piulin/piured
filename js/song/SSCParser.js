@@ -56,9 +56,18 @@ function postProcessing(meta, endIndex) {
         meta['TICKCOUNTS'] = parseCommaSeparatedAssignments( meta['TICKCOUNTS'] ) ;
     }
 
+    if ( 'SCROLLS' in meta ) {
+        meta['SCROLLS'] = parseCommaSeparatedAssignments( meta['SCROLLS'] ) ;
+    }
+
     if ( 'OFFSET' in meta ) {
         meta['OFFSET'] = parseFloat(meta['OFFSET']) ;
     }
+
+    if ( 'SPEEDS' in meta ) {
+        meta['SPEEDS'] = parseCommaSeparatedAssignments(meta['SPEEDS']) ;
+    }
+
 
     return [ meta, endIndex ] ;
 }
@@ -67,10 +76,14 @@ function parseCommaSeparatedAssignments(content) {
     let list = [] ;
     let commaSplit = content.split(',') ;
     for (var i = 0 ; i < commaSplit.length ; ++i ) {
-        // [0] -> timeStamp
+        // [0] -> beat
         // [1] -> value
-        let [ timeStamp, value ] = commaSplit[i].split('=') ;
-        list.push( [parseFloat(timeStamp), parseFloat(value)]);
+        let aux = [] ;
+        let equalSplit = commaSplit[i].split('=') ;
+        for (let val of equalSplit) {
+            aux.push( parseFloat(val) ) ;
+        }
+        list.push(aux) ;
     }
     return list ;
 }

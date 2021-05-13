@@ -61,6 +61,8 @@ class KeyInput {
                 pad.drKeyHold = true ;
                 // console.log('dr down: ' +event.which)
                 this.composer.arrowPressed('dr',pad.padId) ;
+            } else if ( event.which >= 49 && event.which <= 57) {
+                this.composer.setNewSpeed(10-(58-event.which)) ;
             }
         }
 

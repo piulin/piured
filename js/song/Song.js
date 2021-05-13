@@ -20,6 +20,8 @@ class Song {
         // Not that convenient way of reading files from disk.
         readFileContent(pathToSSCFile,this.loadSSC.bind(this)) ;
 
+        console.log(this) ;
+
 
     }
 
@@ -39,6 +41,22 @@ class Song {
         }
     }
 
+    getScrolls(level) {
+        if ( 'SCROLLS' in this.levels[level].meta ) {
+            return this.levels[level].meta['SCROLLS'] ;
+        } else {
+            return this.meta['SCROLLS'] ;
+        }
+    }
+
+    getSpeeds(level) {
+        if ( 'SPEEDS' in this.levels[level].meta ) {
+            return this.levels[level].meta['SPEEDS'] ;
+        } else {
+            return this.meta['SPEEDS'] ;
+        }
+    }
+
     getTickCountAtBeat(level, beat) {
 
         const tickCounts = this.getTickCounts(level) ;
@@ -54,6 +72,22 @@ class Song {
 
         }
         return last ;
+    }
+
+    getSpeedAndTimeAtBeat(level, beat) {
+
+        const speeds = this.getSpeeds(level) ;
+        let last = speeds[0];
+        for ( const speed of speeds ) {
+            const beatInSpeed = speed[0] ;
+            if ( beat >= beatInSpeed ) {
+                last = speed ;
+            } else {
+                return [last[1],last[2]] ;
+            }
+
+        }
+        return [last[1],last[2]] ;
     }
 
     getLevelStyle(level) {

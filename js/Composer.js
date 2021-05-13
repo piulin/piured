@@ -46,7 +46,10 @@ class Composer {
         this.lastStepTimeStamp = 0.0;
         this.animationPosition = 0 ;
 
+        this.effectSpeed = 1;
+        this.lastEffectSpeed = 1;
 
+        this.lastSSCSpeed = 1;
     }
 
 
@@ -61,7 +64,7 @@ class Composer {
         this.level = level ;
 
         // Create the bpmManager
-        this.bpmManager = new BPMManager(this.song.getBMPs(level), this.speed) ;
+        this.bpmManager = new BPMManager(this.song.getBMPs(level), this.song.getScrolls(level), this.speed) ;
 
         this.bpms = this.song.levels[level].meta['BPMS'] ;
 
@@ -439,10 +442,13 @@ class Composer {
         // Corrected w.r.t. keyboard lag.
         const currentAudioTimeCorrected = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset ;
 
+        //
 
         // update position of the steps in the 3D word.
         // this also returns the current beat given the audioTime
         const beat = this.updateStepsPositionAndGetCurrentBeat(delta, currentAudioTimeCorrected) ;
+
+        this.updateCurrentSpeed(beat) ;
 
         // keep track of the upcoming steps and the active holds.
         this.stepQueue.updateStepQueueAndActiveHolds(currentAudioTimeCorrected, delta, beat) ;
@@ -465,6 +471,44 @@ class Composer {
         return this.song.getTickCountAtBeat(this.level, beat) ;
     }
 
+    updateCurrentSpeed(beat) {
+        const [speed, timeSegs] = this.song.getSpeedAndTimeAtBeat(this.level, beat) ;
+        this.setNewSpeed(speed, timeSegs * 1000) ;
+    }
+
+    updateSpeed() {
+        if (this.lastEffectSpeed !== this.effectSpeed ) {
+
+            let lastEffectSpeed = this.lastEffectSpeed ;
+            let effectSpeed = this.effectSpeed ;
+            this.steps.traverse(function(child) {
+                if (child instanceof THREE.Mesh) {
+                    // back to the original speed
+                    child.position.y *=(1/lastEffectSpeed);
+                    // apply new speed
+                    child.position.y *= effectSpeed ;
+
+                    if ( child.isHold ) {
+                        child.holdObject.scale.y *= (1/lastEffectSpeed);
+                        child.holdObject.scale.y *= effectSpeed;
+                        child.beginningHoldYPosition *= (1/lastEffectSpeed);
+                        child.beginningHoldYPosition *= effectSpeed;
+
+                        child.endHoldYPosition *= (1/lastEffectSpeed);
+                        child.endHoldYPosition *= effectSpeed;
+                    }
+
+                }}) ;
+
+            this.lastEffectSpeed = this.effectSpeed ;
+
+        }
+    }
+
+    setNewSpeed(speed, time = 200) {
+        new TWEEN.Tween(this).to({effectSpeed: speed}, time).start();
+    }
+
     // We do both things at the same time to save some computational time.
     updateStepsPositionAndGetCurrentBeat(delta, currentAudioTime) {
         let beat = undefined ;
@@ -477,6 +521,8 @@ class Composer {
         }
 
         this.updateActiveHoldsPosition(delta) ;
+
+        this.updateSpeed() ;
         return beat ;
     }
 
@@ -546,22 +592,23 @@ class Composer {
 
     updateStepsPositionDelta(lcat) {
 
-        const yDisplacement =  this.bpmManager.getYShiftAtCurrentAudioTime(lcat) ;
+        const [yDisplacement, beat] =  this.bpmManager.getYShiftAtCurrentAudioTime(lcat) ;
         //
-        this.steps.position.y = yDisplacement* this.speed ;
+        this.steps.position.y = yDisplacement* this.speed * this.effectSpeed;
 
-        return yDisplacement ;
+        return beat ;
 
     }
 
     updateStepsPositionAudioClockSync(currentAudioTime) {
 
 
-        const yDisplacement =  this.bpmManager.getYShiftAtCurrentAudioTime(currentAudioTime) ;
+        const [yDisplacement, beat] =  this.bpmManager.getYShiftAtCurrentAudioTime(currentAudioTime) ;
 
-        this.steps.position.y = yDisplacement* this.speed ;
+        this.steps.position.y = yDisplacement* this.speed *this.effectSpeed ;
 
-        return yDisplacement ;
+
+        return beat ;
     }
 
     updateReceptorAnimation(currentAudioTime) {
@@ -754,8 +801,6 @@ class Composer {
 
 
     arrowPressed(kind, padId) {
-
-        console.log('kind:' + kind + ' padId: '+padId) ;
 
         let currentAudioTime = this.song.getCurrentAudioTime(this.level) - this.keyBoardOffset;
 
