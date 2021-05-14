@@ -11,9 +11,17 @@ class BPMManager {
         this.bpmList = bpmList ;
         this.scrollList = scrollList ;
 
+        this.currentBPM = 0 ;
+
     }
 
-    getBPMAtBeat(beat) {
+    getCurrentBPM() {
+
+        return this.currentBPM;
+
+    }
+
+    updateCurrentBPM (beat) {
 
         const tickCounts = this.bpmList ;
         let last = tickCounts[0][1];
@@ -23,10 +31,10 @@ class BPMManager {
             if ( beat >= beatInTick ) {
                 last = tick ;
             } else {
-                return last ;
+                break ;
             }
         }
-        return last ;
+        this.currentBPM = last ;
 
     }
 

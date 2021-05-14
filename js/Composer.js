@@ -430,6 +430,9 @@ class Composer {
             step.endNoteObject = endNote ;
             step.endHoldTimeStamp = currentTimeInSong ;
 
+            // update proportion of endNote
+            this.updateEndNoteProportion(step) ;
+
         }
 
     }
@@ -482,7 +485,7 @@ class Composer {
             this.newTargetSpeed = speed ;
             let time = measure * 1000;
             if (type === 0) {
-                time = (60 / this.currentBPM) * measure * 1000;
+                time = (60 / this.bpmManager.getCurrentBPM()) * measure * 1000;
             }
             this.setNewSpeed(speed, time);
         }
@@ -494,7 +497,12 @@ class Composer {
 
             let lastEffectSpeed = this.lastEffectSpeed ;
             let effectSpeed = this.effectSpeed ;
+            let updateEndNoteFunction = this.updateEndNoteProportion.bind(this) ;
+
+            // we don't know the order of the traverse, so we have to do it twice.
             this.steps.traverse(function(child) {
+
+                // steps, holds, and endNotes are meshes
                 if (child instanceof THREE.Mesh) {
                     // back to the original speed
                     child.position.y *=(1/lastEffectSpeed);
@@ -513,16 +521,25 @@ class Composer {
 
                         child.endHoldYPosition *= (1/lastEffectSpeed);
                         child.endHoldYPosition *= effectSpeed;
+
+                        //updateEndNoteFunction(child) ;
+
                     }
 
                 }}) ;
 
+            // this.steps.traverse(function(child) {
+            //     // steps, holds, and endNotes are meshes
+            //     if (child instanceof THREE.Mesh) {
+            //         if ( child.isHold ) {
+            //             updateEndNoteFunction(child) ;
+            //         }
+            //     }}) ;
             this.lastEffectSpeed = this.effectSpeed ;
-
         }
     }
 
-    setNewSpeed(speed, time = 0.5) {
+    setNewSpeed(speed, time = 200) {
 
         // console.log('setting new speed: ' + speed, ' in time: ' + time) ;
         // console.log('time: ' + time + ' currentBPM: ' + this.currentBPM + ' beats: ' + beats);
@@ -541,15 +558,15 @@ class Composer {
 
         }
 
-        this.currentBPM = this.bpmManager.getBPMAtBeat(beat) ;
+        this.bpmManager.updateCurrentBPM(beat) ;
 
         this.updateSpeed() ;
 
-        this.updateActiveHoldsPosition(delta) ;
+        this.updateActiveHoldsPosition() ;
         return beat ;
     }
 
-    updateActiveHoldsPosition(delta) {
+    updateActiveHoldsPosition() {
 
 
         let listActiveHolds = this.stepQueue.activeHolds.asList() ;
@@ -558,52 +575,11 @@ class Composer {
 
             let step = listActiveHolds[i] ;
 
-            let distanceToOrigin = Math.abs (step.position.y) - this.steps.position.y ;
-
             // check if hold is pressed.
+
             if ( this.keyListener.isPressed(step.kind, step.padId) ) {
 
-                // update step note position
-                step.position.y += distanceToOrigin ;
-
-                // update hold position
-                let beginningHoldYPosition = step.position.y;
-                let endHoldYPosition = step.endHoldYPosition ;
-                let hold = step.holdObject ;
-                let holdEndNote = step.endNoteObject ;
-
-                // console.log(holdEndNote);
-
-
-                let holdScale = beginningHoldYPosition - endHoldYPosition  ;
-                hold.scale.y = holdScale ;
-
-                // -0.5 to shift it to the center
-                hold.position.y = beginningHoldYPosition - holdScale*0.5 ;
-
-
-
-                let distanceStepNoteEndNote = beginningHoldYPosition - holdEndNote.position.y  ;
-
-                // console.log(distanceStepNoteEndNote) ;
-
-
-                // End note problem: we have to shrink it when it overlaps with the step Note.
-                // holdScale is the distance between the step note and the end hold note.
-
-                // Option with no shaders.
-                if (  distanceStepNoteEndNote < 1 ) {
-
-                    // shift to the middle of the step.
-                    distanceStepNoteEndNote += 0.5 ;
-                    let difference = holdEndNote.scale.y - distanceStepNoteEndNote ;
-                    holdEndNote.scale.y = distanceStepNoteEndNote ;
-                    holdEndNote.position.y -= difference*0.5 ;
-
-                    // update also texture to keep aspect ratio
-                    holdEndNote.material.map.repeat.set(1/6, (1/3)*distanceStepNoteEndNote ) ;
-
-                }
+                this.updateHoldPosition(step) ;
 
             }
 
@@ -611,6 +587,59 @@ class Composer {
 
         }
 
+    }
+
+    // This function shrinks the endNote so it does look proportioned
+    updateHoldPosition(step) {
+
+        let distanceToOrigin = Math.abs (step.position.y) - this.steps.position.y ;
+
+        // update step note position
+        step.position.y += distanceToOrigin ;
+
+        // update hold position
+        let beginningHoldYPosition = step.position.y;
+        let endHoldYPosition = step.endHoldYPosition ;
+        let hold = step.holdObject ;
+
+
+        let holdScale = beginningHoldYPosition - endHoldYPosition  ;
+        hold.scale.y = holdScale ;
+
+        // -0.5 to shift it to the center
+        hold.position.y = beginningHoldYPosition - holdScale*0.5 ;
+
+        // this prevents the end note to look ugly
+        this.updateEndNoteProportion(step) ;
+
+        // console.log(distanceStepNoteEndNote) ;
+
+
+
+    }
+
+    // checks the distance between the top and the bottom of the hold, and then decides the correct proportion for the end
+    // note.
+    updateEndNoteProportion(step) {
+        let beginningHoldYPosition = step.position.y;
+        let holdEndNote = step.endNoteObject ;
+        let distanceStepNoteEndNote = beginningHoldYPosition - holdEndNote.position.y  ;
+        // End note problem: we have to shrink it when it overlaps with the step Note.
+        // holdScale is the distance between the step note and the end hold note.
+
+        // Option with no shaders.
+        if (  distanceStepNoteEndNote < 1 ) {
+
+            // shift to the middle of the step.
+            distanceStepNoteEndNote += 0.5 ;
+            let difference = holdEndNote.scale.y - distanceStepNoteEndNote ;
+            holdEndNote.scale.y = distanceStepNoteEndNote ;
+            holdEndNote.position.y -= difference*0.5 ;
+
+            // update also texture to keep aspect ratio
+            holdEndNote.material.map.repeat.set(1/6, (1/3)*distanceStepNoteEndNote ) ;
+
+        }
     }
 
     updateStepsPositionDelta(lcat) {
@@ -639,7 +668,7 @@ class Composer {
     updateReceptorAnimation(currentAudioTime) {
 
 
-        const bpm = this.bpms[0][1] ;
+        const bpm = this.bpmManager.getCurrentBPM() ;
         const beatsPerSecond = bpm / 60 ;
         const secondsPerBeat = 60 / bpm ;
 

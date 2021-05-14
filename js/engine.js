@@ -79,8 +79,8 @@ class Engine {
     start ( ) {
 
 
-        // const keyBoardLag = 0.06 ;
-        const keyBoardLag = 0.00 ;
+        const keyBoardLag = 0.06 ;
+        // const keyBoardLag = 0.00 ;
 
         // let song = new Song('songs/bc/dp.ssc');
         // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc'); // 7, 14
@@ -93,7 +93,7 @@ class Engine {
         // let song = new Song('songs/mf/A03 - Monkey Fingers.ssc', keyBoardLag); //4
         // let song = new Song('songs/or/401 - Oh! Rosa.ssc', keyBoardLag); //6
         // let song = new Song('songs/liadg/C04 - Love is a Danger Zone 2.ssc'); //4
-        let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
+        // let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
         // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc', keyBoardLag); // 8
         // let song = new Song('songs/bc/105 - Black Cat.ssc', keyBoardLag); // 5, -3
         // let song = new Song('songs/e/C08 - Emergency.ssc', keyBoardLag); // 4 //TODO: fails -3
@@ -102,22 +102,22 @@ class Engine {
         // let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc', keyBoardLag); // 5 -3
         // let song = new Song('songs/cw/911 - Chicken Wing.ssc', keyBoardLag); // 10
         // let song = new Song('songs/st/906 - Starian.ssc', keyBoardLag); // 7
-        // let song = new Song('songs/pzo/1431 - Point Zero One.ssc', keyBoardLag); // 7
+        let song = new Song('songs/pzo/1431 - Point Zero One.ssc', keyBoardLag); // 7
 
 
-        this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,1, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,3, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,8, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,3.5, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NX2/HD/' ,2, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,3, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NX2/HD/' ,4, keyBoardLag);
+        this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,4, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/FIESTAEX-BASIC/HD/' ,5, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/FIESTA2/HD/' ,3, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/ZERO-POKER/HD/' ,5, keyBoardLag);
 
         // Get the steps and receptor in position
-        // let playerCourse = this.composer.composeStage(song.levels.length -1) ;
-        let playerCourse = this.composer.composeStage(0) ;
+        let playerCourse = this.composer.composeStage(song.levels.length -1) ;
+        // let playerCourse = this.composer.composeStage(0) ;
 
         this.scene.add(playerCourse) ;
 
@@ -128,8 +128,8 @@ class Engine {
         this.showGrids() ;
 
         // display 3D axis.
-        const axesHelper = new THREE.AxisHelper(5) ;
-        this.scene.add(axesHelper) ;
+        // const axesHelper = new THREE.AxisHelper(5) ;
+        // this.scene.add(axesHelper) ;
 
 
         // Main loop.

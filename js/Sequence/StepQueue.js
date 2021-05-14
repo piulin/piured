@@ -115,7 +115,7 @@ class StepQueue {
 
             const tickCounts = this.composer.getTickCountAtBeat(beat) ;
 
-            this.judgeHolds(delta, currentAudioTime, tickCounts) ;
+            this.judgeHolds(delta, currentAudioTime, beat, tickCounts) ;
 
             // Note that, to be exact, we have to add the remainder contribution of the hold that was not processed on the last
             // frame
@@ -174,7 +174,7 @@ class StepQueue {
     }
 
     // the boolean end is used to compute the remainder combo left after a set of holds.
-    judgeHolds(delta, currentAudioTime, tickCounts) {
+    judgeHolds(delta, currentAudioTime, beat, tickCounts) {
 
 
         this.activeHolds.cumulatedHoldTime += delta ;
@@ -182,8 +182,7 @@ class StepQueue {
 
         this.activeHolds.timeCounterJudgmentHolds += delta ;
 
-
-        const secondsPerBeat = 60 / this.composer.bpms[0][1] ;
+        const secondsPerBeat = 60 / this.composer.bpmManager.getCurrentBPM() ;
 
         const secondsPerKeyCount = secondsPerBeat/ tickCounts ;
 
