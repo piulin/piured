@@ -93,22 +93,22 @@ class Engine {
         // let song = new Song('songs/mf/A03 - Monkey Fingers.ssc', keyBoardLag); //4
         // let song = new Song('songs/or/401 - Oh! Rosa.ssc', keyBoardLag); //6
         // let song = new Song('songs/liadg/C04 - Love is a Danger Zone 2.ssc'); //4
-        // let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
+        let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
         // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc', keyBoardLag); // 8
         // let song = new Song('songs/bc/105 - Black Cat.ssc', keyBoardLag); // 5, -3
         // let song = new Song('songs/e/C08 - Emergency.ssc', keyBoardLag); // 4 //TODO: fails -3
-        let song = new Song('songs/kos/1665 - Norazo - King of Sales.ssc', keyBoardLag); // 5, 8
+        // let song = new Song('songs/kos/1665 - Norazo - King of Sales.ssc', keyBoardLag); // 5, 8
         // let song = new Song('songs/c/1101 - Cleaner.ssc', keyBoardLag); // 5
         // let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc', keyBoardLag); // 5 -3
         // let song = new Song('songs/cw/911 - Chicken Wing.ssc', keyBoardLag); // 10
         // let song = new Song('songs/st/906 - Starian.ssc', keyBoardLag); // 7
         // let song = new Song('songs/pzo/1431 - Point Zero One.ssc', keyBoardLag); // 7
-        song.play() ;
 
-        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,5, keyBoardLag);
+
+        this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,1, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/NX/HD/' ,3, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,8, keyBoardLag);
-        this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,3.5, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/NX2/HD/' ,2, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,3, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/FIESTAEX-BASIC/HD/' ,5, keyBoardLag);
@@ -116,10 +116,12 @@ class Engine {
         // this.composer = new Composer(song, 'noteskins/ZERO-POKER/HD/' ,5, keyBoardLag);
 
         // Get the steps and receptor in position
-        let playerCourse = this.composer.composeStage(song.levels.length -2) ;
-        // let playerCourse = this.composer.composeStage(0) ;
+        // let playerCourse = this.composer.composeStage(song.levels.length -1) ;
+        let playerCourse = this.composer.composeStage(0) ;
 
         this.scene.add(playerCourse) ;
+
+        song.play() ;
 
 
         // Display 3d grids.

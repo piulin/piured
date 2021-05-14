@@ -74,6 +74,23 @@ class Song {
         return last ;
     }
 
+    getBPMAtBeat(level, beat) {
+
+        const tickCounts = this.getBMPs(level) ;
+        let last = tickCounts[0][1];
+        for ( const tickCount of tickCounts ) {
+            const beatInTick = tickCount[0] ;
+            const tick = tickCount[1] ;
+            if ( beat >= beatInTick ) {
+                last = tick ;
+            } else {
+                return last ;
+            }
+
+        }
+        return last ;
+    }
+
     getSpeedAndTimeAtBeat(level, beat) {
 
         const speeds = this.getSpeeds(level) ;
@@ -83,11 +100,13 @@ class Song {
             if ( beat >= beatInSpeed ) {
                 last = speed ;
             } else {
-                return [last[1],last[2]] ;
+
+                // we also return the type: time in seconds or beats.
+                return [last[1],last[2], last[3]] ;
             }
 
         }
-        return [last[1],last[2]] ;
+        return [last[1],last[2], last[3]] ;
     }
 
     getLevelStyle(level) {

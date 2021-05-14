@@ -15,11 +15,18 @@ class BPMManager {
 
     getBPMAtBeat(beat) {
 
-        for (let bpmInfo of this.bpmList) {
-            if (beat <= bpmInfo[0] ) {
-                return bpmInfo[1] ;
+        const tickCounts = this.bpmList ;
+        let last = tickCounts[0][1];
+        for ( const tickCount of tickCounts ) {
+            const beatInTick = tickCount[0] ;
+            const tick = tickCount[1] ;
+            if ( beat >= beatInTick ) {
+                last = tick ;
+            } else {
+                return last ;
             }
         }
+        return last ;
 
     }
 
@@ -74,92 +81,92 @@ class BPMManager {
         const beat = (4*barIndex + 4*noteInBarIndex/notesInBar) ;
 
         // iterate all bpms
-         for (var i = 0 ; i < this.bpmList.length ; i++ ) {
+        for (var i = 0 ; i < this.bpmList.length ; i++ ) {
 
 
 
-             // const scrollBeat = this.scrollList[j][0] ;
-             // const scrollSpeed = this.scrollList[j][1] ;
+            // const scrollBeat = this.scrollList[j][0] ;
+            // const scrollSpeed = this.scrollList[j][1] ;
 
-             // retrieve bpm and beat from the list
-             let bpmInfo = this.bpmList [i];
-             const beatInList = bpmInfo[0];
+            // retrieve bpm and beat from the list
+            let bpmInfo = this.bpmList [i];
+            const beatInList = bpmInfo[0];
 
-             // also retrieve nextBeat from the list if possible.
-             let nextBeatInList = this.bpmList [i + 1] !== undefined ? this.bpmList [i + 1][0] : undefined;
-
-
-             // this condition is met when the beat corresponds to the current chunk of beats (beatInList, nextBeatInList)
-
-             //iterate scrolls
-             let scrollList = this.getScrollsInBeatInterval(beatInList, nextBeatInList) ;
-
-             if (beat >= beatInList && (beat < nextBeatInList || nextBeatInList === undefined)) {
+            // also retrieve nextBeat from the list if possible.
+            let nextBeatInList = this.bpmList [i + 1] !== undefined ? this.bpmList [i + 1][0] : undefined;
 
 
+            // this condition is met when the beat corresponds to the current chunk of beats (beatInList, nextBeatInList)
 
-                 // calculate contribution of each scroll in the position.
-                 for ( var j = 0; j < scrollList.length ; j++ ) {
-                     const scroll = scrollList[j] ;
-                     const scrollBeat = scroll[0] ;
-                     const scrollValue = scroll [1] ;
-                     const nextScroll = scrollList[j+1] ;
+            //iterate scrolls
+            let scrollList = this.getScrollsInBeatInterval(beatInList, nextBeatInList) ;
 
-                     if ( nextScroll !== undefined && beat >= nextScroll[0] ) {
-                         yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
-                     } else {
-                         yShift += -(beat - scrollBeat) * this.speed * scrollValue ;
-                         break ;
-                     }
-
-                 }
-
-                 // we calculate the proportion of time and displacement that this bpm would contribute.
-                 const secondsPerBeat = 60 / bpmInfo[1];
-
-                 currentTimeInSong += (beat - beatInList) * secondsPerBeat;
-
-                 break;
-
-                 // otherwise, the whole chunk is contributed.
-             } else {
-
-                 const secondsPerBeat = 60 / bpmInfo[1];
+            if (beat >= beatInList && (beat < nextBeatInList || nextBeatInList === undefined)) {
 
 
-                 // calculate contribution of each scroll in the position.
-                 for ( var j = 0; j < scrollList.length ; j++ ) {
-                     const scroll = scrollList[j] ;
-                     const scrollBeat = scroll[0] ;
-                     const scrollValue = scroll [1] ;
-                     const nextScroll = scrollList[j+1] ;
 
-                     // there is an error over here.
-                     if ( nextScroll === undefined ) {
-                         yShift += -(nextBeatInList - scrollBeat) * this.speed * scrollValue ;
-                     } else {
-                         yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
-                     }
+                // calculate contribution of each scroll in the position.
+                for ( var j = 0; j < scrollList.length ; j++ ) {
+                    const scroll = scrollList[j] ;
+                    const scrollBeat = scroll[0] ;
+                    const scrollValue = scroll [1] ;
+                    const nextScroll = scrollList[j+1] ;
 
-                     // this before
-                     // if ( nextScroll === undefined ) {
-                     //     yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
-                     // } else {
-                     //     yShift += -(nextBeatInList - scrollBeat) * this.speed * scrollValue ;
-                     // }
+                    if ( nextScroll !== undefined && beat >= nextScroll[0] ) {
+                        yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
+                    } else {
+                        yShift += -(beat - scrollBeat) * this.speed * scrollValue ;
+                        break ;
+                    }
+
+                }
+
+                // we calculate the proportion of time and displacement that this bpm would contribute.
+                const secondsPerBeat = 60 / bpmInfo[1];
+
+                currentTimeInSong += (beat - beatInList) * secondsPerBeat;
+
+                break;
+
+                // otherwise, the whole chunk is contributed.
+            } else {
+
+                const secondsPerBeat = 60 / bpmInfo[1];
 
 
-                 }
+                // calculate contribution of each scroll in the position.
+                for ( var j = 0; j < scrollList.length ; j++ ) {
+                    const scroll = scrollList[j] ;
+                    const scrollBeat = scroll[0] ;
+                    const scrollValue = scroll [1] ;
+                    const nextScroll = scrollList[j+1] ;
 
-                 // yShift += -(nextBeatInList - beatInList) * this.speed ;
+                    // there is an error over here.
+                    if ( nextScroll === undefined ) {
+                        yShift += -(nextBeatInList - scrollBeat) * this.speed * scrollValue ;
+                    } else {
+                        yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
+                    }
 
-                 currentTimeInSong += (nextBeatInList - beatInList) * secondsPerBeat;
-             }
+                    // this before
+                    // if ( nextScroll === undefined ) {
+                    //     yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
+                    // } else {
+                    //     yShift += -(nextBeatInList - scrollBeat) * this.speed * scrollValue ;
+                    // }
 
 
-         }
+                }
 
-         return [yShift, currentTimeInSong] ;
+                // yShift += -(nextBeatInList - beatInList) * this.speed ;
+
+                currentTimeInSong += (nextBeatInList - beatInList) * secondsPerBeat;
+            }
+
+
+        }
+
+        return [yShift, currentTimeInSong] ;
     }
 
 
@@ -195,12 +202,13 @@ class BPMManager {
                     const scroll = scrollList[j] ;
                     const scrollBeat = scroll[0] ;
                     const scrollValue = scroll [1] ;
-                    const nextScroll = scrollList[j] ;
+                    const nextScroll = scrollList[j+1] ;
 
                     if ( nextScroll === undefined ) {
-                        yShift += (nextScroll[0] - scrollBeat) * scrollValue ;
+                        yShift += (nextBeatInList - scrollBeat) * scrollValue ;
+
                     } else {
-                        yShift += (nextBeatInList - scrollBeat) *  scrollValue ;
+                        yShift += (nextScroll[0] - scrollBeat) * scrollValue ;
                     }
 
                 }

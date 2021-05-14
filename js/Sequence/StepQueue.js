@@ -235,7 +235,7 @@ class StepQueue {
 
             const numberOfHits = Math.floor(remainingTime / secondsPerKeyCount ) ;
 
-            console.log('end numberOfHits: ' + numberOfHits) ;
+            // console.log('end numberOfHits: ' + numberOfHits) ;
 
 
             if (this.areHoldsBeingPressed() && this.activeHolds.wasLastKnowHoldPressed) {

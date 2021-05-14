@@ -50,6 +50,8 @@ class Composer {
         this.lastEffectSpeed = 1;
 
         this.lastSSCSpeed = 1;
+        this.newTargetSpeed = 1 ;
+
     }
 
 
@@ -444,6 +446,8 @@ class Composer {
 
         //
 
+
+
         // update position of the steps in the 3D word.
         // this also returns the current beat given the audioTime
         const beat = this.updateStepsPositionAndGetCurrentBeat(delta, currentAudioTimeCorrected) ;
@@ -472,11 +476,20 @@ class Composer {
     }
 
     updateCurrentSpeed(beat) {
-        const [speed, timeSegs] = this.song.getSpeedAndTimeAtBeat(this.level, beat) ;
-        this.setNewSpeed(speed, timeSegs * 1000) ;
+        // a type 0: means that the speed change is expressed in beats, otherwise in seconds
+        const [speed, measure, type] = this.song.getSpeedAndTimeAtBeat(this.level, beat) ;
+        if (this.newTargetSpeed !== speed ) {
+            this.newTargetSpeed = speed ;
+            let time = measure * 1000;
+            if (type === 0) {
+                time = (60 / this.currentBPM) * measure * 1000;
+            }
+            this.setNewSpeed(speed, time);
+        }
     }
 
     updateSpeed() {
+
         if (this.lastEffectSpeed !== this.effectSpeed ) {
 
             let lastEffectSpeed = this.lastEffectSpeed ;
@@ -489,10 +502,14 @@ class Composer {
                     child.position.y *= effectSpeed ;
 
                     if ( child.isHold ) {
-                        child.holdObject.scale.y *= (1/lastEffectSpeed);
-                        child.holdObject.scale.y *= effectSpeed;
+
+                        child.holdObject.scale.y *= (1/(lastEffectSpeed/2));
+                        child.holdObject.scale.y *= effectSpeed/2;
+
+
                         child.beginningHoldYPosition *= (1/lastEffectSpeed);
                         child.beginningHoldYPosition *= effectSpeed;
+
 
                         child.endHoldYPosition *= (1/lastEffectSpeed);
                         child.endHoldYPosition *= effectSpeed;
@@ -505,7 +522,10 @@ class Composer {
         }
     }
 
-    setNewSpeed(speed, time = 200) {
+    setNewSpeed(speed, time = 0.5) {
+
+        // console.log('setting new speed: ' + speed, ' in time: ' + time) ;
+        // console.log('time: ' + time + ' currentBPM: ' + this.currentBPM + ' beats: ' + beats);
         new TWEEN.Tween(this).to({effectSpeed: speed}, time).start();
     }
 
@@ -518,11 +538,14 @@ class Composer {
         } else {
             this.lcat += delta ;
             beat = this.updateStepsPositionDelta(this.lcat) ;
+
         }
 
-        this.updateActiveHoldsPosition(delta) ;
+        this.currentBPM = this.bpmManager.getBPMAtBeat(beat) ;
 
         this.updateSpeed() ;
+
+        this.updateActiveHoldsPosition(delta) ;
         return beat ;
     }
 
@@ -593,6 +616,8 @@ class Composer {
     updateStepsPositionDelta(lcat) {
 
         const [yDisplacement, beat] =  this.bpmManager.getYShiftAtCurrentAudioTime(lcat) ;
+
+        // console.log(beat) ;
         //
         this.steps.position.y = yDisplacement* this.speed * this.effectSpeed;
 
