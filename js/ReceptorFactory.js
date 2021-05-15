@@ -48,7 +48,7 @@ class ReceptorFactory {
             fragmentShader: fs
         });
 
-        receptorMaterial.alphaTest = 0.01 ;
+        receptorMaterial.alphaTest = 0.1 ;
 
         this.receptorMesh = new THREE.Mesh( receptorPolygon, receptorMaterial );
 

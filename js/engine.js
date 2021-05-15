@@ -32,7 +32,7 @@ class Engine {
         this.camera.up = new THREE.Vector3(0,1,0) ;
 
 
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true});
+        this.renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: false});
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.gammaInput = true;
 
@@ -79,8 +79,8 @@ class Engine {
     start ( ) {
 
 
-        const keyBoardLag = 0.06 ;
-        // const keyBoardLag = 0.00 ;
+        // const keyBoardLag = 0.06 ;
+        const keyBoardLag = 0.00 ;
 
         // let song = new Song('songs/bc/dp.ssc');
         // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc'); // 7, 14
@@ -106,20 +106,24 @@ class Engine {
 
 
         // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,3.2, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4, keyBoardLag);
+        this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/NX2/HD/' ,4, keyBoardLag);
-        this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,4, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,4, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/FIESTAEX-BASIC/HD/' ,5, keyBoardLag);
         // this.composer = new Composer(song, 'noteskins/FIESTA2/HD/' ,3, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/ZERO-POKER/HD/' ,5, keyBoardLag);
+        // this.composer = new Composer(song, 'noteskins/ZERO-POKER/HD/' ,3.5, keyBoardLag);
 
         // Get the steps and receptor in position
         let playerCourse = this.composer.composeStage(song.levels.length -1) ;
         // let playerCourse = this.composer.composeStage(0) ;
 
+
+
         this.scene.add(playerCourse) ;
+
+
 
         song.play() ;
 

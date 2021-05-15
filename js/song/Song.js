@@ -57,6 +57,10 @@ class Song {
         }
     }
 
+    getBannerPath() {
+        return this.pathToSSCFile.substr(0, this.pathToSSCFile.lastIndexOf("/")) + '/' + this.meta['BACKGROUND'] ;
+    }
+
     getTickCountAtBeat(level, beat) {
 
         const tickCounts = this.getTickCounts(level) ;

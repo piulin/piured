@@ -148,10 +148,6 @@ class Composer {
         }
 
 
-
-
-        // TODO: merge steps into one object, same for receptor
-
         this.steps = steps ;
         // this.receptor = receptor;
 
@@ -160,6 +156,14 @@ class Composer {
         stage.add(judgmentObject) ;
         stage.add(steps) ;
         stage.add(receptors) ;
+
+
+
+
+        let backgroundFactory = new BackgroundFactory(this.song.getBannerPath());
+        this.bg = backgroundFactory.mesh ;
+        stage.add(backgroundFactory.mesh) ;
+
 
         this.stepQueue.cleanUpStepQueue() ;
 
@@ -528,13 +532,13 @@ class Composer {
 
                 }}) ;
 
-            // this.steps.traverse(function(child) {
-            //     // steps, holds, and endNotes are meshes
-            //     if (child instanceof THREE.Mesh) {
-            //         if ( child.isHold ) {
-            //             updateEndNoteFunction(child) ;
-            //         }
-            //     }}) ;
+            this.steps.traverse(function(child) {
+                // steps, holds, and endNotes are meshes
+                if (child instanceof THREE.Mesh) {
+                    if ( child.isHold ) {
+                        updateEndNoteFunction(child) ;
+                    }
+                }}) ;
             this.lastEffectSpeed = this.effectSpeed ;
         }
     }
@@ -693,6 +697,11 @@ class Composer {
         // to dump the energy over time
         // this.activeReceptor.material.opacity = outputOpacityLevel ;
         this.receptor.material.uniforms.activeColorContribution.value = 1.5*opacityLevel*opacityLevel ;
+
+
+        const tal = (1-opacityLevel*opacityLevel)
+        * (0.7) + 0.1;
+        this.bg.material.uniforms.uThreshold.value = tal  ;
 
         // console.log(this.activeReceptor.material.opacity) ;
 
