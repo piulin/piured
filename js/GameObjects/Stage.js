@@ -61,7 +61,7 @@ class Stage extends GameObject {
 
 
 
-        let stage1 = new PlayerStage(this._resourceManager, this.song, P1, this.levels[0], this.userSpeeds[0],'0',null) ;
+        let stage1 = new PlayerStage(this._resourceManager, this.song, P1, this.levels[0], this.userSpeeds[0],'0','1') ;
         this._object.add(stage1.object) ;
         engine.addToUpdateList(stage1) ;
 
