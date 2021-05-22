@@ -1,14 +1,17 @@
 "use strict"; // good practice - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
 
-class StepQueue {
+class StepQueue extends GameObject {
 
 
-    constructor(composer, keyInput, accuracyMargin ) {
+    constructor(resourceManager, playerStage, beatManager, keyInput, accuracyMargin ) {
 
+        super(resourceManager) ;
 
         this.keyInput = keyInput ;
 
-        this.composer = composer ;
+        this.playerStage = playerStage ;
+
+        this.beatManager = beatManager ;
 
         this.accuracyMargin = accuracyMargin ;
 
@@ -20,10 +23,39 @@ class StepQueue {
 
     }
 
-    // THESE METHODS ARE CALLED WHEN CONSTRUCTING THE SCENE.
+
+    ready() {
+
+    }
+
+    update(delta) {
+
+        const currentAudioTime = this.beatManager.currentAudioTime;
+        const currentBeat = this.beatManager.currentBeat;
+        this.updateActiveHolds(currentAudioTime, delta, currentBeat);
+        this.updateStepQueue(currentAudioTime);
+
+    }
+
+
+
+    input() {
+
+        const pressedKeys = this.keyInput.getPressed() ;
+
+        for ( const [kind, padId] of pressedKeys ) {
+
+
+            this.stepPressed(kind,padId) ;
+
+        }
+
+    }
+
+
+// THESE METHODS ARE CALLED WHEN CONSTRUCTING THE SCENE.
 
     addNewEntryWithTimeStampInfo( timeStamp, index ) {
-
 
         let stepInfo = new StepInfo([], timeStamp);
         this.stepQueue.push(stepInfo) ;
@@ -96,7 +128,7 @@ class StepQueue {
     // ----------------------- THESE METHODS ARE CALLED EACH FRAME ---------------------- //
 
 
-    updateStepQueueAndActiveHolds(currentAudioTime, delta, beat) {
+    updateActiveHolds(currentAudioTime, delta, beat) {
 
         let validHold = this.findFirstValidHold(currentAudioTime);
 
@@ -113,14 +145,14 @@ class StepQueue {
         // Hold contribution to the combo
         if (validHold !== null) {
 
-            const tickCounts = this.composer.getTickCountAtBeat(beat) ;
+            const tickCounts = this.beatManager.currentTickCount ;
 
             this.judgeHolds(delta, currentAudioTime, beat, tickCounts) ;
 
             // Note that, to be exact, we have to add the remainder contribution of the hold that was not processed on the last
             // frame
         } else if (this.activeHolds.needFinishJudgment) {
-            const tickCounts = this.composer.getTickCountAtBeat(beat) ;
+            const tickCounts = this.beatManager.currentTickCount ;
             const difference = this.activeHolds.judgmentTimeStampEndReference - this.activeHolds.cumulatedHoldTime ;
             this.endJudgingHolds(difference, tickCounts) ;
             this.activeHolds.cumulatedHoldTime = 0;
@@ -128,12 +160,15 @@ class StepQueue {
         }
 
         this.removeHoldsIfProceeds(currentAudioTime) ;
+    }
+
+    updateStepQueue( currentAudioTime ) {
+
+
 
         if ( this.getLength() > 0 ) {
 
             let stepTime = this.getStepTimeStampFromTopMostStepInfo() ;
-
-
 
             const difference = (stepTime) - currentAudioTime ;
             // this condition is met when we run over a hold. We update here the current list of holds
@@ -147,28 +182,34 @@ class StepQueue {
 
                 // if we only have holds, and all of them are being pressed beforehand, then it's a perfect!
                 if ( this.areThereOnlyHoldsInTopMostStepInfo() && this.areHoldsBeingPressed() ) {
-                    this.composer.judgmentScale.animateJudgement('p') ;
-                    this.composer.animateTapEffect(this.getTopMostStepsList()) ;
+                    // TODO:
+                    // this.composer.judgmentScale.animateJudgement('p') ;
+                    // this.composer.animateTapEffect(this.getTopMostStepsList()) ;
+
+                    this.playerStage.animateReceptorFX(this.getTopMostStepsList()) ;
+                    this.playerStage.judgment.perfect() ;
+                    // console.log('perfect') ;
+
                     this.removeFirstElement() ;
                     this.checkForNewHolds = true ;
                 }
 
             }
 
+            // console.log(difference) ;
+
             // we count a miss, if we go beyond the time of the topmost step info, given that there are no holds there
+
+            // console.log('diff:' +difference , 'margin:' + this.accuracyMargin) ;
             if (difference < -this.accuracyMargin ) {
 
-                this.composer.judgmentScale.miss() ;
-
+                this.playerStage.judgment.miss() ;
                 this.removeFirstElement() ;
                 this.checkForNewHolds = true ;
 
             }
 
         }
-
-
-
 
 
     }
@@ -182,7 +223,7 @@ class StepQueue {
 
         this.activeHolds.timeCounterJudgmentHolds += delta ;
 
-        const secondsPerBeat = 60 / this.composer.bpmManager.getCurrentBPM() ;
+        const secondsPerBeat = 60 / this.beatManager.currentBPM ;
 
         const secondsPerKeyCount = secondsPerBeat/ tickCounts ;
 
@@ -200,12 +241,16 @@ class StepQueue {
             this.activeHolds.timeCounterJudgmentHolds = 0 ;
 
 
-            const difference =  Math.abs((this.activeHolds.lastAddedHold.beginHoldTimeStamp) - currentAudioTime) ;
+            const difference =  Math.abs((this.activeHolds.lastAddedHold.beginTimeStamp) - currentAudioTime) ;
             // case 1: holds are pressed on time
             if (this.areHoldsBeingPressed()) {
 
-                this.composer.judgmentScale.animateJudgement('p', numberOfHits);
-                this.composer.animateTapEffect(this.activeHolds.asList());
+                // TODO:
+                // this.composer.judgmentScale.animateJudgement('p', numberOfHits);
+                // this.composer.animateTapEffect(this.activeHolds.asList());
+                this.playerStage.animateReceptorFX(this.activeHolds.asList()) ;
+                this.playerStage.judgment.perfect(numberOfHits) ;
+                // console.log('perfect') ;
             // case 2: holds are not pressed. we need to give some margin to do it
             } else if (this.activeHolds.beginningHoldChunk && difference < this.accuracyMargin ) {
 
@@ -213,8 +258,8 @@ class StepQueue {
 
                 // case 3: holds are not pressed and we run out of the margin
             } else {
-                // TODO: misses should not be in the same count.
-                this.composer.judgmentScale.miss() ;
+
+                this.playerStage.judgment.miss(numberOfHits) ;
                 this.activeHolds.beginningHoldChunk = false ;
             }
 
@@ -229,7 +274,7 @@ class StepQueue {
     endJudgingHolds(remainingTime, tickCounts) {
 
 
-            const secondsPerBeat = 60 / this.composer.bpms[0][1] ;
+            const secondsPerBeat = 60 / this.beatManager.currentBPM ;
             const secondsPerKeyCount = secondsPerBeat/ tickCounts ;
 
             const numberOfHits = Math.floor(remainingTime / secondsPerKeyCount ) ;
@@ -238,18 +283,20 @@ class StepQueue {
 
 
             if (this.areHoldsBeingPressed() && this.activeHolds.wasLastKnowHoldPressed) {
-                this.composer.judgmentScale.animateJudgement('p', numberOfHits);
-                this.composer.animateTapEffect(this.activeHolds.asList());
+
+                this.playerStage.animateReceptorFX(this.activeHolds.asList()) ;
+                this.playerStage.judgment.perfect(numberOfHits) ;
+                // console.log('perfect') ;
             } else {
                 // TODO: misses should not be in the same count.
-                this.composer.judgmentScale.miss() ;
+                // TODO:
+                // this.composer.judgmentScale.miss() ;
+                // console.log('miss') ;
+                this.playerStage.judgment.miss(numberOfHits) ;
             }
 
             //reset
-
             this.activeHolds.timeCounterJudgmentHolds = 0 ;
-
-
 
     }
 
@@ -257,7 +304,7 @@ class StepQueue {
         let len = this.getTopMostStepListLength() ;
         for ( var i = 0 ; i <  len ; i++) {
             let step = this.getStepFromTopMostStepInfo(i) ;
-            if (step.isHold === false) {
+            if (!(step instanceof StepHold)) {
                 return false ;
             }
         }
@@ -278,31 +325,31 @@ class StepQueue {
 
             let step = listActiveHolds[i] ;
 
-            if (step !== null && currentAudioTime > step.endHoldTimeStamp ) {
+            if (step !== null && currentAudioTime > step.endTimeStamp ) {
                 this.activeHolds.setHold(step.kind, step.padId, null) ;
 
                 // save the endHoldTimeStamp to compute the remainder judgments.
                 this.activeHolds.needFinishJudgment = true ;
-                this.activeHolds.judgmentTimeStampEndReference = step.endHoldTimeStamp - this.activeHolds.firstHoldInHoldRun.beginHoldTimeStamp ;
+                this.activeHolds.judgmentTimeStampEndReference = step.endTimeStamp - this.activeHolds.firstHoldInHoldRun.beginTimeStamp ;
                 // console.log('begin: ' + beginTime + ' end: ' + endTime) ;
                 // this.activeHolds.actualTotalComboValueOfHold = this.computeTotalComboContribution( beginTime, endTime ) ;
 
                 // if the hold is active, we can remove it from the render and give a perfect judgment, I think.
-                if (this.keyInput.isPressed(step.kind, step.padId)) {
+                if (this.keyInput.isHeld(step.kind, step.padId)) {
 
-                    this.composer.removeObjectFromSteps(step) ;
-                    this.composer.removeObjectFromSteps(step.holdObject) ;
-                    this.composer.removeObjectFromSteps(step.endNoteObject) ;
 
-                    this.composer.animateTapEffect([step]) ;
+                    this.playerStage.judgment.perfect() ;
 
-                    this.composer.judgmentScale.animateJudgement('p') ;
+                    this.playerStage.removeStep(step) ;
+
+
+                    this.playerStage.animateReceptorFX([step]) ;
 
 
 
                 // otherwise we have a miss.
                 } else {
-                    this.composer.judgmentScale.miss() ;
+                    this.playerStage.judgment.miss() ;
                 }
 
 
@@ -322,7 +369,7 @@ class StepQueue {
         // console.log(this.stepQueue.stepQueue[0]);
         for ( var i = 0 ; i < length ; ++i ) {
             let note = this.getStepFromTopMostStepInfo(i) ;
-            if ( note.isHold ) {
+            if ( note instanceof StepHold ) {
                 this.setHold(note.kind, note.padId, note);
                 // console.log('hold added:' + note.held) ;
             }
@@ -334,19 +381,13 @@ class StepQueue {
 
 
 
+
     // ----------------------- THESE METHODS ARE CALLED WHEN A KEY IS PRESSED ---------------------- //
 
-
-    stepReleased(kind, padId, currentAudioTime) {
-
-        this.updateHeldStepsStatus( kind, padId, false ) ;
-
-    }
 
     getFirstStepWithinMargin(currentAudioTime, kind, padId) {
 
         for ( var i = 0 ; i < this.stepQueue.length ; i++ ) {
-
 
             let stepInfo = this.stepQueue[i] ;
             let timeStamp = stepInfo.timeStamp ;
@@ -376,23 +417,20 @@ class StepQueue {
 
     }
 
-    stepPressed(kind, padId, currentAudioTime) {
+    stepPressed(kind, padId) {
 
+
+        const currentAudioTime = this.beatManager.currentAudioTime ;
 
         // keep track if there is an upcoming hold
-
-
-
-        this.updateHeldStepsStatus(kind, padId, true) ;
-
 
         let [stepInfo, step, hitIndex, difference] = this.getFirstStepWithinMargin(currentAudioTime, kind, padId) ;
 
         // console.log(stepInfo) ;
 
-        // with the second condition, we make sure that we don't treat the holds here. Holds, if they are pressed
-        // before hand (anytime) count always as perfects.
-        if (stepInfo !== null ) {
+        // with the second condition, we make sure that we don't treat the holds here. Holds, when pressed
+        // beforehand (anytime), count always as a perfect.
+        if ( step !== null ) {
 
 
             step.pressed = true;
@@ -401,31 +439,23 @@ class StepQueue {
             // If all steps have been pressed, then we can remove them from the steps to be rendered
             if (this.areStepsInNoteListPressed(stepInfo.stepList)) {
 
-                const grade = this.composer.judgmentScale.grade(difference) ;
+
+                const grade = this.playerStage.judgment.grade(difference) ;
 
                 //
                 if ( grade === 'b' || grade === 'go') {
-                    if (grade === 'b') {
-                        this.composer.judgmentScale.bad() ;
-                    } else {
-                        this.composer.judgmentScale.good() ;
-                    }
 
-                    if ( step.isHold ) {
+                    if ( step instanceof StepHold) {
                         this.setHold(step.kind, step.padId, step) ;
                     }
 
                 } else {
 
-                    this.composer.animateTapEffect(stepInfo.stepList) ;
-                    // also animate the holds.
-                    this.composer.animateTapEffect(this.activeHolds.asList()) ;
 
-                    this.composer.judgmentScale.animateJudgement(grade) ;
+                    this.playerStage.animateReceptorFX(stepInfo.stepList) ;
+                    this.playerStage.animateReceptorFX(this.activeHolds.asList()) ;
 
-                    // if ( !step.isHold ) {
 
-                    // }
 
                     this.removeNotesFromStepObject(stepInfo.stepList) ;
 
@@ -446,36 +476,6 @@ class StepQueue {
     }
 
 
-    // true: step is held, false: otherwise
-    updateHeldStepsStatus(kind, padId, status) {
-        // this.updateHeldStepsStatusInStepQueue( kind, status ) ;
-        this.updateHeldStepsStatusInActiveHolds( kind, padId, status ) ;
-    }
-
-    updateHeldStepsStatusInActiveHolds(kind, padId, status) {
-
-        let step = this.activeHolds.getHold(kind, padId);
-        if (step !== null ) {
-            step.held = status
-        }
-
-    }
-
-    updateHeldStepsStatusInStepQueue(kind, status) {
-        const length =  this.getTopMostStepListLength() ;
-        for ( var i = 0 ; i < length ; ++i ) {
-
-            let note = this.getStepFromTopMostStepInfo(i) ;
-            if ( note.isHold && note.kind === kind ) {
-                // console.log('updated note : ' + note.kind) ;
-                note.held = status ;
-                // console.log(note.held) ;
-                break ;
-            }
-
-        }
-    }
-
 
     // Returns true if all the steps have been pressed
     areStepsInNoteListPressed(noteList) {
@@ -485,7 +485,7 @@ class StepQueue {
 
             let note = noteList[i] ;
             if ( note.pressed === false ) {
-                if ( note.isHold && this.keyInput.isPressed(note.kind, note.padId) ) {
+                if ( (note instanceof StepHold) && this.keyInput.isHeld(note.kind, note.padId) ) {
                     continue ;
                 }
                 return false ;
@@ -505,7 +505,7 @@ class StepQueue {
 
             let step = listActiveHolds[i] ;
 
-            if (step !== null && this.keyInput.isPressed(step.kind, step.padId) ) {
+            if (step !== null && this.keyInput.isHeld(step.kind, step.padId) ) {
                 continue ;
                 // listActiveHolds[i] = null ;
                 // console.log('removed:' + listActiveHolds[i]) ;
@@ -526,7 +526,7 @@ class StepQueue {
 
             let step = listActiveHolds[i] ;
 
-            if ( step !== null  && step.beginHoldTimeStamp <= currentAudioTime) {
+            if ( step !== null  && step.beginTimeStamp <= currentAudioTime) {
                 return step ;
             }
 
@@ -563,14 +563,15 @@ class StepQueue {
             let note = noteList[i] ;
 
             // remove the step if it's not a hold, obviously.
-            if ( note.isHold === false ) {
-                this.composer.removeObjectFromSteps(note) ;
+            if ( ! (note instanceof StepHold) ) {
+
+                this.playerStage.removeStep(note) ;
+
 
                 // add it to the active holds early
             } else {
                 this.setHold(note.kind, note.padId, note) ;
             }
-
 
         }
 

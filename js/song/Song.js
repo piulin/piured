@@ -4,7 +4,7 @@
 
 class Song {
 
-    constructor(pathToSSCFile ) {
+    constructor( pathToSSCFile ) {
 
 
         this.pathToSSCFile = pathToSSCFile ;
@@ -14,6 +14,8 @@ class Song {
 
         // NoteData of each level.
         this.levels = [] ;
+
+        this.syncTime = 0.00 ;
 
         // $.get(pathToSSCFile, this.parse.bind(this), 'text');
 
@@ -152,7 +154,7 @@ class Song {
 
     play () {
 
-        this.delay = 1.0 ;
+        this.delay = 2.0 ;
         let audioLoader = new THREE.AudioLoader();
         this.startTime = 0.0 ;
 
@@ -184,7 +186,7 @@ class Song {
         // return this.context.currentTime ;
         // console.log('Outside start time: ' + this.startTime) ;
         // this.levels[level].meta['OFFSET'] ;
-        return this.context.currentTime - this.delay + this.levels[level].meta['OFFSET']  - this.startTime;
+        return this.context.currentTime - this.delay + this.levels[level].meta['OFFSET']  - this.startTime - this.syncTime;
         // return this.startTime - this.audio.context.currentTime + parseFloat(this.meta['OFFSET']);
         //return this.audio.context.currentTime + this.startTime + parseFloat(this.meta['OFFSET']);
     }

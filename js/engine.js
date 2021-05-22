@@ -3,6 +3,9 @@
 class Engine {
 
 
+    _updateList = [] ;
+    _inputList = [] ;
+
     constructor() {
 
         this.clock = new THREE.Clock();
@@ -52,10 +55,16 @@ class Engine {
         this.stats = this.createStats();
         document.body.appendChild( this.stats.domElement );
 
+    }
 
 
 
+    addToUpdateList(gameObject) {
+        this._updateList.push(gameObject) ;
+    }
 
+    addToInputList(gameObject) {
+        this._inputList.push(gameObject) ;
     }
 
     createStats() {
@@ -79,8 +88,8 @@ class Engine {
     start ( ) {
 
 
-        // const keyBoardLag = 0.06 ;
-        const keyBoardLag = 0.00 ;
+        // let resourceManagerL = new ResourceManager('noteskins/EXCEED2-OLD/HD', 'stage') ;
+        let resourceManagerR = new ResourceManager('noteskins/NXA/HD', 'stage') ;
 
         // let song = new Song('songs/bc/dp.ssc');
         // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc'); // 7, 14
@@ -88,6 +97,7 @@ class Engine {
         // let song = new Song('songs/s/B18 - Solitary 2.ssc'); // 6
         // let song = new Song('songs/cd/B19 - Canon-D.ssc'); // 6
         // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc', keyBoardLag); //6, -2
+        let song = new Song('songs/d/1013 - Destination.ssc'); //6, -2
         // let song = new Song('songs/h/B02 - Hot.ssc', keyBoardLag); //5
         // let song = new Song('songs/bblbr/A16 - Ba Be Loo Be Ra.ssc', keyBoardLag); //3
         // let song = new Song('songs/mf/A03 - Monkey Fingers.ssc', keyBoardLag); //4
@@ -102,36 +112,28 @@ class Engine {
         // let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc', keyBoardLag); // 5 -3
         // let song = new Song('songs/cw/911 - Chicken Wing.ssc', keyBoardLag); // 10
         // let song = new Song('songs/st/906 - Starian.ssc', keyBoardLag); // 7
-        let song = new Song('songs/pzo/1431 - Point Zero One.ssc', keyBoardLag); // 7
+        // let song = new Song('songs/pzo/1431 - Point Zero One.ssc', keyBoardLag); // 7
 
 
-        // this.composer = new Composer(song, 'noteskins/EXCEED2-OLD/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NX/HD/' ,3.2, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/PREMIERE/HD/' ,4, keyBoardLag);
-        this.composer = new Composer(song, 'noteskins/NXA/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/NX2/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/PRIME/HD/' ,4, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/FIESTAEX-BASIC/HD/' ,5, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/FIESTA2/HD/' ,3, keyBoardLag);
-        // this.composer = new Composer(song, 'noteskins/ZERO-POKER/HD/' ,3.5, keyBoardLag);
+        let levels = [4,5] ;
+        let speeds = [4,3] ;
+        // let resourceManagers = [resourceManagerL,resourceManagerR] ;
 
-        // Get the steps and receptor in position
-        let playerCourse = this.composer.composeStage(song.levels.length -1) ;
-        // let playerCourse = this.composer.composeStage(0) ;
+        let stage = new Stage(resourceManagerR, song, levels, speeds) ;
+
+        engine.addToUpdateList(stage) ;
 
 
+        this.scene.add(stage.object) ;
 
-        this.scene.add(playerCourse) ;
-
-
+        this.performReady() ;
 
         song.play() ;
-
 
         // Display 3d grids.
         this.showGrids() ;
 
-        // display 3D axis.
+        // // display 3D axis.
         // const axesHelper = new THREE.AxisHelper(5) ;
         // this.scene.add(axesHelper) ;
 
@@ -141,21 +143,35 @@ class Engine {
         this.animate();
     }
 
+    performReady() {
+        for (var i = 0 ; i < this._updateList.length ; i++ ) {
+            this._updateList[i].ready() ;
+        }
+    }
+
     animate() {
-        //Note that .bind(this) is important so it doesnt lose the local context.dddddddd
+        //Note that .bind(this) is important so it doesnt lose the local context.
         window.requestAnimationFrame(this.animate.bind(this));
         this.render();
     }
     render() {
 
         // It is the amount of time since last call to render.
-        var delta = this.clock.getDelta();
+        const delta = this.clock.getDelta();
+
+
+
+        for (var i = 0 ; i < this._inputList.length ; i++ ) {
+            this._inputList[i].input() ;
+        }
+
+        // Update position of the steps
+        for (var i = 0 ; i < this._updateList.length ; i++ ) {
+            this._updateList[i].update(delta) ;
+        }
 
         // for tweening the judgments.
         TWEEN.update();
-
-        // Update position of the steps
-        this.composer.update(delta) ;
 
         this.cameraControls.update(delta);
         this.renderer.render(this.scene, this.camera);

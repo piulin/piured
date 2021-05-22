@@ -2,33 +2,64 @@
 
 
 
-class BPMManager {
+class BeatManager extends GameObject {
 
 
-    constructor(bpmList, scrollList, speed) {
+    constructor(resourceManager, song, level, speed, keyBoardLag) {
+
+        super(resourceManager) ;
 
         this.speed = speed ;
-        this.bpmList = bpmList ;
-        this.scrollList = scrollList ;
 
+        this.bpmList = song.getBMPs(level) ;
+        this.scrollList = song.getScrolls(level) ;
+        this.song = song ;
+        this.level = level ;
+        this.keyBoardLag = keyBoardLag ;
+
+    }
+
+    ready() {
+
+        this.currentAudioTime = 0 ;
+        this.currentAudioTimeReal = 0 ;
         this.currentBPM = 0 ;
+        this.currentYDisplacement = -100 ;
+        this.currentBeat = 0 ;
+        this.currentTickCount = 1 ;
+
 
     }
 
-    getCurrentBPM() {
+    update(delta) {
 
-        return this.currentBPM;
+        const songAudioTime = this.song.getCurrentAudioTime(this.level) ;
+        if ( songAudioTime < 0 ) {
+            this.currentAudioTime = songAudioTime - this.keyBoardLag;
+            this.currentAudioTimeReal = songAudioTime;
+        } else {
+            this.currentAudioTime += delta ;
+            this.currentAudioTimeReal += delta;
+
+        }
+
+        [this.currentYDisplacement, this.currentBeat] =
+            this.getYShiftAtCurrentAudioTime(this.currentAudioTime) ;
+
+        this.updateCurrentBPM() ;
+
+        this.currentTickCount = this.song.getTickCountAtBeat(this.level, this.currentBeat) ;
 
     }
 
-    updateCurrentBPM (beat) {
+    updateCurrentBPM () {
 
         const tickCounts = this.bpmList ;
         let last = tickCounts[0][1];
         for ( const tickCount of tickCounts ) {
             const beatInTick = tickCount[0] ;
             const tick = tickCount[1] ;
-            if ( beat >= beatInTick ) {
+            if ( this.currentBeat >= beatInTick ) {
                 last = tick ;
             } else {
                 break ;

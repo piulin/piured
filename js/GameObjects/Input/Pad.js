@@ -14,6 +14,12 @@ class Pad {
         this.urKey = keyMap.ur ;
         this.drKey = keyMap.dr ;
 
+        this.dlKeyPressed = false ;
+        this.ulKeyPressed = false ;
+        this.cKeyPressed = false ;
+        this.urKeyPressed = false ;
+        this.drKeyPressed = false ;
+
         this.dlKeyHold = false ;
         this.ulKeyHold = false ;
         this.cKeyHold = false ;
@@ -25,6 +31,26 @@ class Pad {
     }
 
     isPressed(kind) {
+        switch (kind) {
+            case 'dl':
+                return  this.dlKeyPressed ;
+                break ;
+            case 'ul':
+                return  this.ulKeyPressed ;
+                break ;
+            case 'c':
+                return  this.cKeyPressed ;
+                break ;
+            case 'ur':
+                return  this.urKeyPressed ;
+                break ;
+            case 'dr':
+                return  this.drKeyPressed ;
+                break ;
+        }
+    }
+
+    isHeld(kind) {
         switch (kind) {
             case 'dl':
                 return  this.dlKeyHold ;
