@@ -27,7 +27,7 @@ class PlayerStage extends GameObject {
 
         this.keyListener = keyListener ;
 
-        this.keyboardLag = 0.04;
+        this.keyboardLag = 0.07;
 
 
         this.beatManager = new BeatManager(this._resourceManager,

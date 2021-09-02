@@ -77,7 +77,7 @@ class Stage extends GameObject {
                 this.levels[1],
                 this.userSpeeds[1],
                 '1',
-                null) ;
+                '2') ;
 
             this._object.add(stage2.object) ;
             engine.addToUpdateList(stage2) ;

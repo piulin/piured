@@ -85,41 +85,42 @@ class Engine {
         container.appendChild( this.renderer.domElement );
     }
 
-    start ( ) {
+    start ( songPath, audioBuf,  level, speed, offset, noteskin) {
 
 
-        // let resourceManagerL = new ResourceManager('noteskins/EXCEED2-OLD/HD', 'stage') ;
-        let resourceManagerR = new ResourceManager('noteskins/NXA/HD', 'stage') ;
+        let resourceManagerL = new ResourceManager('noteskins/' + noteskin + '/HD', 'stage') ;
+        // let resourceManagerR = new ResourceManager('noteskins/NX/HD', 'stage') ;
 
         // let song = new Song('songs/bc/dp.ssc');
         // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc'); // 7, 14
         // let song = new Song('songs/fl/103 - Forever Love.ssc'); // 7
         // let song = new Song('songs/s/B18 - Solitary 2.ssc'); // 6
         // let song = new Song('songs/cd/B19 - Canon-D.ssc'); // 6
-        // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc', keyBoardLag); //6, -2
+        // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc'); //6, -2
         // let song = new Song('songs/d/1013 - Destination.ssc'); //5,
-        // let song = new Song('songs/h/B02 - Hot.ssc', keyBoardLag); //5
-        // let song = new Song('songs/bblbr/A16 - Ba Be Loo Be Ra.ssc', keyBoardLag); //3
-        // let song = new Song('songs/mf/A03 - Monkey Fingers.ssc', keyBoardLag); //4
-        // let song = new Song('songs/or/401 - Oh! Rosa.ssc', keyBoardLag); //6
+        // let song = new Song('songs/h/B02 - Hot.ssc'); //5
+        // let song = new Song('songs/bblbr/A16 - Ba Be Loo Be Ra.ssc'); //3
+        // let song = new Song('songs/mf/A03 - Monkey Fingers.ssc'); //4
+        // let song = new Song('songs/or/401 - Oh! Rosa.ssc'); //6
         // let song = new Song('songs/liadg/C04 - Love is a Danger Zone 2.ssc'); //4
         // let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
-        // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc', keyBoardLag); // 8
-        // let song = new Song('songs/bc/105 - Black Cat.ssc', keyBoardLag); // 5, -3
-        // let song = new Song('songs/e/C08 - Emergency.ssc', keyBoardLag); // 4 //TODO: fails -3
-        // let song = new Song('songs/kos/1665 - Norazo - King of Sales.ssc', keyBoardLag); // 5, 8
-        // let song = new Song('songs/c/1101 - Cleaner.ssc', keyBoardLag); // 5
-        let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc'); // 5 -3
+        // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc'); // 8
+        // let song = new Song('songs/bc/105 - Black Cat.ssc'); // 5, -3
+        // let song = new Song('songs/e/C08 - Emergency.ssc'); // 4 //TODO: fails -3
+        let song = new Song(songPath, audioBuf, offset); // 5, 8
+        // let song = new Song('songs/c/1101 - Cleaner.ssc'); // 5
+        // let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc'); // 5 -3
         // let song = new Song('songs/cw/911 - Chicken Wing.ssc', keyBoardLag); // 10
-        // let song = new Song('songs/st/906 - Starian.ssc', keyBoardLag); // 7
-        // let song = new Song('songs/pzo/1431 - Point Zero One.ssc', keyBoardLag); // 7
+        // let song = new Song('songs/st/906 - Starian.ssc'); // 7
+        // let song = new Song('songs/pzo/1431 - Point Zero One.ssc'); // 7
 
 
-        let levels = [5,4] ;
-        let speeds = [3.5,3] ;
+        let levels = [level];
+        // let levels = [14] ;
+        let speeds = [speed] ;
         // let resourceManagers = [resourceManagerL,resourceManagerR] ;
 
-        let stage = new Stage(resourceManagerR, song, levels, speeds) ;
+        let stage = new Stage(resourceManagerL, song, levels, speeds) ;
 
         engine.addToUpdateList(stage) ;
 

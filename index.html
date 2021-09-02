@@ -93,11 +93,102 @@
 		<script src="js/GameObjects/Stage.js"></script>
 
 
+
 	</head>
 	<body>
+
+
+		<div id="selector">
+
+			<label for="ssc-file">Select SSC (Stepmania) file:</label> <input type="file" id="ssc-file" name="ssc"><br>
+			<label for="level">Select Level: </label><select id="level" name="level">
+			</select><br>
+			<table>
+				<tr>
+					<td>Title: </td>
+					<td id="t">-</td>
+				</tr>
+				<tr>
+					<td>Artist: </td>
+					<td id="a">-</td>
+				</tr>
+				<tr>
+					<td>Steps Type: </td>
+					<td id="st">-</td>
+				</tr>
+				<tr>
+					<td>Description: </td>
+					<td id="d">-</td>
+				</tr>
+				<tr>
+					<td>Meter: </td>
+					<td id="m">-</td>
+				</tr>
+				<tr>
+					<td>Credit: </td>
+					<td id="c">-</td>
+				</tr>
+				<tr>
+					<td>BPMs: </td>
+					<td id="b">-</td>
+				</tr>
+			</table><br>
+
+			<label for="level">Select Speed: </label><select id="speed" name="speed">
+
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="3.5">3.5</option>
+			<option value="4" selected>4</option>
+			<option value="4.5">4.5</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			</select><br>
+			<label for="noteskin">Select Noteskin: </label><select id="noteskin" name="speed">
+
+			<option value="EXCEED2-FLOWERCARD">EXCEED2-FLOWERCARD</option>
+			<option value="EXCEED2-OLD" selected>EXCEED2-OLD</option>
+			<option value="FIESTA">FIESTA</option>
+			<option value="FIESTA-DRUM">FIESTA-DRUM</option>
+			<option value="FIESTA-LIGHTNING">FIESTA-LIGHTNING</option>
+			<option value="FIESTA-MISSILE">FIESTA-MISSILE</option>
+			<option value="FIESTA-SOCCER">FIESTA-SOCCER</option>
+			<option value="FIESTA2">FIESTA 2</option>
+			<option value="FIESTAEX-BASIC">FIESTA EX</option>
+			<option value="NX">NX</option>
+			<option value="NX2">NX2</option>
+			<option value="NX2-DOG">NX2-DOG</option>
+			<option value="NX2-E-FIRE">NX2-FIRE</option>
+			<option value="NX2-E-ICE">NX2-ICE</option>
+			<option value="NX2-E-WIND">NX2-WIND</option>
+			<option value="NX2-GIRL">NX2-GIRL</option>
+			<option value="NX2-SHEEP">NX2-SHEEP</option>
+			<option value="NX2-YASANGMA">NX2-YASANGMA</option>
+			<option value="NXA">NXA</option>
+			<option value="PREMIERE">PREMIERE/ZERO</option>
+			<option value="PRIME">PRIME</option>
+			<option value="ZERO-CANOND">ZERO-CANOND</option>
+			<option value="ZERO-EASY">ZERO-EASY</option>
+			<option value="ZERO-MUSICAL">ZERO-MUSICAL</option>
+			<option value="ZERO-POKER">ZERO-POKER</option>
+			<option value="ZERO-SLIME">ZERO-SLIME</option>
+		</select><br>
+
+			<label for="offset">Adjust song offset: </label>
+			<input type="text" id="offset" name="offset" value="-0.1" ><br>
+
+			<label for="audio-file">Select Audio file (MP3):</label> <input type="file" id="audio-file" name="ssc"><br>
+
+			<button id="play">Play!</button>
+
+		</div>
+
+
 		<div id="container">
 		</div>
 
+		<script src="js/chartsDiscover.js"></script>
 		<script src="js/piured.js"></script>
 	</body>
 </html>

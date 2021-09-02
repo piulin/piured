@@ -4,7 +4,7 @@
 
 class Song {
 
-    constructor( pathToSSCFile ) {
+    constructor( pathToSSCFile, audioBuf, offset ) {
 
 
         this.pathToSSCFile = pathToSSCFile ;
@@ -15,14 +15,15 @@ class Song {
         // NoteData of each level.
         this.levels = [] ;
 
-        this.syncTime = 0.00 ;
+        this.syncTime = offset ;
+
+        this.audioBuf = audioBuf ;
 
         // $.get(pathToSSCFile, this.parse.bind(this), 'text');
 
         // Not that convenient way of reading files from disk.
         readFileContent(pathToSSCFile,this.loadSSC.bind(this)) ;
 
-        console.log(this) ;
 
 
     }
@@ -123,6 +124,7 @@ class Song {
 
     getMusicPath() {
         return this.pathToSSCFile.substr(0, this.pathToSSCFile.lastIndexOf("/")) + '/' + this.meta['MUSIC'] ;
+        // return this.musicPath ;
     }
 
 
@@ -155,30 +157,44 @@ class Song {
     play () {
 
         this.delay = 2.0 ;
-        let audioLoader = new THREE.AudioLoader();
-        this.startTime = 0.0 ;
+        let delay = this.delay ;
+        // let audioLoader = new THREE.AudioLoader();
+        let startTime =  null ;
 
-        this.context = new AudioContext();
+        let context = new AudioContext();
+        this.context = context ;
+
+        context.decodeAudioData(this.audioBuf, this.playBack.bind(this));
+
+
         //analyser = new THREE.AudioAnalyser( audio, 32 );
-        audioLoader.load( this.getMusicPath(), this.playBack.bind(this)
-
-
-        );
+        // audioLoader.load( this.getMusicPath(), this.playBack.bind(this)
+        //
+        //
+        // );
 
         // this.startTime =  ;
     }
 
-    // This method is called when the buffer with the song is ready.
-    playBack( buffer ) {
-
-        let audioBufferSourceNode = this.context.createBufferSource();
-        audioBufferSourceNode.buffer = buffer ;
-        audioBufferSourceNode.connect(this.context.destination);
+    playBack( buf ) {
+        let source = this.context.createBufferSource();
+        source.connect(this.context.destination);
+        source.buffer = buf;
         this.startTime = this.context.currentTime;
-        audioBufferSourceNode.start(this.startTime + this.delay) ;
-        console.log('Start time: ' + this.startTime);
-
+        source.start(this.startTime + this.delay) ;
     }
+
+    // This method is called when the buffer with the song is ready.
+    // playBack( buffer ) {
+    //
+    //     let audioBufferSourceNode = this.context.createBufferSource();
+    //     audioBufferSourceNode.buffer = buffer ;
+    //     audioBufferSourceNode.connect(this.context.destination);
+    //     this.startTime = this.context.currentTime;
+    //     audioBufferSourceNode.start(this.startTime + this.delay) ;
+    //     console.log('Start time: ' + this.startTime);
+    //
+    // }
 
 
 
