@@ -19,6 +19,8 @@ class Song {
 
         this.audioBuf = audioBuf ;
 
+        this.requiresResync = false ;
+
         // $.get(pathToSSCFile, this.parse.bind(this), 'text');
 
         // Not that convenient way of reading files from disk.
@@ -158,13 +160,15 @@ class Song {
 
         this.delay = 2.0 ;
         let delay = this.delay ;
-        // let audioLoader = new THREE.AudioLoader();
+        let audioLoader = new THREE.AudioLoader();
         let startTime =  null ;
 
         let context = new AudioContext();
         this.context = context ;
 
-        context.decodeAudioData(this.audioBuf, this.playBack.bind(this));
+        audioLoader.load( this.audioBuf, this.playBack.bind(this))
+
+        // context.decodeAudioData(this.audioBuf, this.playBack.bind(this));
 
 
         //analyser = new THREE.AudioAnalyser( audio, 32 );
@@ -195,6 +199,12 @@ class Song {
     //     console.log('Start time: ' + this.startTime);
     //
     // }
+
+
+    updateSyncTime(offset) {
+        this.syncTime += offset ;
+        this.requiresResync = true ;
+    }
 
 
 

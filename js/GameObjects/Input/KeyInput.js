@@ -57,9 +57,17 @@ class KeyInput extends GameObject {
                 pad.drKeyHold = true ;
                 pad.drKeyPressed = true ;
                 // console.log('dr down: ' +event.which)
-            } else if ( event.which >= 49 && event.which <= 57) {
+            }
+            else if ( event.which >= 49 && event.which <= 57) {
                 // TODO:
                 this.composer.setNewSpeed(10-(58-event.which)) ;
+            }
+            else if ( event.which === 190) {// period
+                console.log('.')
+                engine.updateOffset(0.01) ;
+            } else if (event.which === 188 ) { // comma
+                console.log(',')
+                engine.updateOffset( -0.01 ) ;
             }
         }
 

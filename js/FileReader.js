@@ -4,8 +4,9 @@ function readFileContent (pathToFile, callbackFunction) {
     $.ajax(
         {
             url: pathToFile,
+            method: 'GET',
             success: callbackFunction,
-            dataType: 'text',
+            crossDomain: true,
             async: false
         }
     ) ;

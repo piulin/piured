@@ -100,7 +100,16 @@
 
 		<div id="selector">
 
-			<label for="ssc-file">Select SSC (Stepmania) file:</label> <input type="file" id="ssc-file" name="ssc"><br>
+			<h3>Play online charts!</h3>
+
+			<label for="stage">Select Stage: </label><select id="stage" size="14" name="stage">
+			</select><br>
+
+			<label for="online-song">Select Song: </label><select id="online-song" size="14" name="online-song">
+		</select><br>
+
+<!--			<h3>Play local charts!</h3>-->
+<!--			<label for="ssc-file">Select SSC (Stepmania) file:</label> <input type="file" id="ssc-file" name="ssc"><br>-->
 			<label for="level">Select Level: </label><select id="level" name="level">
 			</select><br>
 			<table>
@@ -175,10 +184,12 @@
 			<option value="ZERO-SLIME">ZERO-SLIME</option>
 		</select><br>
 
-			<label for="offset">Adjust song offset: </label>
-			<input type="text" id="offset" name="offset" value="-0.1" ><br>
+			<label for="offset">Tune song offset: </label>
+			<input type="text" id="offset" name="offset" value="0.0" ><br>
+			<label>The offset can be updated on the fly by pressing "," and "." to add and subtract offset, respectively.</label>
+			<br>
 
-			<label for="audio-file">Select Audio file (MP3):</label> <input type="file" id="audio-file" name="ssc"><br>
+<!--			<label for="audio-file">Select Audio file (MP3):</label> <input type="file" id="audio-file" name="ssc"><br>-->
 
 			<button id="play">Play!</button>
 

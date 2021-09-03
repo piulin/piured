@@ -107,7 +107,7 @@ class Engine {
         // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc'); // 8
         // let song = new Song('songs/bc/105 - Black Cat.ssc'); // 5, -3
         // let song = new Song('songs/e/C08 - Emergency.ssc'); // 4 //TODO: fails -3
-        let song = new Song(songPath, audioBuf, offset); // 5, 8
+        this.song = new Song(songPath, audioBuf, offset); // 5, 8
         // let song = new Song('songs/c/1101 - Cleaner.ssc'); // 5
         // let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc'); // 5 -3
         // let song = new Song('songs/cw/911 - Chicken Wing.ssc', keyBoardLag); // 10
@@ -120,7 +120,7 @@ class Engine {
         let speeds = [speed] ;
         // let resourceManagers = [resourceManagerL,resourceManagerR] ;
 
-        let stage = new Stage(resourceManagerL, song, levels, speeds) ;
+        let stage = new Stage(resourceManagerL, this.song, levels, speeds) ;
 
         engine.addToUpdateList(stage) ;
 
@@ -129,7 +129,7 @@ class Engine {
 
         this.performReady() ;
 
-        song.play() ;
+        this.song.play() ;
 
         // Display 3d grids.
         this.showGrids() ;
@@ -184,6 +184,12 @@ class Engine {
         // Coordinates.drawGrid({size:100,scale:1,orientation:"z", scene: this.scene});
         // Coordinates.drawAxes({axisLength:11,axisOrientation:"x",axisRadius:0.04});
         // Coordinates.drawAxes({axisLength:11,axisOrientation:"z",axisRadius:0.04});
+    }
+
+    updateOffset(newOffsetOffset) {
+
+        this.song.updateSyncTime(newOffsetOffset) ;
+
     }
 
 
