@@ -8,7 +8,7 @@ let songIndex = null
 let mp3path = null
 let sscpath = null
 
-let resources = 'https://193.196.53.175/'
+let resources = 'https://piulin.gentakojima.me/'
 
 function discoverCharts(pathToFolder) {
 
