@@ -88,7 +88,7 @@ class Engine {
     start ( songPath, audioBuf,  level, speed, offset, noteskin) {
 
 
-        let resourceManagerL = new ResourceManager('noteskins/' + noteskin + '/HD', 'stage') ;
+        let resourceManagerL = new ResourceManager('noteskins/' + noteskin + '/UHD', 'stage_UHD') ;
         // let resourceManagerR = new ResourceManager('noteskins/NX/HD', 'stage') ;
 
         // let song = new Song('songs/bc/dp.ssc');
@@ -131,6 +131,7 @@ class Engine {
 
         this.song.play() ;
 
+
         // Display 3d grids.
         this.showGrids() ;
 
@@ -138,10 +139,14 @@ class Engine {
         // const axesHelper = new THREE.AxisHelper(5) ;
         // this.scene.add(axesHelper) ;
 
-
         // Main loop.
         this.addToDOM();
         this.animate();
+    }
+
+    setAllCulled(obj, culled) {
+        obj.frustumCulled = culled;
+        obj.children.forEach(child => this.setAllCulled(child, culled));
     }
 
     performReady() {

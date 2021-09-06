@@ -34,7 +34,8 @@ class BeatManager extends GameObject {
     update(delta) {
 
         const songAudioTime = this.song.getCurrentAudioTime(this.level) ;
-        if ( songAudioTime < 0 || this.song.requiresResync) {
+
+        if ( songAudioTime <= 0.0 || this.song.requiresResync) {
             this.song.requiresResync = false ;
             this.currentAudioTime = songAudioTime - this.keyBoardLag;
             this.currentAudioTimeReal = songAudioTime;

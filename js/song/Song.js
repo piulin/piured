@@ -21,6 +21,8 @@ class Song {
 
         this.requiresResync = false ;
 
+        this.readyToStart = false ;
+
         // $.get(pathToSSCFile, this.parse.bind(this), 'text');
 
         // Not that convenient way of reading files from disk.
@@ -186,6 +188,7 @@ class Song {
         source.buffer = buf;
         this.startTime = this.context.currentTime;
         source.start(this.startTime + this.delay) ;
+        this.readyToStart = true ;
     }
 
     // This method is called when the buffer with the song is ready.
@@ -212,6 +215,7 @@ class Song {
         // return this.context.currentTime ;
         // console.log('Outside start time: ' + this.startTime) ;
         // this.levels[level].meta['OFFSET'] ;
+        if ( this.readyToStart === false ) return -1.0 ;
         return this.context.currentTime - this.delay + this.levels[level].meta['OFFSET']  - this.startTime - this.syncTime;
         // return this.startTime - this.audio.context.currentTime + parseFloat(this.meta['OFFSET']);
         //return this.audio.context.currentTime + this.startTime + parseFloat(this.meta['OFFSET']);

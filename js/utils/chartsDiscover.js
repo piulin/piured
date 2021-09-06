@@ -1,3 +1,6 @@
+$.ajaxSetup({
+    async: false
+});
 
 let audioBuf = null
 let chart_level = null
@@ -38,10 +41,14 @@ function discoverLevels( sscPath ) {
 }
 
 $("#level").live('change', function() {
+    change_level($(this).val())
+});
+
+function change_level(l) {
     // alert('The option with value ' + $(this).val());
-    chart_level = $(this).val()
+    chart_level = l ;
     let song = JSON.parse(localStorage.getItem('song')); //retrieve the object
-    let level = song.levels[$(this).val()] ;
+    let level = song.levels[l] ;
 
     document.getElementById('st').innerHTML = level.meta.STEPSTYPE ;
     document.getElementById('t').innerHTML = song.meta.TITLE ;
@@ -52,7 +59,7 @@ $("#level").live('change', function() {
     document.getElementById('b').innerHTML = JSON.stringify(level.meta.BPMS) ;
 
 
-});
+}
 
 
 function clear(id) {
@@ -148,10 +155,17 @@ function readSongList() {
 }
 
 $("#stage").live('change', function() {
+
+    change_stage($(this).val()) ;
+
+
+});
+
+function change_stage(i) {
     // alert('The option with value ' + $(this).val());
 
     clear('online-song') ;
-    let i = $(this).val()
+    clear('level')
     stageIndex = i ;
     let stage = songsJson.children[i] ;
 
@@ -173,9 +187,7 @@ $("#stage").live('change', function() {
 
 
     }
-
-
-});
+}
 
 $("#online-song").live('change', function() {
     // alert('The option with value ' + $(this).val());
@@ -208,7 +220,8 @@ $("#online-song").live('change', function() {
     }
 
 
-    discoverLevels( resources + sscpath )
+    discoverLevels( resources + sscpath ) ;
+    change_level(0) ;
 
 
 
@@ -216,4 +229,6 @@ $("#online-song").live('change', function() {
 });
 
 
+
 readSongList() ;
+change_stage(14) ;
