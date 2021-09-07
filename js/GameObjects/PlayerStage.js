@@ -415,6 +415,7 @@ class PlayerStage extends GameObject {
     animateReceptorFX(stepList) {
         for (var step of stepList) {
             this.padReceptors[step.padId].animateExplosionStep(step) ;
+            this.padReceptors[step.padId].animateExplosionStep(step) ;
         }
     }
 

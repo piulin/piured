@@ -130,6 +130,12 @@ class ResourceManager {
             new TransparentMaterial(tex).material );
     }
 
+    constructGenericWhiteTap() {
+        let tex = this._textureDict['T'].cloneMap() ;
+        return new THREE.Mesh( this._geometryDict['S'].stepGeometry,
+            new AdditiveMaterial(tex).material );
+    }
+
     constructStepBounce(kind) {
         switch (kind) {
             case 'dl':
