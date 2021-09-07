@@ -50,8 +50,7 @@ class Explosion extends GameObject {
     animate() {
         this._animationPosition = 0 ;
         this._lastStepTimeStamp = 0 ;
-        this._mesh.material.opacity = 1.0 ;
-
+        this._mesh.material.map.offset.set( 1 / 20, 1 / 4);
     }
 
     update(delta) {
@@ -59,26 +58,22 @@ class Explosion extends GameObject {
 
         if (this._animationPosition <= 4 ) {
 
-            this._mesh.material.opacity = 1.0;
 
             let timeStamp = this._lastStepTimeStamp + delta;
-
+            this._mesh.material.opacity = 1.0;
             let movement = timeStamp * this._explosionAnimationRate;
 
             if (movement > 1) {
                 this._animationPosition = (this._animationPosition + 1);
-
-                // if we reach the end of the animation, stop and reset values.
-                if (this._animationPosition > 4) {
-                    this._mesh.material.opacity = 0.0;
-                    this._lastStepTimeStamp = 0;
-                    return;
-                }
                 this._mesh.material.map.offset.set(this._animationPosition * (1 / 5) + 1 / 20, 1 / 4);
+
                 this._lastStepTimeStamp = 0;
+
             } else {
                 this._lastStepTimeStamp += delta;
             }
+        } else {
+            this._mesh.material.opacity = 0.0;
         }
 
 
