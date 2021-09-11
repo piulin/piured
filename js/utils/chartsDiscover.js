@@ -41,6 +41,7 @@ function discoverLevels( sscPath ) {
 }
 
 $("#level").live('change', function() {
+    localStorage.setItem("last_level", $(this).val());
     change_level($(this).val())
 });
 
@@ -121,7 +122,17 @@ $( "#play" ).click(function() {
 
 });
 
+$( "#noteskin" ).live("change", function(){
+  localStorage.setItem("last_noteskin", $(this).val());
+});
 
+$( "#speed" ).live("change", function(){
+  localStorage.setItem("last_speed", $(this).val());
+});
+
+$( "#offset" ).live("change", function(){
+  localStorage.setItem("last_offset", $(this).val());
+});
 
 function readSongList() {
 
@@ -150,12 +161,27 @@ function readSongList() {
 
         }
 
+        /* Set default selection for dynamic values: Stage, Song and Level */
+
+        let default_stage = localStorage.getItem("last_stage") !== null ? parseInt(localStorage.getItem("last_stage")) : 14 ;
+        change_stage(default_stage) ;
+        $( "#stage" ).val(default_stage) ;
+
+        let default_song = localStorage.getItem("last_song") !== null ? parseInt(localStorage.getItem("last_song")) : 0 ;
+        $( "#online-song" ).val(default_song) ;
+        $( "#online-song" ).trigger("change") ;
+
+        let default_level = localStorage.getItem("last_level") !== null ? parseInt(localStorage.getItem("last_level")) : 0 ;
+        change_level(default_level) ;
+        $( "#level" ).val(default_level) ;
+
 
     });
 }
 
 $("#stage").live('change', function() {
 
+    localStorage.setItem("last_stage", $(this).val());
     change_stage($(this).val()) ;
 
 
@@ -191,6 +217,8 @@ function change_stage(i) {
 
 $("#online-song").live('change', function() {
     // alert('The option with value ' + $(this).val());
+
+    localStorage.setItem("last_song", $(this).val());
 
     clear('level')
 
@@ -228,7 +256,17 @@ $("#online-song").live('change', function() {
 
 });
 
-
+/* Load dynamic values and set thise defaults */
 
 readSongList() ;
-change_stage(14) ;
+
+/* Set default selection for static values: Noteskin, Speed and Offset */
+
+let default_noteskin = localStorage.getItem("last_noteskin") !== null ? localStorage.getItem("last_noteskin") : "EXCEED2-OLD" ;
+$( "#noteskin" ).val(default_noteskin) ;
+
+let default_speed = localStorage.getItem("last_speed") !== null ? parseInt(localStorage.getItem("last_speed")) : 4 ;
+$( "#speed" ).val(default_speed) ;
+
+let default_offset = localStorage.getItem("last_offset") !== null ? parseFloat(localStorage.getItem("last_offset")) : "0.0" ;
+$( "#offset" ).val(default_offset) ;
