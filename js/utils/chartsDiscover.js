@@ -71,42 +71,6 @@ function clear(id) {
     }
 }
 
-//
-// if (window.FileList && window.File && window.FileReader) {
-//     document.getElementById('ssc-file').addEventListener('change', event => {
-//
-//         clear('level')
-//         // console.log(event)
-//         const file = event.target.files[0];
-//
-//         const reader = new FileReader();
-//         reader.addEventListener('load', event => {
-//             // console.log(event.target.result)
-//             localStorage.setItem('sscPath', event.target.result);
-//             // localStorage.setItem('sscPath', 'http://193.196.53.175/else/16A0%20-%20Sr.%20Lan%20Belmont%20-%20Can-can%20~Orpheus%20in%20The%20Party%20Mix~.ssc');
-//             discoverLevels(event.target.result)
-//             // discoverLevels('http://193.196.53.175/else/16A0%20-%20Sr.%20Lan%20Belmont%20-%20Can-can%20~Orpheus%20in%20The%20Party%20Mix~.ssc')
-//
-//         });
-//         reader.readAsDataURL(file);
-//     });
-//
-//
-//     document.getElementById('audio-file').addEventListener('change', event => {
-//
-//         const file = event.target.files[0];
-//
-//         const reader = new FileReader();
-//         reader.addEventListener('load', event => {
-//
-//             audioBuf = event.target.result
-//             console.log('Audio ready')
-//             // console.log(event.target.result)
-//
-//         });
-//         reader.readAsArrayBuffer(file);
-//     });
-// }
 
 $( "#play" ).click(function() {
 
