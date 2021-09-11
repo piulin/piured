@@ -41,6 +41,7 @@ function discoverLevels( sscPath ) {
 }
 
 $("#level").live('change', function() {
+    localStorage.setItem("last_level", $(this).val());
     change_level($(this).val())
 });
 
@@ -70,42 +71,6 @@ function clear(id) {
     }
 }
 
-//
-// if (window.FileList && window.File && window.FileReader) {
-//     document.getElementById('ssc-file').addEventListener('change', event => {
-//
-//         clear('level')
-//         // console.log(event)
-//         const file = event.target.files[0];
-//
-//         const reader = new FileReader();
-//         reader.addEventListener('load', event => {
-//             // console.log(event.target.result)
-//             localStorage.setItem('sscPath', event.target.result);
-//             // localStorage.setItem('sscPath', 'http://193.196.53.175/else/16A0%20-%20Sr.%20Lan%20Belmont%20-%20Can-can%20~Orpheus%20in%20The%20Party%20Mix~.ssc');
-//             discoverLevels(event.target.result)
-//             // discoverLevels('http://193.196.53.175/else/16A0%20-%20Sr.%20Lan%20Belmont%20-%20Can-can%20~Orpheus%20in%20The%20Party%20Mix~.ssc')
-//
-//         });
-//         reader.readAsDataURL(file);
-//     });
-//
-//
-//     document.getElementById('audio-file').addEventListener('change', event => {
-//
-//         const file = event.target.files[0];
-//
-//         const reader = new FileReader();
-//         reader.addEventListener('load', event => {
-//
-//             audioBuf = event.target.result
-//             console.log('Audio ready')
-//             // console.log(event.target.result)
-//
-//         });
-//         reader.readAsArrayBuffer(file);
-//     });
-// }
 
 $( "#play" ).click(function() {
 
@@ -121,7 +86,17 @@ $( "#play" ).click(function() {
 
 });
 
+$( "#noteskin" ).live("change", function(){
+  localStorage.setItem("last_noteskin", $(this).val());
+});
 
+$( "#speed" ).live("change", function(){
+  localStorage.setItem("last_speed", $(this).val());
+});
+
+$( "#offset" ).live("change", function(){
+  localStorage.setItem("last_offset", $(this).val());
+});
 
 function readSongList() {
 
@@ -150,12 +125,27 @@ function readSongList() {
 
         }
 
+        /* Set default selection for dynamic values: Stage, Song and Level */
+
+        let default_stage = localStorage.getItem("last_stage") !== null ? parseInt(localStorage.getItem("last_stage")) : 14 ;
+        change_stage(default_stage) ;
+        $( "#stage" ).val(default_stage) ;
+
+        let default_song = localStorage.getItem("last_song") !== null ? parseInt(localStorage.getItem("last_song")) : 0 ;
+        $( "#online-song" ).val(default_song) ;
+        $( "#online-song" ).trigger("change") ;
+
+        let default_level = localStorage.getItem("last_level") !== null ? parseInt(localStorage.getItem("last_level")) : 0 ;
+        change_level(default_level) ;
+        $( "#level" ).val(default_level) ;
+
 
     });
 }
 
 $("#stage").live('change', function() {
 
+    localStorage.setItem("last_stage", $(this).val());
     change_stage($(this).val()) ;
 
 
@@ -191,6 +181,8 @@ function change_stage(i) {
 
 $("#online-song").live('change', function() {
     // alert('The option with value ' + $(this).val());
+
+    localStorage.setItem("last_song", $(this).val());
 
     clear('level')
 
@@ -228,7 +220,17 @@ $("#online-song").live('change', function() {
 
 });
 
-
+/* Load dynamic values and set thise defaults */
 
 readSongList() ;
-change_stage(14) ;
+
+/* Set default selection for static values: Noteskin, Speed and Offset */
+
+let default_noteskin = localStorage.getItem("last_noteskin") !== null ? localStorage.getItem("last_noteskin") : "EXCEED2-OLD" ;
+$( "#noteskin" ).val(default_noteskin) ;
+
+let default_speed = localStorage.getItem("last_speed") !== null ? parseInt(localStorage.getItem("last_speed")) : 4 ;
+$( "#speed" ).val(default_speed) ;
+
+let default_offset = localStorage.getItem("last_offset") !== null ? parseFloat(localStorage.getItem("last_offset")) : "0.0" ;
+$( "#offset" ).val(default_offset) ;

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<style>
 			body {
 				font-family: Monospace;
@@ -11,6 +12,21 @@
 			#container {
 				height: 492px;
 				width: 876px;
+			}
+			#selector{
+				overflow-y: auto;
+				max-height: 100vh;
+				max-width: 100vw;
+			}
+			.flex{
+				display: flex;
+				flex-wrap: wrap;
+			}
+			#play{
+				display: inline-block;
+				padding: 0 2em;
+				line-height: 2;
+				margin-top: 1ex;
 			}
 		</style>
 		<script src="lib/jquery-1.8.3.min.js"></script>
@@ -113,13 +129,13 @@
 			<h3>Play online charts!</h3>
 
 
-			<div>
-				<div style="float:left;">
+			<div class="flex">
+				<div>
 					<label for="stage">Select Stage: </label><br>
 					<select id="stage" size="15" name="stage"></select><br>
 				</div>
 
-				<div style="float:left;">
+				<div>
 					<label for="online-song">Select Song: </label><br>
 					<select id="online-song" size="15" name="online-song" style="min-width: 200px;">
 					</select><br>
@@ -173,10 +189,8 @@
 				</tr>
 			</table><br>
 
-			<div>
-
-
-				<div style="float:left;">
+			<div class="flex">
+				<div>
 					<label for="noteskin">Select Noteskin: </label><br>
 					<select id="noteskin" name="speed" size="10">
 
