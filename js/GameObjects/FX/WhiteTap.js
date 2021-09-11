@@ -50,7 +50,6 @@ class WhiteTap extends GameObject {
 
     animate() {
 
-        console.log("hey")
         const time = 250 ;
         const opacityDelay = 100 ;
         this._mesh.material.opacity = 1.0 ;
@@ -60,8 +59,8 @@ class WhiteTap extends GameObject {
             TWEEN.remove(this._tweenOpacityEffect) ;
         }
 
-        this._tweenOpacityEffect = new TWEEN.Tween( this._mesh.material ).to( { opacity: 0 }, 0 ).delay(time).start();
-        // new TWEEN.Tween( this._mesh.scale ).to( { x: 1.15, y: 1.15 }, time ).start();
+        this._tweenOpacityEffect = new TWEEN.Tween( this._mesh.material ).to( { opacity: 0 }, time-opacityDelay ).delay(opacityDelay).start();
+        new TWEEN.Tween( this._mesh.scale ).to( { x: 1.2, y: 1.2 }, time ).start();
 
     }
 

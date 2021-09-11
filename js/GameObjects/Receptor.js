@@ -46,6 +46,11 @@ class Receptor extends GameObject {
         this.drBounce = this.setUpBounce('dr', this.drXPos) ;
 
 
+        this.dlStepNote = this.setUpStepNote('dl', this.dlXPos) ;
+        this.ulStepNote = this.setUpStepNote('ul', this.ulXPos) ;
+        this.cStepNote = this.setUpStepNote('c', this.cXPos) ;
+        this.urStepNote = this.setUpStepNote('ur', this.urXPos) ;
+        this.drStepNote = this.setUpStepNote('dr', this.drXPos) ;
 
 
         this.dlFX = this.setUpExplosion(this.dlXPos) ;
@@ -94,6 +99,19 @@ class Receptor extends GameObject {
         return explosion ;
     }
 
+    setUpStepNote(kind, XPosition) {
+        let note = new StepNoteFX(this._resourceManager, kind) ;
+        note.object.position.x = XPosition ;
+        // tap.object.position.z = 0.01 ;
+        note.object.material.opacity = 0.0 ;
+
+        this._object.add(note.object) ;
+        engine.addToUpdateList(note) ;
+
+        return note ;
+
+    }
+
     setUpTap(kind, XPosition) {
         let tap = new Tap(this._resourceManager, kind) ;
         tap.object.position.x = XPosition ;
@@ -126,33 +144,40 @@ class Receptor extends GameObject {
 
         let tapEffect = null ;
         let explosion = null ;
+        let stepNote = null ;
         const kind = step.kind ;
         switch (kind) {
             case 'dl':
                 tapEffect = this.dlBounce
                 explosion = this.dlFX ;
+                stepNote = this.dlStepNote ;
                 break ;
             case 'ul':
                 tapEffect = this.ulBounce ;
                 explosion = this.ulFX ;
+                stepNote = this.ulStepNote ;
                 break ;
             case 'c':
                 tapEffect = this.cBounce ;
                 explosion = this.cFX ;
+                stepNote = this.cStepNote ;
                 break ;
             case 'ur':
                 tapEffect = this.urBounce ;
                 explosion = this.urFX ;
+                stepNote = this.urStepNote ;
                 break ;
             case 'dr':
                 tapEffect = this.drBounce ;
                 explosion = this.drFX ;
+                stepNote = this.drStepNote ;
                 break ;
         }
 
         this.animateWhiteTap(kind)
         tapEffect.animate() ;
         explosion.animate() ;
+        // stepNote.animate() ;
 
     }
 

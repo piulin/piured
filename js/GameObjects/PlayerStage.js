@@ -123,7 +123,7 @@ class PlayerStage extends GameObject {
             Lsteps.position.x = -this.receptorsApart ;
             Lreceptor.object.position.x = -this.receptorsApart;
 
-            var [Rsteps, Rreceptor ] =
+            var [Rsteps, Rreceptor] =
                 this.composePad(5, this.idRightPad) ;
 
             this.padSteps[this.idRightPad] = Rsteps ;
@@ -415,7 +415,7 @@ class PlayerStage extends GameObject {
     animateReceptorFX(stepList) {
         for (var step of stepList) {
             this.padReceptors[step.padId].animateExplosionStep(step) ;
-            this.padReceptors[step.padId].animateExplosionStep(step) ;
+            // this.padReceptors[step.padId].animateExplosionStep(step) ;
         }
     }
 

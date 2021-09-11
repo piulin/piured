@@ -28,6 +28,9 @@ class ResourceManager {
         this._geometryDict['S'] = new StepGeometry() ;
         this._geometryDict['J'] = new JudgmentGeometry() ;
         this._geometryDict['R'] = new ReceptorGeometry() ;
+        this._geometryDict['L'] = new LifeBarGeometry() ;
+        this._geometryDict['T'] = new TipGeometry() ;
+        this._geometryDict['P'] = new PulseGeometry() ;
     }
 
     loadTextures ( noteskinPath, stagePath ) {
@@ -68,6 +71,16 @@ class ResourceManager {
 
         // Judgment
         this._textureDict['J'] = new PNGTexture(stagePath + '/Player_Judgment Rank 1x6.png') ;
+
+
+
+        // Life meter bar
+        this._textureDict['SLBACK'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Back 1x2.png') ;
+        this._textureDict['SLBAR'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Bar 1x2.png') ;
+        this._textureDict['SLFRONT'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Front 1x2.png') ;
+
+        this._textureDict['LP'] = new PNGTexture(stagePath + '/pulse.png') ;
+        this._textureDict['LT'] = new PNGTexture(stagePath + '/SG-TIP 1x2.png') ;
 
     }
 
@@ -118,6 +131,30 @@ class ResourceManager {
         }
     }
 
+    constructSLifeBarBack() {
+        return  new THREE.Mesh( this._geometryDict['L'].lifeBarGeometry,
+            new TransparentMaterial(this._textureDict['SLBACK'].cloneMap()).material );
+    }
+
+    constructSLifeBarBar() {
+        return  new THREE.Mesh( this._geometryDict['L'].lifeBarGeometry,
+            new TransparentMaterial(this._textureDict['SLBAR'].cloneMap()).material );
+    }
+
+    constructSLifeBarFront() {
+        return  new THREE.Mesh( this._geometryDict['L'].lifeBarGeometry,
+            new TransparentMaterial(this._textureDict['SLFRONT'].cloneMap()).material );
+    }
+
+    constructLifeBarTip() {
+        return  new THREE.Mesh( this._geometryDict['T'].tipGeometry,
+            new TransparentMaterial(this._textureDict['LT'].cloneMap()).material );
+    }
+
+    constructLifeBarPulse() {
+        return  new THREE.Mesh( this._geometryDict['P'].pulseGeometry,
+            new TransparentMaterial(this._textureDict['LP'].cloneMap()).material );
+    }
 
     constructBackground() {
         return new THREE.Mesh( this._geometryDict['B'].backgroundGeometry,
@@ -134,6 +171,31 @@ class ResourceManager {
         let tex = this._textureDict['T'].cloneMap() ;
         return new THREE.Mesh( this._geometryDict['S'].stepGeometry,
             new AdditiveMaterial(tex).material );
+    }
+
+    constructStepNoteFX(kind) {
+        switch (kind) {
+            case 'dl':
+                return  new THREE.Mesh( this._geometryDict['S'].stepGeometry,
+                    new TransparentMaterial(this._textureDict['SDL'].cloneMap()).material );
+                break ;
+            case 'ul':
+                return  new THREE.Mesh( this._geometryDict['S'].stepGeometry,
+                    new TransparentMaterial(this._textureDict['SUL'].cloneMap()).material );
+                break ;
+            case 'c':
+                return  new THREE.Mesh( this._geometryDict['S'].stepGeometry,
+                    new TransparentMaterial(this._textureDict['SC'].cloneMap()).material );
+                break ;
+            case 'ur':
+                return  new THREE.Mesh( this._geometryDict['S'].stepGeometry,
+                    new TransparentMaterial(this._textureDict['SUR'].cloneMap()).material );
+                break ;
+            case 'dr':
+                return  new THREE.Mesh( this._geometryDict['S'].stepGeometry,
+                    new TransparentMaterial(this._textureDict['SDR'].cloneMap()).material );
+                break ;
+        }
     }
 
     constructStepBounce(kind) {
