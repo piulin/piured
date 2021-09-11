@@ -9,6 +9,7 @@ class PlayerStage extends GameObject {
     _stage ;
     _steps ;
     _receptors ;
+    _lifeBar ;
 
     _userSpeed ;
 
@@ -91,10 +92,9 @@ class PlayerStage extends GameObject {
 
 
 
-        this.judgment = new JudgmentScale(this._resourceManager, this.accuracyMargin ) ;
-        this.judgment.object.position.y = -2.5 ;
-        engine.addToUpdateList(this.judgment) ;
-        this._object.add(this.judgment.object) ;
+
+
+
 
         // this.bpms = this.song.levels[level].meta['BPMS'] ;
 
@@ -135,7 +135,22 @@ class PlayerStage extends GameObject {
 
             this._steps.add(Rsteps) ;
             this._receptors.add(Rreceptor.object) ;
+
+            // lifebar
+            this._lifeBar = new LifeBar(this._resourceManager, this.beatManager, 'double' ) ;
+        } else {
+            // lifebar
+            this._lifeBar = new LifeBar(this._resourceManager, this.beatManager, 'single' ) ;
+
         }
+
+        this._lifeBar.object.position.y = 0.7 ;
+        this._object.add(this._lifeBar.object) ;
+
+        this.judgment = new JudgmentScale(this._resourceManager, this.accuracyMargin, this._lifeBar ) ;
+        this.judgment.object.position.y = -2.5 ;
+        engine.addToUpdateList(this.judgment) ;
+        this._object.add(this.judgment.object) ;
 
         this._object.add(this._steps) ;
         this._object.add(this._receptors) ;

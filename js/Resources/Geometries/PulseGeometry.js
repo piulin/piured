@@ -8,7 +8,7 @@ class PulseGeometry {
     constructor() {
 
         // 2x1 rectangle
-        this._geometry = new THREE.PlaneGeometry( 2 , 1 , 1, 1 ) ;
+        this._geometry = new THREE.PlaneGeometry( 0.5 , 68/194 , 1, 1 ) ;
 
     }
 

@@ -4,12 +4,17 @@
 class JudgmentScale extends GameObject {
 
     _judgment ;
+    _lifeBar ;
+    _state = 0 ;
+    _counter = 0 ;
+    _barSteps = 60 ;
+    _currentStep = 30 ;
 
-    constructor(resourceManager, accuracyMargin) {
+    constructor(resourceManager, accuracyMargin, lifeBar) {
 
         super(resourceManager) ;
 
-
+        this._lifeBar = lifeBar ;
         this.accuracyMargin = accuracyMargin ;
 
         this._judgment = new Judgment(this._resourceManager) ;
@@ -33,6 +38,10 @@ class JudgmentScale extends GameObject {
 
     update(delta) {
 
+        if (this._currentStep <= 0) {
+            this._currentStep = 0 ;
+        }
+
     }
 
 // TODO:
@@ -42,18 +51,50 @@ class JudgmentScale extends GameObject {
         this.stats.m += 1;
         this._judgment.animate('m',this.comboCount) ;
 
+
+        if (this._currentStep > 60 ) {
+            this._state = 5;
+            this._counter = 0;
+            this._currentStep = 60 ;
+        }
+
+        if ( this._state === 5 ) {
+            if ( this._counter >=3 ) {
+                this._currentStep = 54 ;
+                this._state = 0 ;
+                this._counter = 0 ;
+            } else {
+                this._counter += 1 ;
+            }
+        } else {
+            this._currentStep -= 6 ;
+            this._counter = 0 ;
+            this._state = 0 ;
+        }
+
+        this._lifeBar.setsize( this._currentStep/this._barSteps ) ;
+
+
+
     }
     bad ( ) {
         this.missComboCount = 0;
         this.comboCount = 0 ;
         this.stats.b += 1;
         this._judgment.animate('b',this.comboCount) ;
+
+        this._state = 0 ;
+        this._counter = 0 ;
     }
 
     good ( ) {
         this.missComboCount = 0 ;
         this.stats.go += 1;
         this._judgment.animate('go',this.comboCount) ;
+
+        this._state = 0 ;
+        this._counter = 0 ;
+
     }
 
     great ( ) {
@@ -62,6 +103,15 @@ class JudgmentScale extends GameObject {
         this.comboCount += 1 ;
         this._judgment.animate('gr',this.comboCount) ;
 
+        if (this._state === 5 ) {
+            this._state = 0 ;
+        }
+
+        this.counterUpdatePerfect(7,0,1) ;
+        this.counterUpdatePerfect(6,1,2) ;
+        this.counterUpdatePerfect(4,2,3) ;
+        this.counterUpdatePerfect(2,3,3) ;
+
     }
 
     perfect ( comboIncrement = 1 ) {
@@ -69,7 +119,32 @@ class JudgmentScale extends GameObject {
         this.stats.p += 1;
         this.comboCount += comboIncrement ;
         this._judgment.animate('p',this.comboCount) ;
+
+        if (this._state === 5 ) {
+            this._state = 0 ;
+        }
+
+
+        this.counterUpdatePerfect(7,0,1, comboIncrement) ;
+        this.counterUpdatePerfect(6,1,2, comboIncrement) ;
+        this.counterUpdatePerfect(4,2,3, comboIncrement) ;
+        this.counterUpdatePerfect(2,3,3, comboIncrement) ;
+
     }
+
+    counterUpdatePerfect(updateCondition, fromState, toState, comboIncrement) {
+        if ( this._state === fromState) {
+            if (this._counter < updateCondition-1 ) {
+                this._counter += comboIncrement ;
+            } else {
+                this._currentStep += 1 ;
+                this._counter = 0 ;
+                this._state = toState ;
+                this._lifeBar.setsize( this._currentStep/this._barSteps ) ;
+            }
+        }
+    }
+
 
 
     grade(timeElapse) {

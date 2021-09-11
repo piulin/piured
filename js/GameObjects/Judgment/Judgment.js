@@ -11,7 +11,7 @@ class Judgment extends GameObject {
     _object ;
 
 
-    constructor(resourceManager) {
+    constructor(resourceManager, ) {
 
         super(resourceManager);
 

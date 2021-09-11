@@ -29,6 +29,7 @@ class ResourceManager {
         this._geometryDict['J'] = new JudgmentGeometry() ;
         this._geometryDict['R'] = new ReceptorGeometry() ;
         this._geometryDict['L'] = new LifeBarGeometry() ;
+        this._geometryDict['DL'] = new DLifeBarGeometry() ;
         this._geometryDict['T'] = new TipGeometry() ;
         this._geometryDict['P'] = new PulseGeometry() ;
     }
@@ -77,7 +78,15 @@ class ResourceManager {
         // Life meter bar
         this._textureDict['SLBACK'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Back 1x2.png') ;
         this._textureDict['SLBAR'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Bar 1x2.png') ;
-        this._textureDict['SLFRONT'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Front 1x2.png') ;
+        this._textureDict['SLBARFX'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Bar_FX.png') ;
+        this._textureDict['SLBARFXRED'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Bar_FX_Red.png') ;
+        this._textureDict['SLFRONT'] = new PNGTexture(stagePath + '/LifeMeterBar_S_Front.png') ;
+
+        this._textureDict['DLBACK'] = new PNGTexture(stagePath + '/LifeMeterBar_D_Back 1x2.png') ;
+        this._textureDict['DLBAR'] = new PNGTexture(stagePath + '/LifeMeterBar_D_Bar 1x2.png') ;
+        this._textureDict['DLBARFX'] = new PNGTexture(stagePath + '/LifeMeterBar_D_Bar_FX.png') ;
+        this._textureDict['DLBARFXRED'] = new PNGTexture(stagePath + '/LifeMeterBar_D_Bar_FX_Red.png') ;
+        this._textureDict['DLFRONT'] = new PNGTexture(stagePath + '/LifeMeterBar_D_Front.png') ;
 
         this._textureDict['LP'] = new PNGTexture(stagePath + '/pulse.png') ;
         this._textureDict['LT'] = new PNGTexture(stagePath + '/SG-TIP 1x2.png') ;
@@ -141,10 +150,44 @@ class ResourceManager {
             new TransparentMaterial(this._textureDict['SLBAR'].cloneMap()).material );
     }
 
+    constructSLifeBarBarFX() {
+        return  new THREE.Mesh( this._geometryDict['L'].lifeBarGeometry,
+            new AdditiveMaterial(this._textureDict['SLBARFX'].cloneMap()).material );
+    }
+
+    constructSLifeBarBarFXRed() {
+        return  new THREE.Mesh( this._geometryDict['L'].lifeBarGeometry,
+            new AdditiveMaterial(this._textureDict['SLBARFXRED'].cloneMap()).material );
+    }
     constructSLifeBarFront() {
         return  new THREE.Mesh( this._geometryDict['L'].lifeBarGeometry,
             new TransparentMaterial(this._textureDict['SLFRONT'].cloneMap()).material );
     }
+
+    constructDLifeBarBack() {
+        return  new THREE.Mesh( this._geometryDict['DL'].lifeBarGeometry,
+            new TransparentMaterial(this._textureDict['DLBACK'].cloneMap()).material );
+    }
+
+    constructDLifeBarBar() {
+        return  new THREE.Mesh( this._geometryDict['DL'].lifeBarGeometry,
+            new TransparentMaterial(this._textureDict['DLBAR'].cloneMap()).material );
+    }
+
+    constructDLifeBarBarFX() {
+        return  new THREE.Mesh( this._geometryDict['DL'].lifeBarGeometry,
+            new AdditiveMaterial(this._textureDict['DLBARFX'].cloneMap()).material );
+    }
+
+    constructDLifeBarBarFXRed() {
+        return  new THREE.Mesh( this._geometryDict['DL'].lifeBarGeometry,
+            new AdditiveMaterial(this._textureDict['DLBARFXRED'].cloneMap()).material );
+    }
+    constructDLifeBarFront() {
+        return  new THREE.Mesh( this._geometryDict['DL'].lifeBarGeometry,
+            new TransparentMaterial(this._textureDict['DLFRONT'].cloneMap()).material );
+    }
+
 
     constructLifeBarTip() {
         return  new THREE.Mesh( this._geometryDict['T'].tipGeometry,

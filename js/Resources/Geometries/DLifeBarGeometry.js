@@ -1,14 +1,14 @@
 "use strict" ;
 
 
-class LifeBarGeometry {
+class DLifeBarGeometry {
 
     _geometry ;
 
     constructor() {
 
         // 5x1 rectangle
-        this._geometry = new THREE.PlaneGeometry( 4 , 68/194 , 1, 1 ) ;
+        this._geometry = new THREE.PlaneGeometry( 8 , 68/194 , 1, 1 ) ;
 
     }
 
