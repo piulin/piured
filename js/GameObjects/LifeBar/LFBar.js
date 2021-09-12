@@ -57,8 +57,6 @@ class LFBar extends GameObject {
         this._object.add(this._barFXRed.object) ;
         engine.addToUpdateList(this._barFXRed) ;
 
-        this.setsize(0.5) ;
-
         // this._tweenOpacityEffect = undefined ;
 
     }
@@ -89,11 +87,11 @@ class LFBar extends GameObject {
             } else {
                 this._tip.object.position.x = 3.84;
             }
-
+            // this._bar.material.opacity = 0.8 ;
             this._barFX.blink = true ;
 
         } else {
-
+            // this._bar.material.opacity = 1.0 ;
             this._pulse.opacity = 1.0;
             this._bar.material.map.repeat.set(-size,1/2);
             this._bar.position.x = -(this.barXHalfSize- this.barXSize*(size/2)) - this.pulseXHalfSize ;
@@ -116,6 +114,8 @@ class LFBar extends GameObject {
                 // console.log(diff) ;
 
                 this._pulse.object.position.x = -this.barXHalfSize + newsize/2 ;
+            } else {
+                this._pulse.object.scale.x = 1 ;
             }
 
             this._tip.object.position.x = -this.barXHalfSize + this.barXSize*size ;
@@ -129,8 +129,12 @@ class LFBar extends GameObject {
 
     ready() {
 
+        this._bar.position.z = 0.0 ;
+        this._barFX.object.position.z = 0.001 ;
+        this._pulse.object.position.z = 0.001 ;
+        this._tip.object.position.z = 0.031 ;
 
-        this._tip.object.position.z = 0.04 ;
+
         this._tip.object.scale.x = 1.6 ;
         this._tip.object.scale.y = 1.6 ;
 

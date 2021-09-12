@@ -14,7 +14,7 @@ class LFBarFX extends GameObject {
             this._mesh = this._resourceManager.constructDLifeBarBarFX() ;
         }
 
-        let scale = 1.5 ;
+        let scale = 2.0;
 
         this._mesh.material.color.r = scale ;
         this._mesh.material.color.g = scale ;
