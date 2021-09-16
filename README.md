@@ -1,5 +1,5 @@
 # PIURED: A Web-based Pump It Up Engine
-![PIURED](https://github.com/piulin/piured/blob/main/imgs/piured.png?raw=true)
+![PIURED](https://github.com/piulin/piured/blob/main/imgs/piuredg.gif?raw=true)
 
 
 ## Introduction
