@@ -12,19 +12,19 @@ let mp3path = null
 let sscpath = null
 
 let leftKeyMap = {
-    dl: 90,
-    ul : 81,
-    c : 83,
-    ur : 69,
-    dr: 67
+    dl: 'Z',
+    ul : 'Q',
+    c : 'S',
+    ur : 'E',
+    dr: 'C'
 }
 
 let rightKeyMap = {
-    dl: 86,
-    ul : 82,
-    c : 71,
-    ur : 89,
-    dr: 78
+    dl: 'V',
+    ul : 'R',
+    c : 'G',
+    ur : 'Y',
+    dr: 'N'
 }
 
 let resources = 'https://piulin.gentakojima.me/'
