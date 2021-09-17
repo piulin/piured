@@ -85,7 +85,7 @@ class Engine {
         container.appendChild( this.renderer.domElement );
     }
 
-    start ( songPath, audioBuf,  level, speed, offset, noteskin) {
+    start ( songPath, audioBuf,  level, speed, offset, noteskin, lpad, rpad) {
 
 
         let resourceManagerL = new ResourceManager('noteskins/' + noteskin + '/UHD', 'stage_UHD') ;
@@ -120,7 +120,7 @@ class Engine {
         let speeds = [speed] ;
         // let resourceManagers = [resourceManagerL,resourceManagerR] ;
 
-        let stage = new Stage(resourceManagerL, this.song, levels, speeds) ;
+        let stage = new Stage(resourceManagerL, this.song, levels, speeds, lpad, rpad) ;
 
         engine.addToUpdateList(stage) ;
 

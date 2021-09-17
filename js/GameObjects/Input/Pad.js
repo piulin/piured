@@ -8,11 +8,11 @@ class Pad {
     constructor(keyMap, padId) {
 
         // Key maps
-        this.dlKey =  keyMap.dl ;
-        this.ulKey = keyMap.ul ;
-        this.cKey = keyMap.c ;
-        this.urKey = keyMap.ur ;
-        this.drKey = keyMap.dr ;
+        this.dlKey =  keyMap.dl.toLowerCase() ;
+        this.ulKey = keyMap.ul.toLowerCase() ;
+        this.cKey = keyMap.c.toLowerCase() ;
+        this.urKey = keyMap.ur.toLowerCase() ;
+        this.drKey = keyMap.dr.toLowerCase() ;
 
         this.dlKeyPressed = false ;
         this.ulKeyPressed = false ;

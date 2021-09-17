@@ -11,10 +11,46 @@ let songIndex = null
 let mp3path = null
 let sscpath = null
 
+let leftKeyMap = {
+    dl: 90,
+    ul : 81,
+    c : 83,
+    ur : 69,
+    dr: 67
+}
+
+let rightKeyMap = {
+    dl: 86,
+    ul : 82,
+    c : 71,
+    ur : 89,
+    dr: 78
+}
+
 let resources = 'https://piulin.gentakojima.me/'
 
-function discoverCharts(pathToFolder) {
+function keyMapChanged(km, pad, step) {
 
+    km.value = km.value.charAt(0).toUpperCase() ;
+
+    if (pad === 'l') {
+        leftKeyMap[step] = km.value ;
+        localStorage.setItem("last_lpad", JSON.stringify(leftKeyMap));
+    } else {
+        rightKeyMap[step] = km.value ;
+        localStorage.setItem("last_rpad", JSON.stringify(rightKeyMap));
+    }
+
+
+
+}
+
+function getDancePadCurrentValue(pad, step) {
+    if (pad === 'l') {
+        return leftKeyMap[step] ;
+    } else {
+        return rightKeyMap[step] ;
+    }
 }
 
 
@@ -81,7 +117,7 @@ $( "#play" ).click(function() {
     let offset = parseFloat(document.getElementById('offset').value) ;
     let noteskin = document.getElementById('noteskin').value ;
     // console.log(speed)
-    engine.start( resources + sscpath, resources + mp3path, chart_level, speed, offset, noteskin);
+    engine.start( resources + sscpath, resources + mp3path, chart_level, speed, offset, noteskin, leftKeyMap, rightKeyMap);
 
 
 });
@@ -201,7 +237,8 @@ $("#online-song").live('change', function() {
     for ( let i = 0 ; i < song.children.length ; i++ ) {
 
         let attr = song.children[i] ;
-
+ if ( JSON.parse(localStorage.getItem("last_lpad")) !== null ) {
+}
         if (x.test(attr.name)) {
             mp3path = attr.path ;
         }
@@ -234,3 +271,28 @@ $( "#speed" ).val(default_speed) ;
 
 let default_offset = localStorage.getItem("last_offset") !== null ? parseFloat(localStorage.getItem("last_offset")) : "0.0" ;
 $( "#offset" ).val(default_offset) ;
+
+
+ if ( JSON.parse(localStorage.getItem("last_lpad")) !== null ) {
+     leftKeyMap =JSON.parse(localStorage.getItem("last_lpad")) ;
+}
+
+if ( JSON.parse(localStorage.getItem("last_rpad")) !== null ) {
+    rightKeyMap =JSON.parse(localStorage.getItem("last_rpad")) ;
+}
+
+function updateMappings() {
+    $('#ldlmap').val(leftKeyMap['dl']) ;
+    $('#lulmap').val(leftKeyMap['ul']) ;
+    $('#lcmap').val(leftKeyMap['c']) ;
+    $('#lurmap').val(leftKeyMap['ur']) ;
+    $('#ldrmap').val(leftKeyMap['dr']) ;
+
+    $('#rdlmap').val(rightKeyMap['dl']) ;
+    $('#rulmap').val(rightKeyMap['ul']) ;
+    $('#rcmap').val(rightKeyMap['c']) ;
+    $('#rurmap').val(rightKeyMap['ur']) ;
+    $('#rdrmap').val(rightKeyMap['dr']) ;
+}
+
+updateMappings() ;

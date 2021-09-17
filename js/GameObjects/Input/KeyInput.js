@@ -13,6 +13,11 @@ class KeyInput extends GameObject {
         this.pads = [] ;
         this.padsDic = {} ;
 
+        this.addOffsetKeyMap = ',' ; // period
+        this.subtractOffsetKeyMap = '.' ; // comma
+
+        this.offsetChangeEnabled = true ;
+
         window.onkeydown = this.onKeyDown.bind(this) ;
         window.onkeyup = this.onKeyUp.bind(this) ;
 
@@ -23,6 +28,14 @@ class KeyInput extends GameObject {
     }
 
     addPad(keyMap, padId) {
+        console.log(keyMap) ;
+        for (const [key, value] of Object.entries(keyMap)) {
+            if ( value === this.addOffsetKeyMap || value === this.subtractOffsetKeyMap) {
+                console.log('disable ffset') ;
+                this.offsetChangeEnabled = false ;
+            }
+        }
+
         const pad = new Pad(keyMap, padId) ;
         this.pads.push( pad ) ;
         this.padsDic[padId] = pad ;
@@ -30,43 +43,39 @@ class KeyInput extends GameObject {
 
     onKeyDown( event ) {
 
-        const key = event.which ;
+
+        const key =  event.key.toLowerCase() ;
 
         for ( let pad of this.pads ) {
-            if ( event.which === pad.dlKey && !pad.dlKeyHold ) {
+            if ( key === pad.dlKey && !pad.dlKeyHold ) {
                 pad.dlKeyHold = true ;
                 pad.dlKeyPressed = true ;
-                // console.log('dl down: ' +event.which) ;
+                // console.log('dl down: ' +key) ;
             }
-            else if ( event.which === pad.ulKey && !pad.ulKeyHold ) {
+            else if ( key === pad.ulKey && !pad.ulKeyHold ) {
                 pad.ulKeyHold = true ;
                 pad.ulKeyPressed = true ;
-                // console.log('ul down : ' +event.which)
+                // console.log('ul down : ' +key)
             }
-            else if ( event.which === pad.cKey && !pad.cKeyHold ) {
+            else if ( key === pad.cKey && !pad.cKeyHold ) {
                 pad.cKeyHold = true ;
                 pad.cKeyPressed = true ;
-                // console.log('c down: ' +event.which)
+                // console.log('c down: ' +key)
             }
-            else if ( event.which === pad.urKey && !pad.urKeyHold ) {
+            else if ( key === pad.urKey && !pad.urKeyHold ) {
                 pad.urKeyHold = true ;
                 pad.urKeyPressed = true ;
-                // console.log('ur down: ' +event.which)
+                // console.log('ur down: ' +key)
             }
-            else if ( event.which === pad.drKey && !pad.drKeyHold ) {
+            else if ( key === pad.drKey && !pad.drKeyHold ) {
                 pad.drKeyHold = true ;
                 pad.drKeyPressed = true ;
-                // console.log('dr down: ' +event.which)
+                // console.log('dr down: ' +key)
             }
-            else if ( event.which >= 49 && event.which <= 57) {
-                // TODO:
-                this.composer.setNewSpeed(10-(58-event.which)) ;
-            }
-            else if ( event.which === 190) {// period
-                console.log('.')
+
+            else if ( key === this.addOffsetKeyMap && this.offsetChangeEnabled) {
                 engine.updateOffset(0.01) ;
-            } else if (event.which === 188 ) { // comma
-                console.log(',')
+            } else if (key === this.subtractOffsetKeyMap && this.offsetChangeEnabled) {
                 engine.updateOffset( -0.01 ) ;
             }
         }
@@ -78,30 +87,32 @@ class KeyInput extends GameObject {
 
     onKeyUp(event) {
 
+        const key = event.key ;
+
         for ( let pad of this.pads ) {
-            if ( event.which === pad.dlKey ) {
+            if ( key === pad.dlKey ) {
                 pad.dlKeyHold = false ;
-                // console.log('dl up: ' + event.which);
+                // console.log('dl up: ' + key);
 
             }
-            else if ( event.which === pad.ulKey ) {
+            else if ( key === pad.ulKey ) {
                 pad.ulKeyHold = false ;
-                // console.log('ul up: ' + event.which);
+                // console.log('ul up: ' + key);
 
             }
-            else if ( event.which === pad.cKey ) {
+            else if ( key === pad.cKey ) {
                 pad.cKeyHold = false ;
-                // console.log('c up: ' + event.which);
+                // console.log('c up: ' + key);
 
             }
-            else if ( event.which === pad.urKey ) {
+            else if ( key === pad.urKey ) {
                 pad.urKeyHold = false ;
-                // console.log('ur up: ' + event.which);
+                // console.log('ur up: ' + key);
 
             }
-            else if ( event.which === pad.drKey ) {
+            else if ( key === pad.drKey ) {
                 pad.drKeyHold = false ;
-                // console.log('dr up: ' + event.which);
+                // console.log('dr up: ' + key);
 
             }
         }
@@ -127,19 +138,19 @@ class KeyInput extends GameObject {
         for ( let pad of this.pads ) {
 
             pad.dlKeyPressed = false ;
-            // console.log('dl down: ' +event.which) ;
+            // console.log('dl down: ' +key) ;
 
             pad.ulKeyPressed = false ;
-            // console.log('ul down : ' +event.which)
+            // console.log('ul down : ' +key)
 
             pad.cKeyPressed = false ;
-            // console.log('c down: ' +event.which)
+            // console.log('c down: ' +key)
 
             pad.urKeyPressed = false ;
-            // console.log('ur down: ' +event.which)
+            // console.log('ur down: ' +key)
 
             pad.drKeyPressed = false ;
-            // console.log('dr down: ' +event.which)
+            // console.log('dr down: ' +key)
         }
 
     }

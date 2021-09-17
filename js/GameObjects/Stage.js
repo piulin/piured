@@ -8,7 +8,7 @@ class Stage extends GameObject {
     _object ;
     _bg ;
 
-    constructor(resourceManager, song, levels, userSpeeds) { //...
+    constructor(resourceManager, song, levels, userSpeeds, lpad, rpad) { //...
 
         super(resourceManager);
 
@@ -36,21 +36,29 @@ class Stage extends GameObject {
 
 
 
-
-        this.leftKeyMap = {
-            dl: 90,
-            ul : 81,
-            c : 83,
-            ur : 69,
-            dr: 67
+        if (lpad !== null ) {
+            this.leftKeyMap = lpad ;
+        } else {
+            this.leftKeyMap = {
+                dl: 90,
+                ul : 81,
+                c : 83,
+                ur : 69,
+                dr: 67
+            }
         }
 
-        this.rightKeyMap = {
-            dl: 86,
-            ul : 82,
-            c : 71,
-            ur : 89,
-            dr: 78
+
+        if (rpad !== null) {
+            this.rightKeyMap = rpad ;
+        } else {
+            this.rightKeyMap = {
+                dl: 86,
+                ul: 82,
+                c: 71,
+                ur: 89,
+                dr: 78
+            }
         }
 
         //TODO:

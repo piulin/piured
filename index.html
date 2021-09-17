@@ -234,7 +234,7 @@
 				</div>
 
 				<div>
-					<label for="level">Select Speed: </label>
+					<label for="speed">Select Speed: </label>
 					<br>
 					<select id="speed" name="speed" size="10">
 
@@ -249,6 +249,91 @@
 					<option value="7">7</option>
 					<option value="8">8</option>
 				</select><br>
+				</div>
+			</div><br>
+
+			<div class="flex">
+
+				<div>
+					<label for="level">Left Pad (Pump-single) keymap: </label>
+					<br>
+					<table>
+
+						<tr>
+							<td>Down-left:</td>
+							<td><input type="text" id="ldlmap" value="Z" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dl')" ></td>
+						</tr>
+
+						<tr>
+							<td>Up-left:</td>
+							<td><input type="text" id="lulmap" value="Q" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ul')" ></td>
+							></td>
+						</tr>
+
+						<tr>
+							<td>Center:</td>
+							<td><input type="text" id="lcmap" value="S" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','c')" ></td>
+							></td>
+						</tr>
+
+						<tr>
+							<td>Up-right:</td>
+							<td><input type="text" id="lurmap" value="E" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ur')" ></td>
+							></td>
+						</tr>
+
+						<tr>
+							<td>Down-right:</td>
+							<td><input type="text" id="ldrmap" value="C" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dr')" ></td>
+							></td>
+						</tr>
+					</table>
+				</div>
+
+				<div>
+					<label for="level">Right Pad (Pump-double) keymap: </label>
+					<br>
+					<table>
+
+						<tr>
+							<td>Down-left:</td>
+							<td><input type="text" id="rdlmap" value="V" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dl')" ></td>
+						</tr>
+
+						<tr>
+							<td>Up-left:</td>
+							<td><input type="text" id="rulmap" value="R" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ul')" ></td>
+							></td>
+						</tr>
+
+						<tr>
+							<td>Center:</td>
+							<td><input type="text" id="rcmap" value="G" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','c')" ></td>
+							></td>
+						</tr>
+
+						<tr>
+							<td>Up-right:</td>
+							<td><input type="text" id="rurmap" value="Y" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ur')" ></td>
+							></td>
+						</tr>
+
+						<tr>
+							<td>Down-right:</td>
+							<td><input type="text" id="rdrmap" value="N" maxlength="1"
+									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dr')" ></td>
+							></td>
+						</tr>
+					</table>
 				</div>
 
 
