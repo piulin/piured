@@ -102,8 +102,8 @@ the engine to crash.
 ## Contributing
 
 Do you think everything is wrong? Don't you like what you see? I'd love to hear from you!
-You can always get in touch with me by droppning an e-mail at <pepo_gonba@hotmai.com>. 
-If you feel like getting your hands dirty, you can also 
+You can always get in touch with me by dropping an e-mail at <pepo_gonba@hotmai.com>. 
+If you feel like getting your hands dirty, you can also l
 submit a pull request!
 
 ## Future Work
@@ -113,4 +113,4 @@ platform, similar in style and functionality to [lichess](https://lichess.org).
 
 ## License
 
-This project is licensed under the terms of the GPL-3.0 License.
+This project is licensed under the terms of the GPL-3.0 license.
