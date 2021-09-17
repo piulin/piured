@@ -102,8 +102,8 @@ the engine to crash.
 ## Contributing
 
 Do you think everything is wrong? Don't you like what you see? I'd love to hear from you!
-You can always get in touch with me by dropping an e-mail at <pepo_gonba@hotmai.com>. 
-If you feel like getting your hands dirty, you can also l
+You can always get in touch with me by dropping an e-mail at <pepo_gonba@hotmail.com>. 
+If you feel like getting your hands dirty, you can also
 submit a pull request!
 
 ## Future Work
