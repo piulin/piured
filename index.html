@@ -35,15 +35,15 @@
 		<script src="lib/color-thief.umd.js"></script>
 <!--		For OrbitControls to work, we need to put it below the import of three.js. Otherwise it won't work.-->
 		<script src="lib/OrbitControls.js"></script>
-		<script src="js/FileReader.js"></script>
-		<script src="js/HoldsState.js"></script>
-		<script src="js/Holds.js"></script>
+		<script src="js/Utils/FileReader.js"></script>
+		<script src="js/Structs/HoldsState.js"></script>
+		<script src="js/Structs/Holds.js"></script>
 		<script src="lib/Coordinates.js"></script>
 		<script src="lib/stats.min.js"></script>
-		<script src="js/song/SSCParser.js"></script>
-		<script src="js/song/Song.js"></script>
-		<script src="js/song/NoteData.js"></script>
-		<script src="js/engine.js"></script>
+		<script src="js/Song/SSCParser.js"></script>
+		<script src="js/Song/Song.js"></script>
+		<script src="js/Song/NoteData.js"></script>
+		<script src="js/Engine.js"></script>
 		<script src="lib/tween.min.js"></script>
 
 
@@ -125,7 +125,7 @@
 
 
 
-		<script src="js/utils/filter.js"></script>
+		<script src="js/Utils/Filter.js"></script>
 
 
 
@@ -133,9 +133,43 @@
 	<body>
 
 
+
+
+
 		<div id="selector">
 
-			<h3>Play online charts!</h3>
+			<div id="performance" style="display: none;">
+				<h3>Your results: </h3>
+				<table>
+					<tr>
+						<td>Perfect: </td>
+						<td id="perfect"></td>
+						<td id="pperfect"></td>
+					</tr>
+					<tr>
+						<td>Great: </td>
+						<td id="great"></td>
+						<td id="pgreat"></td>
+					</tr>
+					<tr>
+						<td>Good: </td>
+						<td id="good"></td>
+						<td id="pgood"></td>
+					</tr>
+					<tr>
+						<td>Bad: </td>
+						<td id="bad"></td>
+						<td id="pbad"></td>
+					</tr>
+					<tr>
+						<td>Miss: </td>
+						<td id="miss"></td>
+						<td id="pmiss"></td>
+					</tr>
+				</table>
+			</div>
+
+			<h3>Play Pump It Up online!</h3>
 
 
 			<div class="flex">
@@ -357,7 +391,6 @@
 		<div id="container">
 		</div>
 
-		<script src="js/utils/chartsDiscover.js"></script>
-		<script src="js/piured.js"></script>
+		<script src="js/Utils/DemoLogic.js"></script>
 	</body>
 </html>

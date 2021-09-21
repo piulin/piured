@@ -65,8 +65,7 @@ class PlayerStage extends GameObject {
 
         this.receptorsApart = 1.96 ;
 
-        this.stepTextureAnimationRate = 25 ;
-
+        this.stepTextureAnimationRate = 30 ;
 
     }
 

@@ -22,6 +22,10 @@ class JudgmentScale extends GameObject {
 
     }
 
+    get performance() {
+        return this.stats ;
+    }
+
     ready() {
 
         this.comboCount = 0 ;
@@ -47,8 +51,8 @@ class JudgmentScale extends GameObject {
 // TODO:
     miss ( comboIncrement = 1 ) {
         this.comboCount = 0 ;
-        this.missComboCount += 1 ;
-        this.stats.m += 1;
+        this.missComboCount += comboIncrement ;
+        this.stats.m += comboIncrement;
         this._judgment.animate('m',this.comboCount) ;
 
 
@@ -108,9 +112,6 @@ class JudgmentScale extends GameObject {
         }
 
         this.counterUpdatePerfect(7,0,1) ;
-        this.counterUpdatePerfect(6,1,2) ;
-        this.counterUpdatePerfect(4,2,3) ;
-        this.counterUpdatePerfect(2,3,3) ;
 
     }
 

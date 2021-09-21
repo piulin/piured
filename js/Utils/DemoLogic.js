@@ -1,7 +1,7 @@
 $.ajaxSetup({
     async: false
 });
-
+let engine = null
 let audioBuf = null
 let chart_level = null
 let speed = null
@@ -113,6 +113,8 @@ $( "#play" ).click(function() {
     engine = new Engine() ;
     // let sscPath =localStorage.getItem('sscPath');
     document.getElementById('selector').style.display = 'none' ;
+    document.getElementById('container').style.display = 'block' ;
+    document.getElementById('performance').style.display = 'none' ;
     let speed = parseInt(document.getElementById('speed').value) ;
     let offset = parseFloat(document.getElementById('offset').value) ;
     let noteskin = document.getElementById('noteskin').value ;
@@ -296,3 +298,21 @@ function updateMappings() {
 }
 
 updateMappings() ;
+
+
+function stageCleared(performance) {
+
+    document.getElementById('selector').style.display = 'block' ;
+    document.getElementById('container').style.display = 'none' ;
+    document.getElementById('performance').style.display = 'block' ;
+
+    document.getElementById('performance').scrollIntoView() ;
+
+    document.getElementById('perfect').innerHTML = performance['p'] ;
+    document.getElementById('great').innerHTML =performance['gr'] ;
+    document.getElementById('good').innerHTML =performance['go'] ;
+    document.getElementById('bad').innerHTML=performance['b'] ;
+    document.getElementById('miss').innerHTML =performance['m'] ;
+
+
+}

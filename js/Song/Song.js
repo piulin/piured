@@ -168,7 +168,8 @@ class Song {
         let context = new AudioContext();
         this.context = context ;
 
-        audioLoader.load( this.audioBuf, this.playBack.bind(this))
+        audioLoader.load( this.audioBuf, this.playBack.bind(this)) ;
+
 
         // context.decodeAudioData(this.audioBuf, this.playBack.bind(this));
 
@@ -189,6 +190,14 @@ class Song {
         this.startTime = this.context.currentTime;
         source.start(this.startTime + this.delay) ;
         this.readyToStart = true ;
+        source.onended = this.playBackEnded.bind(this) ;
+
+    }
+
+
+    playBackEnded() {
+            console.log('I ended!') ;
+            engine.stop( ) ;
     }
 
     // This method is called when the buffer with the song is ready.

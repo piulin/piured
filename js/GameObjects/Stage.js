@@ -7,12 +7,13 @@ class Stage extends GameObject {
 
     _object ;
     _bg ;
+    p1 ;
 
     constructor(resourceManager, song, levels, userSpeeds, lpad, rpad) { //...
 
         super(resourceManager);
 
-        this.animationRate = 25 ;
+        this.animationRate = 30 ;
         this.song = song ;
         this.levels = levels ;
         this.userSpeeds = userSpeeds ;
@@ -70,6 +71,7 @@ class Stage extends GameObject {
 
 
         let stage1 = new PlayerStage(this._resourceManager, this.song, P1, this.levels[0], this.userSpeeds[0],'0','1') ;
+        this.p1 = stage1 ;
         this._object.add(stage1.object) ;
         engine.addToUpdateList(stage1) ;
 

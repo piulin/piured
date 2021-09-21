@@ -5,8 +5,12 @@ class Engine {
 
     _updateList = [] ;
     _inputList = [] ;
+    _id ;
+
 
     constructor() {
+
+        window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
 
         this.clock = new THREE.Clock();
 
@@ -57,6 +61,16 @@ class Engine {
 
     }
 
+    // set new canvas size
+    onWindowResize ( ) {
+
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
 
 
     addToUpdateList(gameObject) {
@@ -89,30 +103,8 @@ class Engine {
 
 
         let resourceManagerL = new ResourceManager('noteskins/' + noteskin + '/UHD', 'stage_UHD') ;
-        // let resourceManagerR = new ResourceManager('noteskins/NX/HD', 'stage') ;
 
-        // let song = new Song('songs/bc/dp.ssc');
-        // let song = new Song('songs/wdurw/A11 - What Do You Really Want.ssc'); // 7, 14
-        // let song = new Song('songs/fl/103 - Forever Love.ssc'); // 7
-        // let song = new Song('songs/s/B18 - Solitary 2.ssc'); // 6
-        // let song = new Song('songs/cd/B19 - Canon-D.ssc'); // 6
-        // let song = new Song('songs/wotw/712 - Will O The Wisp.ssc'); //6, -2
-        // let song = new Song('songs/d/1013 - Destination.ssc'); //5,
-        // let song = new Song('songs/h/B02 - Hot.ssc'); //5
-        // let song = new Song('songs/bblbr/A16 - Ba Be Loo Be Ra.ssc'); //3
-        // let song = new Song('songs/mf/A03 - Monkey Fingers.ssc'); //4
-        // let song = new Song('songs/or/401 - Oh! Rosa.ssc'); //6
-        // let song = new Song('songs/liadg/C04 - Love is a Danger Zone 2.ssc'); //4
-        // let song = new Song('songs/pd/A20 - Power of Dreams.ssc',keyBoardLag); //5
-        // let song = new Song('songs/pma/A05 - Pump Me Amadeus.ssc'); // 8
-        // let song = new Song('songs/bc/105 - Black Cat.ssc'); // 5, -3
-        // let song = new Song('songs/e/C08 - Emergency.ssc'); // 4 //TODO: fails -3
         this.song = new Song(songPath, audioBuf, offset); // 5, 8
-        // let song = new Song('songs/c/1101 - Cleaner.ssc'); // 5
-        // let song = new Song('songs/cm/1547 - Chase Me - Dreamcatcher.ssc'); // 5 -3
-        // let song = new Song('songs/cw/911 - Chicken Wing.ssc', keyBoardLag); // 10
-        // let song = new Song('songs/st/906 - Starian.ssc'); // 7
-        // let song = new Song('songs/pzo/1431 - Point Zero One.ssc'); // 7
 
 
         let levels = [level];
@@ -120,12 +112,11 @@ class Engine {
         let speeds = [speed] ;
         // let resourceManagers = [resourceManagerL,resourceManagerR] ;
 
-        let stage = new Stage(resourceManagerL, this.song, levels, speeds, lpad, rpad) ;
+        this.stage = new Stage(resourceManagerL, this.song, levels, speeds, lpad, rpad) ;
 
-        engine.addToUpdateList(stage) ;
+        engine.addToUpdateList(this.stage) ;
 
-
-        this.scene.add(stage.object) ;
+        this.scene.add(this.stage.object) ;
 
         this.performReady() ;
 
@@ -157,9 +148,22 @@ class Engine {
 
     animate() {
         //Note that .bind(this) is important so it doesnt lose the local context.
-        window.requestAnimationFrame(this.animate.bind(this));
+        this._id = window.requestAnimationFrame(this.animate.bind(this));
         this.render();
+
     }
+
+    stop() {
+
+        cancelAnimationFrame(this._id) ;
+
+        this.stats.end() ;
+        this.stats.domElement.style.display = 'none' ;
+        stageCleared( this.stage.p1.judgment.performance ) ;
+
+
+    }
+
     render() {
 
         // It is the amount of time since last call to render.
