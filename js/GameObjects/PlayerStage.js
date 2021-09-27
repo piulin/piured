@@ -105,8 +105,14 @@ class PlayerStage extends GameObject {
         this.padSteps = { } ;
         this.padReceptors = { } ;
 
-        var [ Lsteps, Lreceptor ] =
-            this.composePad(0, this.idLeftPad) ;
+        var Lsteps, Lreceptor ;
+        if ( this._song.getLevelStyle(this._level) === 'pump-single' || this._song.getLevelStyle(this._level) === 'pump-double'  ) {
+            [Lsteps, Lreceptor] =
+                this.composePad(0, this.idLeftPad);
+        } else if ( this._song.getLevelStyle(this._level) === 'pump-halfdouble' ) {
+            [Lsteps, Lreceptor] =
+                this.composePad(-2, this.idLeftPad);
+        }
 
         this.padSteps[this.idLeftPad] = Lsteps ;
         this.padReceptors[this.idLeftPad] = Lreceptor ;
@@ -122,8 +128,17 @@ class PlayerStage extends GameObject {
             Lsteps.position.x = -this.receptorsApart ;
             Lreceptor.object.position.x = -this.receptorsApart;
 
-            var [Rsteps, Rreceptor] =
-                this.composePad(5, this.idRightPad) ;
+
+            var Rsteps, Rreceptor ;
+
+            if ( this._song.getLevelStyle(this._level) === 'pump-double' ) {
+                [Rsteps, Rreceptor] =
+                    this.composePad(5, this.idRightPad);
+            } else if ( this._song.getLevelStyle(this._level) === 'pump-halfdouble' ) {
+                [Rsteps, Rreceptor] =
+                    this.composePad(3, this.idRightPad);
+            }
+
 
             this.padSteps[this.idRightPad] = Rsteps ;
             this.padReceptors[this.idRightPad] = Rreceptor ;
