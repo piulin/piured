@@ -79,8 +79,9 @@ class StepHold extends GameObject {
 
         this._lastGapLength = this.gapLength() ;
         this.updateHoldExtensiblePosition(this._lastGapLength) ;
+        // this._holdExtensible.object.originalYPos = this._holdExtensible.object.position.y ;
         if ( this._lastGapLength < 1 ) {
-            this.updateHoldExtensiblePosition(this._lastGapLength) ;
+            this.updateHoldEndNoteProportion(this._lastGapLength) ;
         }
 
     }
@@ -97,6 +98,8 @@ class StepHold extends GameObject {
 
             if ( gapLength < 1 ) {
                 this.updateHoldEndNoteProportion(gapLength) ;
+            } else {
+                this.updateHoldEndNoteProportion(1) ;
             }
         }
 

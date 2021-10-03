@@ -15,6 +15,8 @@ class PlayerStage extends GameObject {
 
     _object ;
 
+    _speedTween ;
+
     constructor(resourceManager, song, keyListener, level, userSpeed, idLeftPad, idRightPad) {
         super(resourceManager);
 
@@ -286,6 +288,7 @@ class PlayerStage extends GameObject {
             let stepMesh = step.object ;
 
             stepMesh.position.y = currentYPosition ;
+            stepMesh.originalYPos = currentYPosition ;
             stepMesh.position.x = XStepPosition ;
             stepMesh.position.z = this.stepNoteZDepth ;
 
@@ -320,11 +323,13 @@ class PlayerStage extends GameObject {
             engine.addToUpdateList( endNoteObject ) ;
 
             endNoteMesh.position.y = currentYPosition ;
+            endNoteMesh.originalYPos = currentYPosition ;
             endNoteMesh.position.x = XStepPosition ;
             endNoteMesh.position.z = this.holdEndNoteZDepth ;
 
             let holdExtensibleObject = new HoldExtensible(this._resourceManager, kind ) ;
             holdExtensibleObject.object.position.x = XStepPosition ;
+            holdExtensibleObject.object.originalYPos = -10000 ;
             holdExtensibleObject.object.position.z = this.holdZDepth ;
             engine.addToUpdateList( holdExtensibleObject ) ;
 
@@ -360,23 +365,31 @@ class PlayerStage extends GameObject {
         const [speed, measure, type] = this._song.getSpeedAndTimeAtBeat(this._level, beat) ;
         if (this.newTargetSpeed  !== speed ) {
 
-            console.log('speed change: ' + speed+  ' in secs: ' + measure) ;
+            // console.log('speed change: ' + speed+  ' in secs: ' + measure) ;
 
             // console.log('hola') ;
-            this.newTargetSpeed = speed ;
+            this.newTargetSpeed = speed;
             let time = measure * 1000;
             if (type === 0) {
                 time = (60 / this.beatManager.currentBPM) * measure * 1000;
             }
             // so it's not 0
-            const eps = 1 ;
-            new TWEEN.Tween(this).to({effectSpeed: speed}, time + eps).start();
+            const eps = 1.0 ;
+
+
+            // if (time === 0.0) {
+            //     this.effectSpeed = speed;
+            //     TWEEN.remove(this._speedTween) ;
+            // } else {
+                this._speedTween = new TWEEN.Tween(this).to({effectSpeed: speed}, time + eps).start();
+            // }
         }
     }
 
     animateSpeedChange() {
 
         if (this.lastEffectSpeed !== this.effectSpeed ) {
+            // console.log(this.effectSpeed);
 
             let lastEffectSpeed = this.lastEffectSpeed ;
             let effectSpeed = this.effectSpeed ;
@@ -388,10 +401,14 @@ class PlayerStage extends GameObject {
 
                 // steps, holds, and endNotes are meshes
                 if (child instanceof THREE.Mesh) {
+                    // const curr_position = child.position.y ;
                     // back to the original speed
-                    child.position.y *=(1/lastEffectSpeed);
+                    // console.log(child.originalYPos) ;
+                    child.position.y = child.originalYPos ;
                     // apply new speed
                     child.position.y *= effectSpeed ;
+
+                    // console.log('new speed: ' + effectSpeed +  ', last speed: ' + lastEffectSpeed + ' curr position: ' + curr_position + ' new position: ' + child.position.y) ;
 
                 }}) ;
 
