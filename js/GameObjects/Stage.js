@@ -9,7 +9,7 @@ class Stage extends GameObject {
     _bg ;
     p1 ;
 
-    constructor(resourceManager, song, levels, userSpeeds, lpad, rpad) { //...
+    constructor(resourceManager, song, levels, userSpeeds, lpad, rpad, playBackSpeed) { //...
 
         super(resourceManager);
 
@@ -70,7 +70,7 @@ class Stage extends GameObject {
 
 
 
-        let stage1 = new PlayerStage(this._resourceManager, this.song, P1, this.levels[0], this.userSpeeds[0],'0','1') ;
+        let stage1 = new PlayerStage(this._resourceManager, this.song, P1, this.levels[0], this.userSpeeds[0],'0','1', playBackSpeed) ;
         this.p1 = stage1 ;
         this._object.add(stage1.object) ;
         engine.addToUpdateList(stage1) ;
@@ -87,7 +87,8 @@ class Stage extends GameObject {
                 this.levels[1],
                 this.userSpeeds[1],
                 '1',
-                '2') ;
+                '2',
+                playBackSpeed) ;
 
             this._object.add(stage2.object) ;
             engine.addToUpdateList(stage2) ;
@@ -105,6 +106,10 @@ class Stage extends GameObject {
         // this has to be later than the stages.
         engine.addToUpdateList(P1) ;
 
+    }
+
+    setNewPlayBackSpeed ( newPlayBackSpeed ) {
+        this.p1.setNewPlayBackSpeed ( newPlayBackSpeed ) ;
     }
 
     ready() {

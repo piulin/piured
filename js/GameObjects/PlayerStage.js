@@ -17,7 +17,7 @@ class PlayerStage extends GameObject {
 
     _speedTween ;
 
-    constructor(resourceManager, song, keyListener, level, userSpeed, idLeftPad, idRightPad) {
+    constructor(resourceManager, song, keyListener, level, userSpeed, idLeftPad, idRightPad, playBackSpeed) {
         super(resourceManager);
 
         this.idLeftPad = idLeftPad ;
@@ -37,12 +37,16 @@ class PlayerStage extends GameObject {
             this._song,
             this._level,
             this._userSpeed,
-            this.keyboardLag) ;
+            this.keyboardLag,
+            playBackSpeed) ;
 
         engine.addToUpdateList(this.beatManager) ;
 
     }
 
+    setNewPlayBackSpeed ( newPlayBackSpeed ) {
+        this.beatManager.setNewPlayBackSpeed(newPlayBackSpeed) ;
+    }
 
     configureStepConstantsPositions () {
         // Depth of stage elements

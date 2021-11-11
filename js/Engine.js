@@ -71,6 +71,16 @@ class Engine {
 
     }
 
+    tunePlayBackSpeed ( playBackSpeedOffset ) {
+        this.playBackSpeed += playBackSpeedOffset ;
+        if (this.playBackSpeed < 0) {
+            this.playBackSpeed = 0.0 ;
+        }
+        this.song.setNewPlayBackSpeed( this.playBackSpeed ) ;
+        this.stage.setNewPlayBackSpeed( this.playBackSpeed ) ;
+
+    }
+
 
 
     addToUpdateList(gameObject) {
@@ -99,12 +109,14 @@ class Engine {
         container.appendChild( this.renderer.domElement );
     }
 
-    start ( songPath, audioBuf,  level, speed, offset, noteskin, lpad, rpad) {
+    start ( songPath, audioBuf,  level, speed, offset, noteskin, lpad, rpad, playBackSpeed) {
 
+
+        this.playBackSpeed = playBackSpeed ;
 
         let resourceManagerL = new ResourceManager('noteskins/' + noteskin + '/UHD', 'stage_UHD') ;
 
-        this.song = new Song(songPath, audioBuf, offset); // 5, 8
+        this.song = new Song(songPath, audioBuf, offset, playBackSpeed); // 5, 8
 
 
         let levels = [level];
@@ -112,7 +124,7 @@ class Engine {
         let speeds = [speed] ;
         // let resourceManagers = [resourceManagerL,resourceManagerR] ;
 
-        this.stage = new Stage(resourceManagerL, this.song, levels, speeds, lpad, rpad) ;
+        this.stage = new Stage(resourceManagerL, this.song, levels, speeds, lpad, rpad, playBackSpeed) ;
 
         engine.addToUpdateList(this.stage) ;
 

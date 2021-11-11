@@ -16,6 +16,9 @@ class KeyInput extends GameObject {
         this.addOffsetKeyMap = ',' ; // period
         this.subtractOffsetKeyMap = '.' ; // comma
 
+        this.addPlayBackSpeedKeyMap = '+' ; // period
+        this.substractPlayBackSpeedKeyMap = '-' ; // comma
+
         this.offsetChangeEnabled = true ;
 
         window.onkeydown = this.onKeyDown.bind(this) ;
@@ -31,7 +34,6 @@ class KeyInput extends GameObject {
         console.log(keyMap) ;
         for (const [key, value] of Object.entries(keyMap)) {
             if ( value === this.addOffsetKeyMap || value === this.subtractOffsetKeyMap) {
-                console.log('disable ffset') ;
                 this.offsetChangeEnabled = false ;
             }
         }
@@ -77,6 +79,12 @@ class KeyInput extends GameObject {
                 engine.updateOffset(0.01) ;
             } else if (key === this.subtractOffsetKeyMap && this.offsetChangeEnabled) {
                 engine.updateOffset( -0.01 ) ;
+            }
+
+            else if ( key === this.addPlayBackSpeedKeyMap) {
+                engine.tunePlayBackSpeed(0.05) ;
+            } else if (key === this.substractPlayBackSpeedKeyMap) {
+                engine.tunePlayBackSpeed( -0.05 ) ;
             }
         }
 

@@ -68,6 +68,18 @@ function postProcessing(meta, endIndex) {
         meta['SPEEDS'] = parseCommaSeparatedAssignments(meta['SPEEDS']) ;
     }
 
+    if ( 'STOPS' in meta ) {
+        meta['STOPS'] = parseCommaSeparatedAssignments(meta['STOPS']) ;
+    }
+
+    if ( 'WARPS' in meta ) {
+        meta['WARPS'] = parseCommaSeparatedAssignments(meta['WARPS']) ;
+    }
+
+    if ( 'DELAYS' in meta ) {
+        meta['DELAYS'] = parseCommaSeparatedAssignments(meta['DELAYS']) ;
+    }
+
 
     return [ meta, endIndex ] ;
 }

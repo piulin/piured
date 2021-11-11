@@ -5,11 +5,12 @@
 class BeatManager extends GameObject {
 
 
-    constructor(resourceManager, song, level, speed, keyBoardLag) {
+    constructor(resourceManager, song, level, speed, keyBoardLag, playBackSpeed) {
 
         super(resourceManager) ;
 
         this.speed = speed ;
+        this.playBackSpeed = playBackSpeed ;
 
         this.bpmList = song.getBMPs(level) ;
         this.scrollList = song.getScrolls(level) ;
@@ -31,17 +32,24 @@ class BeatManager extends GameObject {
 
     }
 
+    setNewPlayBackSpeed ( newPlayBackSpeed ) {
+        this.playBackSpeed = newPlayBackSpeed ;
+    }
+
+
+
     update(delta) {
 
         const songAudioTime = this.song.getCurrentAudioTime(this.level) ;
 
         if ( songAudioTime <= 0.0 || this.song.requiresResync) {
+        // if ( true ) {
             this.song.requiresResync = false ;
             this.currentAudioTime = songAudioTime - this.keyBoardLag;
             this.currentAudioTimeReal = songAudioTime;
         } else {
-            this.currentAudioTime += delta ;
-            this.currentAudioTimeReal += delta;
+            this.currentAudioTime += delta * this.playBackSpeed ;
+            this.currentAudioTimeReal += delta * this.playBackSpeed;
 
         }
 

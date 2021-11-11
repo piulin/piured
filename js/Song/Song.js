@@ -4,7 +4,7 @@
 
 class Song {
 
-    constructor( pathToSSCFile, audioBuf, offset ) {
+    constructor( pathToSSCFile, audioBuf, offset, playBackSpeed ) {
 
 
         this.pathToSSCFile = pathToSSCFile ;
@@ -14,6 +14,8 @@ class Song {
 
         // NoteData of each level.
         this.levels = [] ;
+
+        this.playBackSpeed = playBackSpeed ;
 
         this.syncTime = offset ;
 
@@ -157,6 +159,12 @@ class Song {
 
     }
 
+    setNewPlayBackSpeed ( newPlayBackSpeed ) {
+        this.source.playbackRate.value = newPlayBackSpeed ;
+        this.playBackSpeed = newPlayBackSpeed ;
+        // this.requiresResync = true ;
+    }
+
 
     play () {
 
@@ -185,6 +193,9 @@ class Song {
 
     playBack( buf ) {
         let source = this.context.createBufferSource();
+        source.playbackRate.value = this.playBackSpeed ;
+
+        // source.detune.value = 1200 ;
         source.connect(this.context.destination);
         source.buffer = buf;
         this.startTime = this.context.currentTime;
@@ -192,6 +203,7 @@ class Song {
         this.readyToStart = true ;
         source.onended = this.playBackEnded.bind(this) ;
 
+        this.source = source ;
     }
 
 

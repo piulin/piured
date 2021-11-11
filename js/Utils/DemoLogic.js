@@ -28,6 +28,7 @@ let rightKeyMap = {
 }
 
 let resources = 'https://piulin.gentakojima.me/'
+// let resources = './'
 
 function keyMapChanged(km, pad, step) {
 
@@ -96,6 +97,17 @@ function change_level(l) {
     document.getElementById('b').innerHTML = JSON.stringify(level.meta.BPMS) ;
 
 
+    if ( level.meta.STOPS[0].length > 1 ||
+        level.meta.WARPS[0].length > 1 ||
+        level.meta.DELAYS[0].length > 1 ) {
+
+        document.getElementById('warning').style.display = '' ;
+
+    } else {
+        document.getElementById('warning').style.display = 'none' ;
+    }
+
+
 }
 
 
@@ -116,10 +128,11 @@ $( "#play" ).click(function() {
     document.getElementById('container').style.display = 'block' ;
     document.getElementById('performance').style.display = 'none' ;
     let speed = parseInt(document.getElementById('speed').value) ;
+    let playback = 1.0 ;
     let offset = parseFloat(document.getElementById('offset').value) ;
     let noteskin = document.getElementById('noteskin').value ;
     // console.log(speed)
-    engine.start( resources + sscpath, resources + mp3path, chart_level, speed, offset, noteskin, leftKeyMap, rightKeyMap);
+    engine.start( resources + sscpath, resources + mp3path, chart_level, speed, offset, noteskin, leftKeyMap, rightKeyMap, playback);
 
 
 });
@@ -197,7 +210,6 @@ function change_stage(i) {
     stageIndex = i ;
     let stage = songsJson.children[i] ;
 
-    console.log(stage)
 
     let select = document.getElementById('online-song') ;
 
@@ -228,7 +240,6 @@ $("#online-song").live('change', function() {
     songIndex = i
     let song = songsJson.children[stageIndex].children[i] ;
 
-    console.log(song)
 
     let x=/^[^.]+\.(mp3|wav|ogg)$/i;
     let y=/^[^.]+\.ssc$/i;
