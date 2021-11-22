@@ -20,7 +20,7 @@ class SongTime2Second {
         this._stops = Array.from(stops) ;
         this._delays = Array.from(delays) ;
         this._curve = new Curve() ;
-        this._curve.addInterval(new Interval(new Point(0.0,0.0), new Point(longFloat,longFloat))) ;
+        this._curve.addInterval(new Interval(new Point(0.0,0.0), new Point(longFloat,longFloat), true, true)) ;
 
 
         for ( let i = 0 ; i < this._stops.length ; i++ ) {

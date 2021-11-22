@@ -59,19 +59,29 @@ class Song {
     }
 
     getStops(level) {
+        let arr ;
         if ( 'STOPS' in this.levels[level].meta ) {
-            return this.levels[level].meta['STOPS'] ;
+            arr = this.levels[level].meta['STOPS'] ;
         } else {
-            return this.meta['STOPS'] ;
+            arr = this.meta['STOPS'] ;
         }
+        if (arr[0].length === 1) {
+            return [] ;
+        }
+        return arr ;
     }
 
     getDelays(level) {
+        let arr ;
         if ( 'DELAYS' in this.levels[level].meta ) {
-            return this.levels[level].meta['DELAYS'] ;
+            arr = this.levels[level].meta['DELAYS'] ;
         } else {
-            return this.meta['DELAYS'] ;
+            arr = this.meta['DELAYS'] ;
         }
+        if (arr[0].length === 1) {
+            return [] ;
+        }
+        return arr ;
     }
 
     getSpeeds(level) {

@@ -10,6 +10,7 @@ let stageIndex = null
 let songIndex = null
 let mp3path = null
 let sscpath = null
+let selsong = null
 
 let leftKeyMap = {
     dl: 'Z',
@@ -58,7 +59,7 @@ function getDancePadCurrentValue(pad, step) {
 function discoverLevels( sscPath ) {
     let song = new Song( sscPath ) ;
 
-    localStorage.setItem('song', JSON.stringify(song)); //stringify object and store
+    selsong =  song ;  // localStorage.setItem('song', JSON.stringify(song)); //stringify object and store
 
     let select = document.getElementById('level') ;
 
@@ -85,7 +86,7 @@ $("#level").live('change', function() {
 function change_level(l) {
     // alert('The option with value ' + $(this).val());
     chart_level = l ;
-    let song = JSON.parse(localStorage.getItem('song')); //retrieve the object
+    let song = selsong ;
     let level = song.levels[l] ;
 
     document.getElementById('st').innerHTML = level.meta.STEPSTYPE ;
@@ -94,13 +95,21 @@ function change_level(l) {
     document.getElementById('d').innerHTML = level.meta.DESCRIPTION ;
     document.getElementById('m').innerHTML = level.meta.METER ;
     document.getElementById('c').innerHTML = level.meta.CREDIT ;
-    document.getElementById('b').innerHTML = JSON.stringify(level.meta.BPMS) ;
+    document.getElementById('b').innerHTML = JSON.stringify(song.getBMPs(l)) ;
 
+    if ( song.getStops(l).length > 0  ) {
+        document.getElementById('stops').innerHTML = 'YES' ;
+    } else {
+        document.getElementById('stops').innerHTML = 'NO' ;
+    }
 
-    if ( level.meta.STOPS[0].length > 1 ||
-        level.meta.WARPS[0].length > 1 ||
-        level.meta.DELAYS[0].length > 1 ) {
+    if ( song.getDelays(l).length > 0  ) {
+        document.getElementById('delays').innerHTML = 'YES' ;
+    } else {
+        document.getElementById('delays').innerHTML = 'NO' ;
+    }
 
+    if (('WARPS' in level.meta && level.meta.WARPS[0].length > 1) ) {
         document.getElementById('warning').style.display = '' ;
 
     } else {

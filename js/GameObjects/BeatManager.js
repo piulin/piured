@@ -9,7 +9,6 @@ class BeatManager extends GameObject {
 
         super(resourceManager) ;
 
-        this.speed = speed ;
         this.playBackSpeed = playBackSpeed ;
 
         this.bpmList = song.getBMPs(level) ;
@@ -25,14 +24,18 @@ class BeatManager extends GameObject {
 
         this.second2beat = new Second2Beat(this.bpmList) ;
         this.second2displacement = new Second2Displacement(this.scrollList,this.bpmList,this.second2beat) ;
+        this.songTime2Second = new SongTime2Second(this.stopsList, this.delaysList, this.second2beat) ;
         console.log('done') ;
+        this._speed = speed;
 
     }
 
     ready() {
 
-        this.currentAudioTime = 0 ;
-        this.currentAudioTimeReal = 0 ;
+        this._currentAudioTime = 0 ;
+        this._currentAudioTimeReal = 0 ;
+        this._currentChartAudioTime = 0 ;
+        this._currentChartAudioTimeReal = 0
         this.currentBPM = 0 ;
         this.currentYDisplacement = -100 ;
         this.currentBeat = 0 ;
@@ -54,13 +57,17 @@ class BeatManager extends GameObject {
         if ( songAudioTime <= 0.0 || this.song.requiresResync) {
         // if ( true ) {
             this.song.requiresResync = false ;
-            this.currentAudioTime = songAudioTime - this.keyBoardLag;
-            this.currentAudioTimeReal = songAudioTime;
+            this._currentAudioTime = songAudioTime - this.keyBoardLag;
+            this._currentAudioTimeReal = songAudioTime;
         } else {
-            this.currentAudioTime += delta * this.playBackSpeed ;
-            this.currentAudioTimeReal += delta * this.playBackSpeed;
+            this._currentAudioTime += delta * this.playBackSpeed ;
+            this._currentAudioTimeReal += delta * this.playBackSpeed;
 
         }
+
+        this._currentChartAudioTime = this.songTime2Second.scry(this._currentAudioTime).y ;
+        this._currentChartAudioTimeReal = this.songTime2Second.scry(this._currentAudioTimeReal).y ;
+
 
         // [this.currentYDisplacement, this.currentBeat] =
         //     this.getYShiftAtCurrentAudioTime(this.currentAudioTime) ;
@@ -70,9 +77,9 @@ class BeatManager extends GameObject {
 
 
         // console.log(this.scrollList)
-        this.currentYDisplacement = this.second2displacement.scry(this.currentAudioTime).y ;
+        this.currentYDisplacement = this.second2displacement.scry(this._currentChartAudioTime).y ;
 
-        this.currentBeat = this.second2beat.scry(this.currentAudioTime).y ;
+        this.currentBeat = this.second2beat.scry(this._currentChartAudioTime).y ;
         // console.log(this.currentYDisplacement )
 
 
@@ -84,6 +91,14 @@ class BeatManager extends GameObject {
 
         this.currentTickCount = this.song.getTickCountAtBeat(this.level, this.currentBeat) ;
 
+    }
+
+    get currentAudioTime () {
+        return this._currentChartAudioTime ;
+    }
+
+    get currentAudioTimeReal() {
+        return this._currentChartAudioTimeReal ;
     }
 
     updateCurrentBPM () {
@@ -124,7 +139,8 @@ class BeatManager extends GameObject {
         const beat = (4*barIndex + 4*noteInBarIndex/notesInBar) ;
 
         let second = this.second2beat.reverseScry(beat).x ;
-        let yShift = -this.second2displacement.scry(second).y * this.speed;
+        let songTime = this.songTime2Second.reverseScry(second).x ;
+        let yShift = -this.second2displacement.scry(second).y * this._speed;
 
 
         return [yShift, second] ;
