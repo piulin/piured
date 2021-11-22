@@ -58,6 +58,22 @@ class Song {
         }
     }
 
+    getStops(level) {
+        if ( 'STOPS' in this.levels[level].meta ) {
+            return this.levels[level].meta['STOPS'] ;
+        } else {
+            return this.meta['STOPS'] ;
+        }
+    }
+
+    getDelays(level) {
+        if ( 'DELAYS' in this.levels[level].meta ) {
+            return this.levels[level].meta['DELAYS'] ;
+        } else {
+            return this.meta['DELAYS'] ;
+        }
+    }
+
     getSpeeds(level) {
         if ( 'SPEEDS' in this.levels[level].meta ) {
             return this.levels[level].meta['SPEEDS'] ;
