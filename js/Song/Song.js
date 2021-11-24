@@ -100,6 +100,14 @@ class Song {
         }
     }
 
+    getOffset(level) {
+        if ( 'OFFSET' in this.levels[level].meta ) {
+            return this.levels[level].meta['OFFSET'] ;
+        } else {
+            return this.meta['OFFSET'];
+        }
+    }
+
     getBannerPath() {
         return this.pathToSSCFile.substr(0, this.pathToSSCFile.lastIndexOf("/")) + '/' + this.meta['BACKGROUND'] ;
     }
@@ -271,13 +279,13 @@ class Song {
         // console.log('Outside start time: ' + this.startTime) ;
         // this.levels[level].meta['OFFSET'] ;
         if ( this.readyToStart === false ) return -1.0 ;
-        return this.context.currentTime - this.delay + this.levels[level].meta['OFFSET']  - this.startTime - this.syncTime;
+        return this.context.currentTime - this.delay + this.getOffset(level)  - this.startTime - this.syncTime;
         // return this.startTime - this.audio.context.currentTime + parseFloat(this.meta['OFFSET']);
         //return this.audio.context.currentTime + this.startTime + parseFloat(this.meta['OFFSET']);
     }
 
     getTotalOffset(level) {
-        return - this.delay + this.levels[level].meta['OFFSET'] - this.startTime;
+        return - this.delay + this.getOffset(level) - this.startTime;
     }
 
 
