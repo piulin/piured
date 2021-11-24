@@ -53,8 +53,10 @@ class Song {
     getScrolls(level) {
         if ( 'SCROLLS' in this.levels[level].meta ) {
             return this.levels[level].meta['SCROLLS'] ;
-        } else {
+        } else if ( 'SCROLLS' in this.meta) {
             return this.meta['SCROLLS'] ;
+        } else {
+            return [] ;
         }
     }
 
@@ -62,8 +64,10 @@ class Song {
         let arr ;
         if ( 'STOPS' in this.levels[level].meta ) {
             arr = this.levels[level].meta['STOPS'] ;
-        } else {
+        } else if ('STOPS' in this.meta) {
             arr = this.meta['STOPS'] ;
+        } else {
+            return [] ;
         }
         if (arr[0].length === 1) {
             return [] ;
@@ -75,8 +79,10 @@ class Song {
         let arr ;
         if ( 'DELAYS' in this.levels[level].meta ) {
             arr = this.levels[level].meta['DELAYS'] ;
-        } else {
+        } else if ( 'DELAYS' in this.meta) {
             arr = this.meta['DELAYS'] ;
+        } else {
+            return [] ;
         }
         if (arr[0].length === 1) {
             return [] ;
@@ -87,8 +93,10 @@ class Song {
     getSpeeds(level) {
         if ( 'SPEEDS' in this.levels[level].meta ) {
             return this.levels[level].meta['SPEEDS'] ;
-        } else {
+        } else if ( 'SPEEDS' in this.meta ) {
             return this.meta['SPEEDS'] ;
+        } else {
+            return [] ;
         }
     }
 
