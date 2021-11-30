@@ -3,14 +3,14 @@ function filter() {
     input = document.getElementById("myInput");
     filter = input.value.toUpperCase();
     ul = document.getElementById("online-song");
-    li = ul.getElementsByTagName("option");
+    li = ul.getElementsByClassName("title");
     for (i = 0; i < li.length; i++) {
         txtValue = li[i].innerHTML
         // txtValue = a.innerHTML ;
         if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            li[i].style.display = "";
+            li[i].parentElement.parentElement.style.display = "";
         } else {
-            li[i].style.display = "none";
+            li[i].parentElement.parentElement.style.display = "none";
         }
     }
 }

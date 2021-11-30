@@ -1,478 +1,470 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
-	<head>
-		<!-- CSS only -->
-<!--		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">-->
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<style>
-			body {
-				font-family: Monospace;
-				background-color: #F5F5F5;
-				margin: 0px;
-				overflow: hidden;
-			}
-			#container {
-				height: 492px;
-				width: 876px;
-			}
-			#selector{
-				overflow-y: auto;
-				max-height: 100vh;
-				max-width: 100vw;
-			}
-			.flex{
-				display: flex;
-				flex-wrap: wrap;
-			}
-			#play{
-				display: inline-block;
-				padding: 0 2em;
-				line-height: 2;
-				margin-top: 1ex;
-			}
-		</style>
-		<script src="lib/jquery-1.8.3.min.js"></script>
-		<script src="lib/three.min.js"></script>
-		<script src="lib/three.js"></script>
-		<script src="lib/color-thief.umd.js"></script>
-<!--		For OrbitControls to work, we need to put it below the import of three.js. Otherwise it won't work.-->
-		<script src="lib/OrbitControls.js"></script>
-		<script src="js/Utils/FileReader.js"></script>
-		<script src="js/Structs/HoldsState.js"></script>
-		<script src="js/Structs/Holds.js"></script>
-		<script src="lib/Coordinates.js"></script>
-		<script src="lib/stats.min.js"></script>
-		<script src="js/Song/SSCParser.js"></script>
-		<script src="js/Song/Song.js"></script>
-		<script src="js/Song/NoteData.js"></script>
-		<script src="js/Engine.js"></script>
-		<script src="lib/tween.min.js"></script>
+<head>
+	<!-- CSS only -->
+	<style>
+		.selector-height {
+			height: 400px;
+		}
+	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
 
 
-		<script src="js/Resources/Geometries/BackgroundGeometry.js"></script>
-		<script src="js/Resources/Geometries/ComboGeometry.js"></script>
-		<script src="js/Resources/Geometries/DigitGeometry.js"></script>
-		<script src="js/Resources/Geometries/JudgmentGeometry.js"></script>
-		<script src="js/Resources/Geometries/ReceptorGeometry.js"></script>
-		<script src="js/Resources/Geometries/StepGeometry.js"></script>
-		<script src="js/Resources/Geometries/LifeBarGeometry.js"></script>
-		<script src="js/Resources/Geometries/DLifeBarGeometry.js"></script>
-		<script src="js/Resources/Geometries/TipGeometry.js"></script>
-		<script src="js/Resources/Geometries/PulseGeometry.js"></script>
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+	<script src="lib/three.min.js"></script>
+	<script src="lib/three.js"></script>
+	<script src="lib/color-thief.umd.js"></script>
+	<!--		For OrbitControls to work, we need to put it below the import of three.js. Otherwise it won't work.-->
+	<script src="lib/OrbitControls.js"></script>
+	<script src="js/Utils/FileReader.js"></script>
+	<script src="js/Structs/HoldsState.js"></script>
+	<script src="js/Structs/Holds.js"></script>
+	<script src="lib/Coordinates.js"></script>
+	<script src="lib/stats.min.js"></script>
+	<script src="js/Song/SSCParser.js"></script>
+	<script src="js/Song/Song.js"></script>
+	<script src="js/Song/NoteData.js"></script>
+	<script src="js/Engine.js"></script>
+	<script src="lib/tween.min.js"></script>
 
 
-		<script src="js/Resources/Materials/TransparentMaterial.js"></script>
-		<script src="js/Resources/Materials/AdditiveMaterial.js"></script>
+	<script src="js/Resources/Geometries/BackgroundGeometry.js"></script>
+	<script src="js/Resources/Geometries/ComboGeometry.js"></script>
+	<script src="js/Resources/Geometries/DigitGeometry.js"></script>
+	<script src="js/Resources/Geometries/JudgmentGeometry.js"></script>
+	<script src="js/Resources/Geometries/ReceptorGeometry.js"></script>
+	<script src="js/Resources/Geometries/StepGeometry.js"></script>
+	<script src="js/Resources/Geometries/LifeBarGeometry.js"></script>
+	<script src="js/Resources/Geometries/DLifeBarGeometry.js"></script>
+	<script src="js/Resources/Geometries/TipGeometry.js"></script>
+	<script src="js/Resources/Geometries/PulseGeometry.js"></script>
 
 
-		<script src="js/Resources/Shaders/BackgroundMaterial.js"></script>
-		<script src="js/Resources/Shaders/ReceptorMaterial.js"></script>
+	<script src="js/Resources/Materials/TransparentMaterial.js"></script>
+	<script src="js/Resources/Materials/AdditiveMaterial.js"></script>
 
 
-		<script src="js/Resources/Textures/PNGTexture.js"></script>
+	<script src="js/Resources/Shaders/BackgroundMaterial.js"></script>
+	<script src="js/Resources/Shaders/ReceptorMaterial.js"></script>
 
 
-		<script src="js/Resources/ResourceManager.js"></script>
-
-		<script src="js/GameObjects/GameObject.js"></script>
-
-		<script src="js/GameObjects/Sequence/StepQueue.js"></script>
-		<script src="js/GameObjects/Sequence/StepInfo.js"></script>
-
-		<script src="js/GameObjects/Input/Pad.js"></script>
-		<script src="js/GameObjects/Input/KeyInput.js"></script>
-
-		<script src="js/GameObjects/AnimatedTextures/HoldExtensibleTexture.js"></script>
-		<script src="js/GameObjects/AnimatedTextures/StepNoteTexture.js"></script>
+	<script src="js/Resources/Textures/PNGTexture.js"></script>
 
 
-		<script src="js/GameObjects/Judgment/Banner.js"></script>
-		<script src="js/GameObjects/Judgment/Combo.js"></script>
-		<script src="js/GameObjects/Judgment/Digit.js"></script>
-		<script src="js/GameObjects/Judgment/Digits.js"></script>
-		<script src="js/GameObjects/Judgment/Judgment.js"></script>
-		<script src="js/GameObjects/Judgment/JudgmentScale.js"></script>
+	<script src="js/Resources/ResourceManager.js"></script>
+
+	<script src="js/GameObjects/GameObject.js"></script>
+
+	<script src="js/GameObjects/Sequence/StepQueue.js"></script>
+	<script src="js/GameObjects/Sequence/StepInfo.js"></script>
+
+	<script src="js/GameObjects/Input/Pad.js"></script>
+	<script src="js/GameObjects/Input/KeyInput.js"></script>
+
+	<script src="js/GameObjects/AnimatedTextures/HoldExtensibleTexture.js"></script>
+	<script src="js/GameObjects/AnimatedTextures/StepNoteTexture.js"></script>
+
+
+	<script src="js/GameObjects/Judgment/Banner.js"></script>
+	<script src="js/GameObjects/Judgment/Combo.js"></script>
+	<script src="js/GameObjects/Judgment/Digit.js"></script>
+	<script src="js/GameObjects/Judgment/Digits.js"></script>
+	<script src="js/GameObjects/Judgment/Judgment.js"></script>
+	<script src="js/GameObjects/Judgment/JudgmentScale.js"></script>
 
 
 
-		<script src="js/GameObjects/StepNotes/EndNote.js"></script>
-		<script src="js/GameObjects/StepNotes/HoldExtensible.js"></script>
-		<script src="js/GameObjects/StepNotes/StepHold.js"></script>
-		<script src="js/GameObjects/StepNotes/StepNote.js"></script>
+	<script src="js/GameObjects/StepNotes/EndNote.js"></script>
+	<script src="js/GameObjects/StepNotes/HoldExtensible.js"></script>
+	<script src="js/GameObjects/StepNotes/StepHold.js"></script>
+	<script src="js/GameObjects/StepNotes/StepNote.js"></script>
 
-		<script src="js/GameObjects/FX/StepBounce.js"></script>
-		<script src="js/GameObjects/FX/Explosion.js"></script>
-		<script src="js/GameObjects/FX/Tap.js"></script>
-		<script src="js/GameObjects/FX/WhiteTap.js"></script>
-		<script src="js/GameObjects/FX/StepNoteFX.js"></script>
-
-
-		<script src="js/GameObjects/BeatManager.js"></script>
-		<script src="js/GameObjects/Receptor.js"></script>
-
-		<script src="js/GameObjects/LifeBar/LFBack.js"></script>
-		<script src="js/GameObjects/LifeBar/LFBarFX.js"></script>
-		<script src="js/GameObjects/LifeBar/LFBarFXRed.js"></script>
-		<script src="js/GameObjects/LifeBar/LFBar.js"></script>
-		<script src="js/GameObjects/LifeBar/LFPulse.js"></script>
-		<script src="js/GameObjects/LifeBar/LFFront.js"></script>
-		<script src="js/GameObjects/LifeBar/LFTip.js"></script>
-		<script src="js/GameObjects/LifeBar/LifeBar.js"></script>
-
-		<script src="js/GameObjects/Background.js"></script>
+	<script src="js/GameObjects/FX/StepBounce.js"></script>
+	<script src="js/GameObjects/FX/Explosion.js"></script>
+	<script src="js/GameObjects/FX/Tap.js"></script>
+	<script src="js/GameObjects/FX/WhiteTap.js"></script>
+	<script src="js/GameObjects/FX/StepNoteFX.js"></script>
 
 
-		<script src="js/GameObjects/PlayerStage.js"></script>
-		<script src="js/GameObjects/Stage.js"></script>
+	<script src="js/GameObjects/BeatManager.js"></script>
+	<script src="js/GameObjects/Receptor.js"></script>
+
+	<script src="js/GameObjects/LifeBar/LFBack.js"></script>
+	<script src="js/GameObjects/LifeBar/LFBarFX.js"></script>
+	<script src="js/GameObjects/LifeBar/LFBarFXRed.js"></script>
+	<script src="js/GameObjects/LifeBar/LFBar.js"></script>
+	<script src="js/GameObjects/LifeBar/LFPulse.js"></script>
+	<script src="js/GameObjects/LifeBar/LFFront.js"></script>
+	<script src="js/GameObjects/LifeBar/LFTip.js"></script>
+	<script src="js/GameObjects/LifeBar/LifeBar.js"></script>
+
+	<script src="js/GameObjects/Background.js"></script>
 
 
-
-		<script src="js/GameObjects/BeatManager/Curve.js"></script>
-		<script src="js/GameObjects/BeatManager/Interval.js"></script>
-		<script src="js/GameObjects/BeatManager/Point.js"></script>
-		<script src="js/GameObjects/BeatManager/Second2Beat.js"></script>
-		<script src="js/GameObjects/BeatManager/Second2Displacement.js"></script>
-		<script src="js/GameObjects/BeatManager/SongTime2Second.js"></script>
+	<script src="js/GameObjects/PlayerStage.js"></script>
+	<script src="js/GameObjects/Stage.js"></script>
 
 
 
-		<script src="js/Utils/Filter.js"></script>
+	<script src="js/GameObjects/BeatManager/Curve.js"></script>
+	<script src="js/GameObjects/BeatManager/Interval.js"></script>
+	<script src="js/GameObjects/BeatManager/Point.js"></script>
+	<script src="js/GameObjects/BeatManager/Second2Beat.js"></script>
+	<script src="js/GameObjects/BeatManager/Second2Displacement.js"></script>
+	<script src="js/GameObjects/BeatManager/SongTime2Second.js"></script>
 
 
 
-	</head>
-	<body>
+	<script src="js/Utils/Filter.js"></script>
 
 
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<body>
 
-<!--	<ol class="list-group list-group-numbered">-->
-<!--		<li class="list-group-item d-flex justify-content-between align-items-start">-->
-<!--			<div class="ms-2 me-auto">-->
-<!--				<div class="fw-bold">Subheading</div>-->
-<!--				Cras justo odio-->
-<!--			</div>-->
-<!--			<span class="badge bg-primary rounded-pill">14</span>-->
-<!--		</li>-->
-<!--		<li class="list-group-item d-flex justify-content-between align-items-start">-->
-<!--			<div class="ms-2 me-auto">-->
-<!--				<div class="fw-bold">Subheading</div>-->
-<!--				Cras justo odio-->
-<!--			</div>-->
-<!--			<span class="badge bg-primary rounded-pill">14</span>-->
-<!--		</li>-->
-<!--		<li class="list-group-item d-flex justify-content-between align-items-start">-->
-<!--			<div class="ms-2 me-auto">-->
-<!--				<div class="fw-bold">Subheading</div>-->
-<!--				Cras justo odio-->
-<!--			</div>-->
-<!--			<span class="badge bg-primary rounded-pill">14</span>-->
-<!--		</li>-->
-<!--	</ol>-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbar">
+	<div class="container-fluid">
+		<span class="navbar-brand mb-0 h1">PIURED</span>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<li class="nav-item">
+					<a class="nav-link active" aria-current="page" href="#">Online</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" aria-current="page" href="#">Local</a>
+				</li>
 
+			</ul>
+			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+				<li class="nav-item">
+					<a class="nav-link" aria-current="page" href="#">About</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
 
+<div class="container" id="selector">
 
-		<div id="selector">
+	<div class="d-grid gap-3">
+		<div class="p-3">
+			<div class="row">
 
-			<div id="performance" style="display: none;">
-				<h3>Your results: </h3>
-				<table>
-					<tr>
-						<td>Perfect: </td>
-						<td id="perfect"></td>
-						<td id="pperfect"></td>
-					</tr>
-					<tr>
-						<td>Great: </td>
-						<td id="great"></td>
-						<td id="pgreat"></td>
-					</tr>
-					<tr>
-						<td>Good: </td>
-						<td id="good"></td>
-						<td id="pgood"></td>
-					</tr>
-					<tr>
-						<td>Bad: </td>
-						<td id="bad"></td>
-						<td id="pbad"></td>
-					</tr>
-					<tr>
-						<td>Miss: </td>
-						<td id="miss"></td>
-						<td id="pmiss"></td>
-					</tr>
-				</table>
-			</div>
+				<div class="col-9">
+					<div class="p-3 card">
+						<div class="card-body">
+							<h5 class="card-title">Tune picker</h5>
+							<h6 class="card-subtitle mb-2 text-muted">Choose a song of your choice to play</h6>
 
-			<h3>Play Pump It Up online!</h3>
+							<div class="row align-items-start">
 
-<!--			<div class="container">-->
-<!--				<div class="row">-->
-<!--					<div class="col">-->
-<!--						<div>-->
-<!--							<label for="stage">Select Stage: </label><br>-->
-<!--							<select id="stage" size="15" name="stage"></select><br>-->
-<!--						</div>-->
-<!--					</div>-->
-<!--					<div class="col">-->
-<!--						<div>-->
-<!--							<label for="online-song">Select Song: </label><br>-->
-<!--							<select id="online-song" size="15" name="online-song" style="min-width: 200px;">-->
-<!--							</select><br>-->
-<!--							<input type="text" id="myInput" onkeyup="filter()" placeholder="Search songs...">-->
+								<div class="col px-0">
+									<div class="p-2 fw-bold">Choose stage</div>
+									<div class="selector-height overflow-auto list-group" role="tablist" id="stage">
+									</div>
+								</div>
+								<div class="col px-0">
+									<div class="p-2 fw-bold">Choose song</div>
+									<div class="selector-height overflow-auto list-group" id="online-song" role="tablist">
+									</div>
+									<form class="pt-2 d-flex">
+										<input class="form-control me-2" type="search" id="myInput" onkeyup="filter()" placeholder="Search for song" aria-label="Search">
+									</form>
+								</div>
+								<div class="col px-0">
+									<div class="p-2 fw-bold">Choose level</div>
+									<div class="selector-height overflow-auto list-group" id="level" role="tablist">
+										<a href="#" class="list-group-item list-group-item-action active" data-bs-toggle="list" aria-current="true">
+											<div class="d-flex w-100 justify-content-between">
+												<div class="fw-bold">Subheading</div>
+											</div>
+											<small>Description</small>
+										</a>
+										<a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list">
+											<div class="d-flex w-100 justify-content-between">
+												<div class="fw-bold">Subheading</div>
+											</div>
+											<small>Description</small>
 
-<!--						</div>-->
-<!--					</div>-->
-<!--					<div class="col">-->
-<!--						<div>-->
+										</a>
+										<a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list">
+											<div class="d-flex w-100 justify-content-between">
+												<div class="fw-bold">Subheading</div>
+											</div>
+											<small>Description</small>
 
-<!--							<label for="level">Select Level: </label><br>-->
-<!--							<select id="level" name="level" size="15" style="min-width: 10%;"></select><br>-->
+										</a>
+										<a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list">
+											<div class="d-flex w-100 justify-content-between">
+												<div class="fw-bold">Subheading</div>
+											</div>
+											<small>Description</small>
 
-<!--						</div>-->
-<!--					</div>-->
-<!--				</div>-->
-<!--			</div>-->
+										</a>
 
-
-			<div class="flex">
-				<div>
-					<label for="stage">Select Stage: </label><br>
-					<select id="stage" size="15" name="stage"></select><br>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
-				<div>
-					<label for="online-song">Select Song: </label><br>
-					<select id="online-song" size="15" name="online-song" style="min-width: 200px;">
-					</select><br>
-					<input type="text" id="myInput" onkeyup="filter()" placeholder="Search songs...">
+				<div class="col">
+					<div class="p-3 card">
+						<div class="card-body">
+							<h5 class="card-title">Level details</h5>
+<!--							<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
+
+							<table class="table">
+								<tr>
+									<td>Title: </td>
+									<td id="t">-</td>
+								</tr>
+								<tr>
+									<td>Artist: </td>
+									<td id="a">-</td>
+								</tr>
+								<tr>
+									<td>Steps Type: </td>
+									<td id="st">-</td>
+								</tr>
+								<tr>
+									<td>Description: </td>
+									<td id="d">-</td>
+								</tr>
+								<tr>
+									<td>Meter: </td>
+									<td id="m">-</td>
+								</tr>
+								<tr>
+									<td>Credit: </td>
+									<td id="c">-</td>
+								</tr>
+								<tr>
+									<td>BPMs: </td>
+									<td id="b">-</td>
+								</tr>
+								<tr>
+									<td>SCROLLS: </td>
+									<td id="scrolls">-</td>
+								</tr>
+								<tr>
+									<td>SPEEDS: </td>
+									<td id="speeds">-</td>
+								</tr>
+								<tr>
+									<td>STOPS: </td>
+									<td id="stops">-</td>
+								</tr>
+								<tr>
+									<td>DELAYS: </td>
+									<td id="delays">-</td>
+								</tr>
+								<tr>
+									<td>PLAYABLE: </td>
+									<td id="playable">
+										<div id="playable-true" style="display: none ;">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#097969" class="bi bi-check" viewBox="0 0 16 16">
+												<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+											</svg>
+										</div>
+
+										<div id="playable-false" style="display: none;">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#C70039" class="bi bi-x" viewBox="0 0 16 16">
+												<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+											</svg>
+										</div>
+
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
 
 				</div>
-
-				<div>
-
-					<label for="level">Select Level: </label><br>
-					<select id="level" name="level" size="15" style="min-width: 10%;"></select><br>
-
-				</div>
-
-			</div>
-			<div id="warning" style="display: none ;">
-				<p style="color: red">Warning! The selected level uses some StepMania features that PIURED does not implement.
-				Playing this level may produce broken gimmicks and off-the-beat steps. Play it at your own risk!
-				</p>
-			</div>
-			<br>
-
-			<div style="clear: both;"></div>
-			<br>
-<!--			<h3>Play local charts!</h3>-->
-<!--			<label for="ssc-file">Select SSC (Stepmania) file:</label> <input type="file" id="ssc-file" name="ssc"><br>-->
-
-			<table>
-				<tr>
-					<td>Title: </td>
-					<td id="t">-</td>
-				</tr>
-				<tr>
-					<td>Artist: </td>
-					<td id="a">-</td>
-				</tr>
-				<tr>
-					<td>Steps Type: </td>
-					<td id="st">-</td>
-				</tr>
-				<tr>
-					<td>Description: </td>
-					<td id="d">-</td>
-				</tr>
-				<tr>
-					<td>Meter: </td>
-					<td id="m">-</td>
-				</tr>
-				<tr>
-					<td>Credit: </td>
-					<td id="c">-</td>
-				</tr>
-				<tr>
-					<td>BPMs: </td>
-					<td id="b">-</td>
-				</tr>
-				<tr>
-					<td>STOPS: </td>
-					<td id="stops">-</td>
-				</tr>
-				<tr>
-					<td>DELAYS: </td>
-					<td id="delays">-</td>
-				</tr>
-			</table><br>
-
-			<div class="flex">
-				<div>
-					<label for="noteskin">Select Noteskin: </label><br>
-					<select id="noteskin" name="speed" size="10">
-
-						<option value="EXCEED2-FLOWERCARD">EXCEED2-FLOWERCARD</option>
-						<option value="EXCEED2-OLD" selected>EXCEED2-OLD</option>
-						<option value="FIESTA">FIESTA</option>
-						<option value="FIESTA-DRUM">FIESTA-DRUM</option>
-						<option value="FIESTA-LIGHTING">FIESTA-LIGHTING</option>
-						<option value="FIESTA-MISSILE">FIESTA-MISSILE</option>
-						<option value="FIESTA-SOCCER">FIESTA-SOCCER</option>
-						<option value="FIESTA2">FIESTA 2</option>
-						<option value="FIESTAEX-BASIC">FIESTA EX</option>
-						<option value="NX">NX</option>
-						<option value="NX2">NX2</option>
-						<option value="NX2-DOG">NX2-DOG</option>
-						<option value="NX2-E-FIRE">NX2-FIRE</option>
-						<option value="NX2-E-ICE">NX2-ICE</option>
-						<option value="NX2-E-WIND">NX2-WIND</option>
-						<option value="NX2-GIRL">NX2-GIRL</option>
-						<option value="NX2-SHEEP">NX2-SHEEP</option>
-						<option value="NX2-YASANGMA">NX2-YASANGMA</option>
-						<option value="NXA">NXA</option>
-						<option value="PREMIERE">PREMIERE/ZERO</option>
-						<option value="PRIME">PRIME</option>
-						<option value="ZERO-CANOND">ZERO-CANOND</option>
-						<option value="ZERO-EASY">ZERO-EASY</option>
-						<option value="ZERO-MUSICAL">ZERO-MUSICAL</option>
-						<option value="ZERO-POKER">ZERO-POKER</option>
-						<option value="ZERO-SLIME">ZERO-SLIME</option>
-					</select><br>
-
-				</div>
-
-				<div>
-					<label for="speed">Select Speed: </label>
-					<br>
-					<select id="speed" name="speed" size="10">
-
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="3.5">3.5</option>
-					<option value="4" selected>4</option>
-					<option value="4.5">4.5</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-				</select><br>
-				</div>
-			</div><br>
-
-			<div class="flex">
-
-				<div>
-					<label for="level">Left Pad (Pump-single) keymap: </label>
-					<br>
-					<table>
-
-						<tr>
-							<td>Down-left:</td>
-							<td><input type="text" id="ldlmap" value="Z" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dl')" ></td>
-						</tr>
-
-						<tr>
-							<td>Up-left:</td>
-							<td><input type="text" id="lulmap" value="Q" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ul')" ></td>
-							></td>
-						</tr>
-
-						<tr>
-							<td>Center:</td>
-							<td><input type="text" id="lcmap" value="S" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','c')" ></td>
-							></td>
-						</tr>
-
-						<tr>
-							<td>Up-right:</td>
-							<td><input type="text" id="lurmap" value="E" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ur')" ></td>
-							></td>
-						</tr>
-
-						<tr>
-							<td>Down-right:</td>
-							<td><input type="text" id="ldrmap" value="C" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dr')" ></td>
-							></td>
-						</tr>
-					</table>
-				</div>
-
-				<div>
-					<label for="level">Right Pad (Pump-double) keymap: </label>
-					<br>
-					<table>
-
-						<tr>
-							<td>Down-left:</td>
-							<td><input type="text" id="rdlmap" value="V" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dl')" ></td>
-						</tr>
-
-						<tr>
-							<td>Up-left:</td>
-							<td><input type="text" id="rulmap" value="R" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ul')" ></td>
-							></td>
-						</tr>
-
-						<tr>
-							<td>Center:</td>
-							<td><input type="text" id="rcmap" value="G" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','c')" ></td>
-							></td>
-						</tr>
-
-						<tr>
-							<td>Up-right:</td>
-							<td><input type="text" id="rurmap" value="Y" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ur')" ></td>
-							></td>
-						</tr>
-
-						<tr>
-							<td>Down-right:</td>
-							<td><input type="text" id="rdrmap" value="N" maxlength="1"
-									   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dr')" ></td>
-							></td>
-						</tr>
-					</table>
-				</div>
-
-
 
 			</div>
-
-
-
-			<label for="offset">Tune song offset: </label>
-			<input type="text" id="offset" name="offset" value="0.0" ><br>
-			<label>The offset can be updated on the fly by pressing "," and "." to add and subtract offset, respectively.</label>
-			<br>
-			<br>
-
-
-			<label>Tune playback speed: The playback rate can be updated on the fly by pressing "+" and "-" to speed up or slow down the audio rate, respectively.
-			Note that once the playback rate is updated, the offset must not be tuned again.</label>
-			<br>
-
-<!--			<label for="audio-file">Select Audio file (MP3):</label> <input type="file" id="audio-file" name="ssc"><br>-->
-
-			<button id="play">Play!</button>
-
 		</div>
 
 
-		<div id="container">
+		<div class="p-3">
+			<button type="button" class="btn btn-primary" onclick="play()">Play!</button>
+			<a class="btn btn-secondary" data-bs-toggle="collapse" href="#optionCard" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle Settings</a>
 		</div>
+
+		<div class="p-3 collapse" id="optionCard">
+<!--		<div class="p-3" id="optionCard">-->
+
+			<div class="p-3 card">
+				<div class="card-body">
+					<h5 class="card-title">Settings</h5>
+					<h6 class="card-subtitle mb-2 text-muted">Tune how your level is displayed and remap your keys</h6>
+
+
+					<div class="row">
+
+						<div class="col">
+
+							<div class="pb-2 fw-bold">Choose noteskin</div>
+							<select class="form-select" size="10" aria-label="size 10 select example" id="noteskin">
+
+								<option value="EXCEED2-FLOWERCARD">EXCEED2-FLOWERCARD</option>
+								<option value="EXCEED2-OLD" selected>EXCEED2-OLD</option>
+								<option value="FIESTA">FIESTA</option>
+								<option value="FIESTA-DRUM">FIESTA-DRUM</option>
+								<option value="FIESTA-LIGHTING">FIESTA-LIGHTING</option>
+								<option value="FIESTA-MISSILE">FIESTA-MISSILE</option>
+								<option value="FIESTA-SOCCER">FIESTA-SOCCER</option>
+								<option value="FIESTA2">FIESTA 2</option>
+								<option value="FIESTAEX-BASIC">FIESTA EX</option>
+								<option value="NX">NX</option>
+								<option value="NX2">NX2</option>
+								<option value="NX2-DOG">NX2-DOG</option>
+								<option value="NX2-E-FIRE">NX2-FIRE</option>
+								<option value="NX2-E-ICE">NX2-ICE</option>
+								<option value="NX2-E-WIND">NX2-WIND</option>
+								<option value="NX2-GIRL">NX2-GIRL</option>
+								<option value="NX2-SHEEP">NX2-SHEEP</option>
+								<option value="NX2-YASANGMA">NX2-YASANGMA</option>
+								<option value="NXA">NXA</option>
+								<option value="PREMIERE">PREMIERE/ZERO</option>
+								<option value="PRIME">PRIME</option>
+								<option value="ZERO-CANOND">ZERO-CANOND</option>
+								<option value="ZERO-EASY">ZERO-EASY</option>
+								<option value="ZERO-MUSICAL">ZERO-MUSICAL</option>
+								<option value="ZERO-POKER">ZERO-POKER</option>
+								<option value="ZERO-SLIME">ZERO-SLIME</option>
+							</select>
+
+						</div>
+
+						<div class="col">
+							<div class="pb-2 fw-bold">Choose speed</div>
+							<select class="form-select" size="10" aria-label="size 10 select example" id="speed" name="speed">
+
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="3.5">3.5</option>
+								<option value="4" selected>4</option>
+								<option value="4.5">4.5</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+							</select>
+						</div>
+
+						<div class="col">
+
+							<div class="pb-2 fw-bold">Left pad keymap:</div>
+							<table>
+								<tr>
+									<td >Down-left:</td>
+									<td><input class="form-control" type="text" id="ldlmap" value="Z" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dl')" ></td>
+								</tr>
+
+								<tr>
+									<td>Up-left:</td>
+									<td><input class="form-control" type="text" id="lulmap" value="Q" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ul')" ></td>
+								</tr>
+
+								<tr>
+									<td>Center:</td>
+									<td><input class="form-control" type="text" id="lcmap" value="S" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','c')" ></td>
+								</tr>
+
+								<tr>
+									<td>Up-right:</td>
+									<td><input class="form-control" type="text" id="lurmap" value="E" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ur')" ></td>
+								</tr>
+
+								<tr>
+									<td>Down-right:</td>
+									<td><input class="form-control" type="text" id="ldrmap" value="C" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dr')" ></td>
+								</tr>
+							</table>
+						</div>
+
+						<div class="col">
+							<div class="pb-2 fw-bold">Right pad keymap:</div>
+							<table>
+
+								<tr>
+									<td>Down-left:</td>
+									<td><input class="form-control" type="text" id="rdlmap" value="V" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dl')" ></td>
+								</tr>
+
+								<tr>
+									<td>Up-left:</td>
+									<td><input class="form-control" type="text" id="rulmap" value="R" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ul')" ></td>
+								</tr>
+
+								<tr>
+									<td>Center:</td>
+									<td><input class="form-control" type="text" id="rcmap" value="G" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','c')" ></td>
+								</tr>
+
+								<tr>
+									<td>Up-right:</td>
+									<td><input class="form-control" type="text" id="rurmap" value="Y" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ur')" ></td>
+								</tr>
+
+								<tr>
+									<td>Down-right:</td>
+									<td><input class="form-control" type="text" id="rdrmap" value="N" maxlength="1"
+											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dr')" ></td>
+								</tr>
+							</table>
+						</div>
+
+					</div>
+
+
+
+
+					<div class="p-2 row">
+						<div class="col">
+							<div class="fw-bold">Tune song offset: </div>
+							<input class="mw-25 form-control" type="text" id="offset" name="offset" value="0.0" >
+							<label>The offset can be updated on the fly by pressing "," and "." to add and subtract offset, respectively.</label>
+						</div>
+
+						<div class="col">
+							<div class="fw-bold">Tune playback rate:  </div>
+							<label>It can be updated on the fly by pressing "+" and "-" to speed up or slow down the song, respectively.
+								Note that once the playback rate is updated, the offset must not be tuned again.</label>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+<div id="container">
+</div>
+
 
 		<script src="js/Utils/DemoLogic.js"></script>
-	</body>
+</body>
 </html>
