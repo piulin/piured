@@ -235,6 +235,7 @@ function createListGroupLink(idx, title, number, onclick) {
 
     let span = document.createElement('span') ;
     span.className = "badge bg-primary rounded-pill" ;
+    span.style = 'height: 20px;'
     span.innerHTML = number;
 
     div1.append(divName) ;
@@ -331,19 +332,10 @@ function change_stage(i) {
 
         let song = stage.children[i] ;
 
-        // console.log(level.meta.METER)
-
-
-
         let a = createListGroupLink(i, song.name, 0,
             function () {
                 changeOnlineSong(i) ;
             }) ;
-        // let opt = document.createElement('option');
-        // opt.value = i ;
-        // opt.innerHTML = song.name;
-
-        // select.appendChild(opt)
 
         gl.append(a) ;
 

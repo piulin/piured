@@ -160,68 +160,39 @@
 
 	<div class="d-grid gap-3">
 		<div class="p-3">
-			<div class="row">
+			<div class="row d-flex align-items-stretch">
 
-				<div class="col-9">
-					<div class="p-3 card">
+				<div class="col-12 col-lg-8 col-xl-9">
+					<div class="p-3 card" style="height:100%;">
 						<div class="card-body">
-							<h5 class="card-title">Tune picker</h5>
-							<h6 class="card-subtitle mb-2 text-muted">Choose a song of your choice to play</h6>
+							<h5 class="card-title">Song picker</h5>
+							<h6 class="card-subtitle mb-2 text-muted">Choose song and level</h6>
 
-							<div class="row align-items-start">
+							<div class="row">
 
-								<div class="col px-0">
+								<div class="col-12 col-md-4 pb-2 px-0">
 									<div class="p-2 fw-bold">Choose stage</div>
 									<div class="selector-height overflow-auto list-group" role="tablist" id="stage">
 									</div>
 								</div>
-								<div class="col px-0">
+								<div class="col-12 col-md-4 pb-2 px-0">
 									<div class="p-2 fw-bold">Choose song</div>
 									<div class="selector-height overflow-auto list-group" id="online-song" role="tablist">
 									</div>
 									<form class="pt-2 d-flex">
-										<input class="form-control me-2" type="search" id="myInput" onkeyup="filter()" placeholder="Search for song" aria-label="Search">
+										<input class="form-control me-2" type="search" id="myInput" onkeyup="filter()" placeholder="Search songs..." aria-label="Search">
 									</form>
 								</div>
-								<div class="col px-0">
+								<div class="col-12 col-md-4 pb-2 px-0">
 									<div class="p-2 fw-bold">Choose level</div>
 									<div class="selector-height overflow-auto list-group" id="level" role="tablist">
-										<a href="#" class="list-group-item list-group-item-action active" data-bs-toggle="list" aria-current="true">
-											<div class="d-flex w-100 justify-content-between">
-												<div class="fw-bold">Subheading</div>
-											</div>
-											<small>Description</small>
-										</a>
-										<a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list">
-											<div class="d-flex w-100 justify-content-between">
-												<div class="fw-bold">Subheading</div>
-											</div>
-											<small>Description</small>
-
-										</a>
-										<a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list">
-											<div class="d-flex w-100 justify-content-between">
-												<div class="fw-bold">Subheading</div>
-											</div>
-											<small>Description</small>
-
-										</a>
-										<a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list">
-											<div class="d-flex w-100 justify-content-between">
-												<div class="fw-bold">Subheading</div>
-											</div>
-											<small>Description</small>
-
-										</a>
-
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
-				<div class="col">
+				<div class="col-12 col-lg-4 col-xl-3" style="height:100%;">
 					<div class="p-3 card">
 						<div class="card-body">
 							<h5 class="card-title">Level details</h5>
@@ -298,11 +269,6 @@
 			</div>
 		</div>
 
-
-		<div class="p-3">
-			<button type="button" class="btn btn-primary" onclick="play()">Play!</button>
-			<a class="btn btn-secondary" data-bs-toggle="collapse" href="#optionCard" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle Settings</a>
-		</div>
 
 		<div class="p-3 collapse" id="optionCard">
 <!--		<div class="p-3" id="optionCard">-->
@@ -469,6 +435,11 @@
 				</div>
 			</div>
 
+		</div>
+
+		<div class="p-3">
+			<button type="button" class="btn btn-primary" onclick="play()">Play!</button>
+			<a class="btn btn-secondary" data-bs-toggle="collapse" href="#optionCard" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle Settings</a>
 		</div>
 
 	</div>
