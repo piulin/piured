@@ -62,17 +62,18 @@ class Stage extends GameObject {
             }
         }
 
-
+        let accuracyMargin = 0.15 ;
         let touchInput = null ;
         if (useTouchInput) {
             touchInput = new TouchInput(this._resourceManager);
             touchInput.object.position.z = 1.0;
-            touchInput.object.position.y = -5;
-            touchInput.object.scale.x = 3.5;
-            touchInput.object.scale.y = 3.5;
+            touchInput.object.position.y = -9;
+            touchInput.object.scale.x = 8.0;
+            touchInput.object.scale.y = 8.0;
             touchInput.object.material.opacity = 0.3;
             this._object.add(touchInput.object);
             engine.addToUpdateList(touchInput);
+            accuracyMargin = 0.25 ;
         }
 
 
@@ -87,7 +88,7 @@ class Stage extends GameObject {
 
 
 
-        let stage1 = new PlayerStage(this._resourceManager, this.song, P1, this.levels[0], this.userSpeeds[0],'0','1', playBackSpeed) ;
+        let stage1 = new PlayerStage(this._resourceManager, this.song, P1, this.levels[0], this.userSpeeds[0],'0','1', playBackSpeed, accuracyMargin) ;
         this.p1 = stage1 ;
         this._object.add(stage1.object) ;
         engine.addToUpdateList(stage1) ;
@@ -105,7 +106,8 @@ class Stage extends GameObject {
                 this.userSpeeds[1],
                 '1',
                 '2',
-                playBackSpeed) ;
+                playBackSpeed,
+                accuracyMargin) ;
 
             this._object.add(stage2.object) ;
             engine.addToUpdateList(stage2) ;

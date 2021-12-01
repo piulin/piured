@@ -17,7 +17,7 @@ class PlayerStage extends GameObject {
 
     _speedTween ;
 
-    constructor(resourceManager, song, keyListener, level, userSpeed, idLeftPad, idRightPad, playBackSpeed) {
+    constructor(resourceManager, song, keyListener, level, userSpeed, idLeftPad, idRightPad, playBackSpeed, accuracyMargin) {
         super(resourceManager);
 
         this.idLeftPad = idLeftPad ;
@@ -31,6 +31,8 @@ class PlayerStage extends GameObject {
         this.keyListener = keyListener ;
 
         this.keyboardLag = 0.07;
+
+        this.accuracyMargin = accuracyMargin ;
 
 
         this.beatManager = new BeatManager(this._resourceManager,
@@ -85,7 +87,7 @@ class PlayerStage extends GameObject {
 
 
 
-        this.accuracyMargin = 0.15 ;
+
 
         this.configureStepConstantsPositions() ;
 

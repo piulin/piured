@@ -122,6 +122,11 @@ class Engine {
 
         this.song = new Song(songPath, audioBuf, offset, playBackSpeed); // 5, 8
 
+        if (useTouchInput) {
+            this.camera.position.y = -6 ;
+            this.camera.position.z = 17 ;
+        }
+
 
         let levels = [level];
         // let levels = [14] ;
