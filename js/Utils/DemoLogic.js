@@ -359,7 +359,7 @@ readSongList() ;
 
 /* Set default selection for static values: Noteskin, Speed and Offset */
 
-let inputTouch = localStorage.getItem("inputTouch") !== null ? JSON.parse(localStorage.getItem("inputTouch")) : "false" ;
+let inputTouch = localStorage.getItem("inputTouch") !== null ? JSON.parse(localStorage.getItem("inputTouch")) : false ;
 $( "#touchInput" ).prop('checked', inputTouch) ;
 
 let default_noteskin = localStorage.getItem("last_noteskin") !== null ? localStorage.getItem("last_noteskin") : "EXCEED2-OLD" ;
