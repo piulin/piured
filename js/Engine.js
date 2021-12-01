@@ -53,13 +53,17 @@ class Engine {
 
         this.renderer.setClearColor(new THREE.Color(0x000000));
 
-        this.cameraControls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
-        this.cameraControls.target = focus ;
+        // this.cameraControls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+        // this.cameraControls.target = focus ;
         // this.camera.lookAt(focus);
-        this.stats = this.createStats();
-        document.body.appendChild( this.stats.domElement );
+        // this.stats = this.createStats();
+        // document.body.appendChild( this.stats.domElement );
+
+        // document.addEventListener( 'mousedown', this.onDocumentMouseDown.bind(this), false );
 
     }
+
+
 
     // set new canvas size
     onWindowResize ( ) {
@@ -109,7 +113,7 @@ class Engine {
         container.appendChild( this.renderer.domElement );
     }
 
-    start ( songPath, audioBuf,  level, speed, offset, noteskin, lpad, rpad, playBackSpeed) {
+    start ( songPath, audioBuf,  level, speed, offset, noteskin, lpad, rpad, playBackSpeed, useTouchInput) {
 
 
         this.playBackSpeed = playBackSpeed ;
@@ -124,7 +128,7 @@ class Engine {
         let speeds = [speed] ;
         // let resourceManagers = [resourceManagerL,resourceManagerR] ;
 
-        this.stage = new Stage(resourceManagerL, this.song, levels, speeds, lpad, rpad, playBackSpeed) ;
+        this.stage = new Stage(resourceManagerL, this.song, levels, speeds, lpad, rpad, playBackSpeed, useTouchInput) ;
 
         engine.addToUpdateList(this.stage) ;
 
@@ -169,8 +173,8 @@ class Engine {
 
         cancelAnimationFrame(this._id) ;
 
-        this.stats.end() ;
-        this.stats.domElement.style.display = 'none' ;
+        // this.stats.end() ;
+        // this.stats.domElement.style.display = 'none' ;
         stageCleared( this.stage.p1.judgment.performance ) ;
 
 
@@ -195,9 +199,9 @@ class Engine {
         // for tweening the judgments.
         TWEEN.update();
 
-        this.cameraControls.update(delta);
+        // this.cameraControls.update(delta);
         this.renderer.render(this.scene, this.camera);
-        this.stats.update();
+        // this.stats.update();
     }
 
     showGrids() {

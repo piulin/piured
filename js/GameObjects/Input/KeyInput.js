@@ -6,7 +6,7 @@
 class KeyInput extends GameObject {
 
 
-    constructor(resourceManager) {
+    constructor(resourceManager, touchInput) {
 
         super(resourceManager) ;
 
@@ -23,6 +23,24 @@ class KeyInput extends GameObject {
 
         window.onkeydown = this.onKeyDown.bind(this) ;
         window.onkeyup = this.onKeyUp.bind(this) ;
+
+        this.touchInput = touchInput ;
+
+        if (touchInput != null) {
+            document.addEventListener( 'touchstart', this.onTouchDown.bind(this), false );
+            document.addEventListener( 'touchend', this.onTouchUp.bind(this), false );
+            this.touchEvents = [null,null,null,null,null] ;
+
+            //full screen
+            if (document.requestFullscreen) {
+                document.requestFullscreen();
+            } else if (document.webkitRequestFullscreen) { /* Safari */
+                document.webkitRequestFullscreen();
+            } else if (document.msRequestFullscreen) { /* IE11 */
+                document.msRequestFullscreen();
+            }
+
+        }
 
     }
 
@@ -41,6 +59,94 @@ class KeyInput extends GameObject {
         const pad = new Pad(keyMap, padId) ;
         this.pads.push( pad ) ;
         this.padsDic[padId] = pad ;
+    }
+
+    onTouchDown( event ) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        var canvasPosition = engine.renderer.domElement.getBoundingClientRect();
+
+        for ( let i = 0 ; i < event.touches.length ; i++) {
+
+
+            let touch = event.touches[i];
+
+            if (this.touchEvents[touch.identifier] == null) {
+
+                this.touchEvents[touch.identifier] = touch;
+                var mouseX = touch.pageX - canvasPosition.left;
+                var mouseY = touch.pageY - canvasPosition.top;
+
+                let kind = this.touchInput.touched(mouseX, mouseY);
+
+                for (let pad of this.pads) {
+                    switch (kind) {
+                        case 'dl':
+                            pad.dlKeyPressed = true;
+                            pad.dlKeyHold = true;
+                            break;
+                        case 'ul':
+                            pad.ulKeyPressed = true;
+                            pad.ulKeyHold = true;
+                            break;
+                        case 'c':
+                            pad.cKeyPressed = true;
+                            pad.cKeyHold = true;
+                            break;
+                        case 'ur':
+                            pad.urKeyPressed = true;
+                            pad.urKeyHold = true;
+                            break;
+                        case 'dr':
+                            pad.drKeyPressed = true;
+                            pad.drKeyHold = true;
+                            break;
+                    }
+                }
+            }
+        }
+
+    }
+
+    onTouchUp( event ) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        var canvasPosition = engine.renderer.domElement.getBoundingClientRect();
+
+        for ( let i = 0 ; i < event.changedTouches.length ; i++) {
+
+            let touch = this.touchEvents[event.changedTouches[i].identifier] ;
+            this.touchEvents[event.changedTouches[i].identifier] = null ;
+            var mouseX = touch.pageX - canvasPosition.left;
+            var mouseY = touch.pageY - canvasPosition.top;
+
+            let kind = this.touchInput.touched(mouseX, mouseY);
+
+            for (let pad of this.pads) {
+                switch (kind) {
+                    case 'dl':
+                        pad.dlKeyHold = false;
+                        break;
+                    case 'ul':
+                        pad.ulKeyHold = false;
+                        break;
+                    case 'c':
+                        pad.cKeyHold = false;
+                        break;
+                    case 'ur':
+                        pad.urKeyHold = false;
+                        break;
+                    case 'dr':
+                        pad.drKeyHold = false;
+                        break;
+                }
+            }
+        }
+
     }
 
     onKeyDown( event ) {

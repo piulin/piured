@@ -66,8 +66,9 @@ function play(){
     let playback = 1.0 ;
     let offset = parseFloat(document.getElementById('offset').value) ;
     let noteskin = document.getElementById('noteskin').value ;
+    let useTouchInput = document.getElementById("touchInput").checked ;
     // console.log(speed)
-    engine.start( resources + sscpath, resources + mp3path, chart_level, speed, offset, noteskin, leftKeyMap, rightKeyMap, playback);
+    engine.start( resources + sscpath, resources + mp3path, chart_level, speed, offset, noteskin, leftKeyMap, rightKeyMap, playback, useTouchInput);
 }
 
 function discoverLevels( sscPath ) {
@@ -179,6 +180,9 @@ $( "#offset" ).on("change", function(){
   localStorage.setItem("last_offset", $(this).val());
 });
 
+$("#touchInput").on("change", function() {
+        localStorage.setItem("inputTouch", this.checked ? "true": "false")
+});
 
 function changeOnlineSong(i){
 
@@ -354,6 +358,9 @@ function change_stage(i) {
 readSongList() ;
 
 /* Set default selection for static values: Noteskin, Speed and Offset */
+
+let inputTouch = localStorage.getItem("inputTouch") !== null ? JSON.parse(localStorage.getItem("inputTouch")) : "false" ;
+$( "#touchInput" ).prop('checked', inputTouch) ;
 
 let default_noteskin = localStorage.getItem("last_noteskin") !== null ? localStorage.getItem("last_noteskin") : "EXCEED2-OLD" ;
 $( "#noteskin" ).val(default_noteskin) ;

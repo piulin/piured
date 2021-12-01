@@ -91,6 +91,9 @@ class ResourceManager {
         this._textureDict['LP'] = new PNGTexture(stagePath + '/pulse.png') ;
         this._textureDict['LT'] = new PNGTexture(stagePath + '/SG-TIP 1x2.png') ;
 
+
+        this._textureDict['TOUCHINPUT'] = new PNGTexture(stagePath + '/touch_input.png') ;
+
     }
 
     loadMaterials() {
@@ -110,6 +113,9 @@ class ResourceManager {
         this._materialsDict['HUR'] = new TransparentMaterial(this._textureDict['HUR'].map) ;
         this._materialsDict['HDR'] = new TransparentMaterial(this._textureDict['HDR'].map) ;
 
+        // Input
+        this._materialsDict['TOUCHINPUT'] = new TransparentMaterial(this._textureDict['TOUCHINPUT'].map) ;
+
 
     }
 
@@ -117,6 +123,10 @@ class ResourceManager {
         // Background
         this._shadersDict['B'] = new BackgroundMaterial() ;
 
+    }
+
+    constructTouchInput() {
+        return new THREE.Mesh( this._geometryDict['S'].stepGeometry, this._materialsDict['TOUCHINPUT'].material );
     }
 
 

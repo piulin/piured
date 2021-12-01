@@ -9,7 +9,7 @@ class Stage extends GameObject {
     _bg ;
     p1 ;
 
-    constructor(resourceManager, song, levels, userSpeeds, lpad, rpad, playBackSpeed) { //...
+    constructor(resourceManager, song, levels, userSpeeds, lpad, rpad, playBackSpeed, useTouchInput) { //...
 
         super(resourceManager);
 
@@ -62,10 +62,27 @@ class Stage extends GameObject {
             }
         }
 
+
+        let touchInput = null ;
+        if (useTouchInput) {
+            touchInput = new TouchInput(this._resourceManager);
+            touchInput.object.position.z = 1.0;
+            touchInput.object.position.y = -5;
+            touchInput.object.scale.x = 3.5;
+            touchInput.object.scale.y = 3.5;
+            touchInput.object.material.opacity = 0.3;
+            this._object.add(touchInput.object);
+            engine.addToUpdateList(touchInput);
+        }
+
+
         //TODO:
-        var P1 = new KeyInput(this._resourceManager)  ;
+        var P1 = new KeyInput(this._resourceManager, touchInput)  ;
         P1.addPad(this.leftKeyMap, '0') ;
         P1.addPad(this.rightKeyMap, '1') ;
+        // ti = touchInput ;
+
+        // touchInput.getScreenPositionInPixels() ;
 
 
 
