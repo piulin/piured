@@ -215,7 +215,12 @@ class Song {
         let audioLoader = new THREE.AudioLoader();
         let startTime =  null ;
 
-        let context = new AudioContext();
+        let context = null ;
+        if('webkitAudioContext' in window) {
+            context = new webkitAudioContext();
+        } else {
+            context = new AudioContext();
+        }
         this.context = context ;
 
         audioLoader.load( this.audioBuf, this.playBack.bind(this)) ;
@@ -250,7 +255,6 @@ class Song {
 
 
     playBackEnded() {
-            console.log('I ended!') ;
             engine.stop( ) ;
     }
 
@@ -286,6 +290,10 @@ class Song {
 
     getTotalOffset(level) {
         return - this.delay + this.getOffset(level) - this.startTime;
+    }
+
+    closeBuff (){
+        this.context.close() ;
     }
 
 

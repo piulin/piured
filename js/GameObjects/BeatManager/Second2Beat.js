@@ -16,7 +16,7 @@ class Second2Beat {
         this._curve = new Curve() ;
 
 
-        let l = Array.from(this._bpms.at(-1)) ;
+        let l = Array.from(this._bpms[this._bpms.length -1]) ;
         l[0] += longFloat ;
         this._bpms.push(l)
         let prevPoint = new Point(0.0,0.0) ;

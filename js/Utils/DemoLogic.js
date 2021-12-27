@@ -28,9 +28,36 @@ let rightKeyMap = {
     dr: 'N'
 }
 
+//FOR IOS/MAC: https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
+window.addEventListener('touchstart', function() {
+
+    let context = null ;
+    if('webkitAudioContext' in window) {
+        context = new webkitAudioContext();
+    } else {
+        context = new AudioContext();
+    }
+    // create empty buffer
+    var buffer = context.createBuffer(1, 1, 22050);
+    var source = context.createBufferSource();
+    source.buffer = buffer;
+
+    // connect to output (your speakers)
+    source.connect(context.destination);
+
+    // play the file
+    source.noteOn(0);
+
+}, false);
+
 let resources = 'https://piulin.gentakojima.me/'
 // let resources = './'
+$(window).on('unload', function() {
+    if (engine != null) {
+        engine.song.closeBuff() ;
+    }
 
+});
 function keyMapChanged(km, pad, step) {
 
     km.value = km.value.charAt(0).toUpperCase() ;
