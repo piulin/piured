@@ -29,26 +29,26 @@ let rightKeyMap = {
 }
 
 //FOR IOS/MAC: https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
-window.addEventListener('touchstart', function() {
-
-    let context = null ;
-    if('webkitAudioContext' in window) {
-        context = new webkitAudioContext();
-    } else {
-        context = new AudioContext();
-    }
-    // create empty buffer
-    var buffer = context.createBuffer(1, 1, 22050);
-    var source = context.createBufferSource();
-    source.buffer = buffer;
-
-    // connect to output (your speakers)
-    source.connect(context.destination);
-
-    // play the file
-    source.noteOn(0);
-
-}, false);
+// window.addEventListener('touchstart', function() {
+//
+//     let context = null ;
+//     if('webkitAudioContext' in window) {
+//         context = new webkitAudioContext();
+//     } else {
+//         context = new AudioContext();
+//     }
+//     // create empty buffer
+//     var buffer = context.createBuffer(1, 1, 22050);
+//     var source = context.createBufferSource();
+//     source.buffer = buffer;
+//
+//     // connect to output (your speakers)
+//     source.connect(context.destination);
+//
+//     // play the file
+//     source.noteOn(0);
+//
+// }, false);
 
 let resources = 'https://piulin.gentakojima.me/'
 // let resources = './'
@@ -84,18 +84,79 @@ function getDancePadCurrentValue(pad, step) {
 
 function play(){
     engine = new Engine() ;
-    // let sscPath =localStorage.getItem('sscPath');
+
     document.getElementById('selector').style.display = 'none' ;
     document.getElementById('navbar').style.display = 'none' ;
     document.getElementById('container').style.display = 'block' ;
-    // document.getElementById('performance').style.display = 'none' ;
+
     let speed = parseInt(document.getElementById('speed').value) ;
     let playback = 1.0 ;
     let offset = parseFloat(document.getElementById('offset').value) ;
     let noteskin = document.getElementById('noteskin').value ;
+    let touchpadSize = 1.2 - (document.getElementById('touchpadSize').value/10.0) ;
     let useTouchInput = document.getElementById("touchInput").checked ;
-    // console.log(speed)
-    engine.start( resources + sscpath, resources + mp3path, chart_level, speed, offset, noteskin, leftKeyMap, rightKeyMap, playback, useTouchInput);
+
+    console.log(touchpadSize) ;
+
+    engine.configureStage(resources+sscpath,
+                        resources+mp3path,
+                                playback,
+                                offset,
+                                noteskin) ;
+
+    let p1InputConfig ;
+    let accuracyMargin = 0.15 ;
+
+    if (useTouchInput) {
+
+        if (document.requestFullscreen) {
+            document.requestFullscreen();
+        } else if (document.webkitRequestFullscreen) { /* Safari */
+            document.webkitRequestFullscreen();
+        } else if (document.msRequestFullscreen) { /* IE11 */
+            document.msRequestFullscreen();
+        }
+        document.addEventListener( 'touchstart', onTouchDown, false );
+        document.addEventListener( 'touchend', onTouchUp, false );
+
+        let stageType = engine.queryStageType(chart_level) ;
+        if (stageType === 'pump-single') {
+            p1InputConfig = new TouchInputConfig(0.8*touchpadSize,0,-9) ;
+            engine.setCameraPosition(0,-6,17) ;
+        } else if (stageType === 'pump-double' || stageType === 'pump-halfdouble') {
+            p1InputConfig = new TouchInputConfig(0.55*touchpadSize,0,-12) ;
+            engine.setCameraPosition(0,-8,22) ;
+        }
+
+    } else {
+
+        accuracyMargin = 0.25 ;
+
+        window.onkeydown = onKeyDown ;
+        window.onkeyup = onKeyUp ;
+
+        p1InputConfig = new KeyInputConfig(leftKeyMap, rightKeyMap) ;
+    }
+
+    let p1Config = new PlayerConfig(p1InputConfig,
+        chart_level,
+        speed,
+        accuracyMargin) ;
+
+
+
+    engine.addPlayer(p1Config) ;
+
+
+
+
+    engine.addToDOM('container');
+
+    window.addEventListener( 'resize', engine.onWindowResize.bind(engine), false );
+
+    engine.stageCleared = stageCleared ;
+
+    engine.start();
 }
 
 function discoverLevels( sscPath ) {
@@ -189,15 +250,17 @@ function change_level(l) {
 function clear(id) {
     var gl = document.getElementById(id);
     gl.innerHTML = '' ;
-    // for (let i = gl.childNodes.length-1; i >= 0; i--) {
-    //     gl.childNodes[i] = null;
-    // }
 }
 
 
 $( "#noteskin" ).on("change", function(){
   localStorage.setItem("last_noteskin", $(this).val());
 });
+
+$( "#touchpadSize" ).on("change", function(){
+    localStorage.setItem("touchpadSize", $(this).val());
+});
+
 
 $( "#speed" ).on("change", function(){
   localStorage.setItem("last_speed", $(this).val());
@@ -381,11 +444,15 @@ readSongList() ;
 let inputTouch = localStorage.getItem("inputTouch") !== null ? JSON.parse(localStorage.getItem("inputTouch")) : false ;
 $( "#touchInput" ).prop('checked', inputTouch) ;
 
+
 let default_noteskin = localStorage.getItem("last_noteskin") !== null ? localStorage.getItem("last_noteskin") : "EXCEED2-OLD" ;
 $( "#noteskin" ).val(default_noteskin) ;
 
 let default_speed = localStorage.getItem("last_speed") !== null ? parseFloat(localStorage.getItem("last_speed")) : 3 ;
 $( "#speed" ).val(default_speed) ;
+
+let touchpadSize = localStorage.getItem("touchpadSize") !== null ? parseFloat(localStorage.getItem("touchpadSize")) : 2 ;
+$( "#touchpadSize" ).val(touchpadSize) ;
 
 let default_offset = localStorage.getItem("last_offset") !== null ? parseFloat(localStorage.getItem("last_offset")) : "0.0" ;
 $( "#offset" ).val(default_offset) ;
@@ -418,18 +485,18 @@ updateMappings() ;
 
 function stageCleared(performance) {
 
+
+    console.log(performance) ;
+
     document.getElementById('selector').style.display = 'block' ;
     document.getElementById('navbar').style.display = 'block' ;
     document.getElementById('container').style.display = 'none' ;
-    document.getElementById('performance').style.display = 'block' ;
 
-    document.getElementById('performance').scrollIntoView() ;
+    document.removeEventListener( 'touchstart', onTouchDown, false );
+    document.removeEventListener( 'touchend', onTouchUp, false );
 
-    document.getElementById('perfect').innerHTML = performance['p'] ;
-    document.getElementById('great').innerHTML =performance['gr'] ;
-    document.getElementById('good').innerHTML =performance['go'] ;
-    document.getElementById('bad').innerHTML=performance['b'] ;
-    document.getElementById('miss').innerHTML =performance['m'] ;
+    engine = null ;
+
 
 
 }

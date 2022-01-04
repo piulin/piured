@@ -5,42 +5,17 @@
 // This class is responsible for the input of a pad (5 steps)
 class KeyInput extends GameObject {
 
+    _mesh ;
 
-    constructor(resourceManager, touchInput) {
+    constructor(resourceManager) {
 
         super(resourceManager) ;
 
         this.pads = [] ;
         this.padsDic = {} ;
 
-        this.addOffsetKeyMap = ',' ; // period
-        this.subtractOffsetKeyMap = '.' ; // comma
+        this._mesh = new THREE.Object3D() ;
 
-        this.addPlayBackSpeedKeyMap = '+' ; // period
-        this.substractPlayBackSpeedKeyMap = '-' ; // comma
-
-        this.offsetChangeEnabled = true ;
-
-        window.onkeydown = this.onKeyDown.bind(this) ;
-        window.onkeyup = this.onKeyUp.bind(this) ;
-
-        this.touchInput = touchInput ;
-
-        if (touchInput != null) {
-            document.addEventListener( 'touchstart', this.onTouchDown.bind(this), false );
-            document.addEventListener( 'touchend', this.onTouchUp.bind(this), false );
-            this.touchEvents = [null,null,null,null,null] ;
-
-            //full screen
-            if (document.requestFullscreen) {
-                document.requestFullscreen();
-            } else if (document.webkitRequestFullscreen) { /* Safari */
-                document.webkitRequestFullscreen();
-            } else if (document.msRequestFullscreen) { /* IE11 */
-                document.msRequestFullscreen();
-            }
-
-        }
 
     }
 
@@ -49,105 +24,13 @@ class KeyInput extends GameObject {
     }
 
     addPad(keyMap, padId) {
-        console.log(keyMap) ;
-        for (const [key, value] of Object.entries(keyMap)) {
-            if ( value === this.addOffsetKeyMap || value === this.subtractOffsetKeyMap) {
-                this.offsetChangeEnabled = false ;
-            }
-        }
 
-        const pad = new Pad(keyMap, padId) ;
+        const pad = new Pad(this._resourceManager, keyMap, padId) ;
+        engine.addToUpdateList(pad) ;
         this.pads.push( pad ) ;
         this.padsDic[padId] = pad ;
     }
 
-    onTouchDown( event ) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        var canvasPosition = engine.renderer.domElement.getBoundingClientRect();
-
-        for ( let i = 0 ; i < event.touches.length ; i++) {
-
-
-            let touch = event.touches[i];
-
-            if (this.touchEvents[touch.identifier] == null) {
-
-                this.touchEvents[touch.identifier] = touch;
-                var mouseX = touch.pageX - canvasPosition.left;
-                var mouseY = touch.pageY - canvasPosition.top;
-
-                let kind = this.touchInput.touched(mouseX, mouseY);
-
-                for (let pad of this.pads) {
-                    switch (kind) {
-                        case 'dl':
-                            pad.dlKeyPressed = true;
-                            pad.dlKeyHold = true;
-                            break;
-                        case 'ul':
-                            pad.ulKeyPressed = true;
-                            pad.ulKeyHold = true;
-                            break;
-                        case 'c':
-                            pad.cKeyPressed = true;
-                            pad.cKeyHold = true;
-                            break;
-                        case 'ur':
-                            pad.urKeyPressed = true;
-                            pad.urKeyHold = true;
-                            break;
-                        case 'dr':
-                            pad.drKeyPressed = true;
-                            pad.drKeyHold = true;
-                            break;
-                    }
-                }
-            }
-        }
-
-    }
-
-    onTouchUp( event ) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        var canvasPosition = engine.renderer.domElement.getBoundingClientRect();
-
-        for ( let i = 0 ; i < event.changedTouches.length ; i++) {
-
-            let touch = this.touchEvents[event.changedTouches[i].identifier] ;
-            this.touchEvents[event.changedTouches[i].identifier] = null ;
-            var mouseX = touch.pageX - canvasPosition.left;
-            var mouseY = touch.pageY - canvasPosition.top;
-
-            let kind = this.touchInput.touched(mouseX, mouseY);
-
-            for (let pad of this.pads) {
-                switch (kind) {
-                    case 'dl':
-                        pad.dlKeyHold = false;
-                        break;
-                    case 'ul':
-                        pad.ulKeyHold = false;
-                        break;
-                    case 'c':
-                        pad.cKeyHold = false;
-                        break;
-                    case 'ur':
-                        pad.urKeyHold = false;
-                        break;
-                    case 'dr':
-                        pad.drKeyHold = false;
-                        break;
-                }
-            }
-        }
-
-    }
 
     onKeyDown( event ) {
 
@@ -180,21 +63,7 @@ class KeyInput extends GameObject {
                 pad.drKeyPressed = true ;
                 // console.log('dr down: ' +key)
             }
-
-            else if ( key === this.addOffsetKeyMap && this.offsetChangeEnabled) {
-                engine.updateOffset(0.01) ;
-            } else if (key === this.subtractOffsetKeyMap && this.offsetChangeEnabled) {
-                engine.updateOffset( -0.01 ) ;
-            }
-
-            else if ( key === this.addPlayBackSpeedKeyMap) {
-                engine.tunePlayBackSpeed(0.05) ;
-            } else if (key === this.substractPlayBackSpeedKeyMap) {
-                engine.tunePlayBackSpeed( -0.05 ) ;
-            }
         }
-
-
 
 
     }
@@ -248,25 +117,6 @@ class KeyInput extends GameObject {
 
     update(delta) {
 
-
-        for ( let pad of this.pads ) {
-
-            pad.dlKeyPressed = false ;
-            // console.log('dl down: ' +key) ;
-
-            pad.ulKeyPressed = false ;
-            // console.log('ul down : ' +key)
-
-            pad.cKeyPressed = false ;
-            // console.log('c down: ' +key)
-
-            pad.urKeyPressed = false ;
-            // console.log('ur down: ' +key)
-
-            pad.drKeyPressed = false ;
-            // console.log('dr down: ' +key)
-        }
-
     }
 
 
@@ -299,6 +149,10 @@ class KeyInput extends GameObject {
         }
 
         return list ;
+    }
+
+    get object () {
+        return this._mesh ;
     }
 
 }

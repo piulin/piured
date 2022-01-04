@@ -271,12 +271,6 @@ class Song {
     // }
 
 
-    updateSyncTime(offset) {
-        this.syncTime += offset ;
-        this.requiresResync = true ;
-    }
-
-
 
     getCurrentAudioTime( level ) {
         // return this.context.currentTime ;

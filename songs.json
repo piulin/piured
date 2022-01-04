@@ -49934,6 +49934,28 @@
           "name": "11-EXCEED~ZERO",
           "path": "./Songs/11-EXCEED%7EZERO",
           "type": "folder"
+        },
+        {
+          "name": "XX-PIURED",
+          "path": "./Songs/XX-PIURED/",
+          "type": "folder",
+          "children":  [
+            {"name": "Maluma - Aloha",
+              "path": "./Songs/XX-PIURED/Maluma%20-%20Aloha",
+              "type": "folder",
+              "children":  [
+                {
+                  "name": "aloha.ssc",
+                  "path": "./Songs/XX-PIURED/Maluma%20-%20Aloha/aloha.ssc",
+                  "type": "file"
+                },
+                {
+                  "name": "aloha.mp3",
+                  "path": "./Songs/XX-PIURED/Maluma%20-%20Aloha/aloha.mp3",
+                  "type": "file"
+                }
+              ]}
+        ]
         }
       ],
       "name": "Songs",

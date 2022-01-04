@@ -2,22 +2,13 @@
 
 
 
-class TouchInput extends GameObject {
+class TouchPad extends Pad {
 
     _mesh ;
 
-    constructor(resourceManager) {
-        super(resourceManager) ;
+    constructor(resourceManager, padId) {
+        super(resourceManager, null, padId) ;
         this._mesh = this._resourceManager.constructTouchInput() ;
-    }
-
-    ready() {
-
-    }
-
-
-    update(delta) {
-
     }
 
     getScreenPositionInPixels() {
@@ -25,16 +16,23 @@ class TouchInput extends GameObject {
         // this._mesh.updateMatrix() ;
         // this._mesh.updateWorldMatrix() ;
         // Get 3D positions of top left corner (assuming they're not rotated)
+
+        let worldPosition = new THREE.Vector3() ;
+        let worldScale = new THREE.Vector3() ;
+
+
+        this._mesh.getWorldPosition(worldPosition) ;
+        this._mesh.getWorldScale(worldScale) ;
         let topLeft = new THREE.Vector3(
-            this._mesh.position.x - (this._mesh.scale.x / 2.0),
-            this._mesh.position.y + (this._mesh.scale.y / 2.0),
-            this._mesh.position.z
+            worldPosition.x - (worldScale.x / 2.0),
+            worldPosition.y + (worldScale.y / 2.0),
+            worldPosition.z
         );
 
         let downRight = new THREE.Vector3(
-            this._mesh.position.x + (this._mesh.scale.x / 2.0),
-            this._mesh.position.y - (this._mesh.scale.y / 2.0),
-            this._mesh.position.z
+            worldPosition.x + (worldScale.x / 2.0),
+            worldPosition.y - (worldScale.y / 2.0),
+            worldPosition.z
         );
 
         // engine.camera.updateMatrixWorld();

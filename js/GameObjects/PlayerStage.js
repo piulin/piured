@@ -10,29 +10,39 @@ class PlayerStage extends GameObject {
     _steps ;
     _receptors ;
     _lifeBar ;
-
     _userSpeed ;
-
     _object ;
-
+    _scaled_object ;
     _speedTween ;
+    playerConfig ;
 
-    constructor(resourceManager, song, keyListener, level, userSpeed, idLeftPad, idRightPad, playBackSpeed, accuracyMargin) {
+    constructor(resourceManager,
+                song,
+                playerConfig,
+                playBackSpeed,
+                lifebarOrientation = 'left2right') {
         super(resourceManager);
 
-        this.idLeftPad = idLeftPad ;
-        this.idRightPad = idRightPad ;
+        this.playerConfig = playerConfig ;
         this._song = song ;
-        this._level = level ;
-        this._userSpeed = userSpeed ;
+        this._level = playerConfig.level ;
+        this._userSpeed = playerConfig.speed ;
 
         this._object = new THREE.Object3D() ;
+        this._scaled_object = new THREE.Object3D() ;
+        this._scaled_object.add(this._object) ;
 
-        this.keyListener = keyListener ;
+        let [kl, ilp, irp] = this.configureInputPlayerStage(playerConfig.inputConfig) ;
+        this.keyListener = kl ;
+        this.idLeftPad = ilp ;
+        this.idRightPad = irp ;
+        this._object.add(kl.object) ;
+        engine.addToUpdateList(kl) ;
 
         this.keyboardLag = 0.07;
 
-        this.accuracyMargin = accuracyMargin ;
+        this.accuracyMargin = playerConfig.accuracyMargin ;
+        this.lifebarOrientation = lifebarOrientation ;
 
 
         this.beatManager = new BeatManager(this._resourceManager,
@@ -44,6 +54,51 @@ class PlayerStage extends GameObject {
 
         engine.addToUpdateList(this.beatManager) ;
 
+    }
+
+    configureInputPlayerStage(inputConfig) {
+
+
+        if (inputConfig instanceof KeyInputConfig) {
+
+            let playerInput = new KeyInput(this._resourceManager)  ;
+            engine.addToUpdateList(playerInput) ;
+            engine.addToKeyDownList(playerInput) ;
+            engine.addToKeyUpList(playerInput) ;
+
+            let pad1Id = '0' ;
+            let pad2Id = '1' ;
+
+            playerInput.addPad(inputConfig.lpad, pad1Id) ;
+            playerInput.addPad(inputConfig.rpad, pad2Id) ;
+
+            return [playerInput, pad1Id, pad2Id ]  ;
+
+        } else if (inputConfig instanceof TouchInputConfig) {
+            let playerInput = new TouchInput(this._resourceManager) ;
+            engine.addToUpdateList(playerInput) ;
+            engine.addToTouchDownList(playerInput) ;
+            engine.addToTouchUpList(playerInput) ;
+
+            let pad1Id = '0' ;
+            let pad2Id = '1' ;
+
+            playerInput.addTouchPad(pad1Id) ;
+
+            if ( this._song.getLevelStyle(this._level) === 'pump-double' || this._song.getLevelStyle(this._level) === 'pump-halfdouble') {
+                playerInput.addTouchPad(pad2Id) ;
+            }
+            //
+            playerInput.setScale( inputConfig.scale ) ;
+            // playerInput.object.scale.y *= inputConfig.scale ;
+            playerInput.object.position.x += inputConfig.X ;
+            playerInput.object.position.y += inputConfig.Y ;
+
+
+
+            return [ playerInput, pad1Id, pad2Id ]  ;
+
+        }
     }
 
     setNewPlayBackSpeed ( newPlayBackSpeed ) {
@@ -147,10 +202,8 @@ class PlayerStage extends GameObject {
                     this.composePad(3, this.idRightPad);
             }
 
-
             this.padSteps[this.idRightPad] = Rsteps ;
             this.padReceptors[this.idRightPad] = Rreceptor ;
-
 
             Rsteps.position.x = this.receptorsApart ;
             Rreceptor.object.position.x = this.receptorsApart;
@@ -159,10 +212,11 @@ class PlayerStage extends GameObject {
             this._receptors.add(Rreceptor.object) ;
 
             // lifebar
-            this._lifeBar = new LifeBar(this._resourceManager, this.beatManager, 'double' ) ;
+            this._lifeBar = this.getLifeBar('double')
         } else {
             // lifebar
-            this._lifeBar = new LifeBar(this._resourceManager, this.beatManager, 'single' ) ;
+
+            this._lifeBar = this.getLifeBar('single') ;
 
         }
 
@@ -180,6 +234,17 @@ class PlayerStage extends GameObject {
         this.stepQueue.cleanUpStepQueue() ;
 
 
+    }
+
+    getLifeBar(kind) {
+        let lifebar = new LifeBar(this._resourceManager, this.beatManager, kind ) ;
+
+        if (this.lifebarOrientation === 'left2right') {
+            return lifebar ;
+        } else if (this.lifebarOrientation === 'right2left') {
+            lifebar.object.scale.x *= -1 ;
+            return lifebar ;
+        }
     }
 
     composePad(stepDataOffset, padId) {
@@ -453,9 +518,13 @@ class PlayerStage extends GameObject {
 
     }
 
+    setScale(scale) {
+        this._object.scale.x *= scale ;
+        this._object.scale.y *= scale ;
+    }
 
     get object() {
-        return this._object ;
+        return this._scaled_object ;
     }
 
     removeStep(step) {

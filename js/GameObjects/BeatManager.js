@@ -18,6 +18,8 @@ class BeatManager extends GameObject {
         this.song = song ;
         this.level = level ;
         this.keyBoardLag = keyBoardLag ;
+        this.customOffset = 0 ;
+        this.requiresResync = false ;
 
 
         // new beatmanager
@@ -48,15 +50,19 @@ class BeatManager extends GameObject {
         this.playBackSpeed = newPlayBackSpeed ;
     }
 
+    updateOffset(offset) {
+        this.customOffset += offset ;
+        this.requiresResync = true ;
+    }
 
 
     update(delta) {
 
-        const songAudioTime = this.song.getCurrentAudioTime(this.level) ;
+        const songAudioTime = this.song.getCurrentAudioTime(this.level) - this.customOffset ;
 
-        if ( songAudioTime <= 0.0 || this.song.requiresResync) {
+        if ( songAudioTime <= 0.0 || this.requiresResync) {
         // if ( true ) {
-            this.song.requiresResync = false ;
+            this.requiresResync = false ;
             this._currentAudioTime = songAudioTime - this.keyBoardLag;
             this._currentAudioTimeReal = songAudioTime;
         } else {
