@@ -15,6 +15,7 @@ class PNGTexture {
             for ( const map of clonedTexturesLocal ) {
                 map.image = mapLocal.image;
                 map.needsUpdate = true ;
+                engine.renderer.initTexture(map) ;
             }
         }) ;
 
@@ -23,6 +24,11 @@ class PNGTexture {
 
         // to accurately represent the colors
         this._map.encoding = THREE.sRGBEncoding;
+
+        this._map.wrapS = THREE.RepeatWrapping;
+
+
+        engine.renderer.initTexture(this._map) ;
 
 
 

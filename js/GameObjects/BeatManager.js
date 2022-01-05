@@ -5,24 +5,39 @@
 class BeatManager extends GameObject {
 
 
-    constructor(resourceManager, song, level, speed, keyBoardLag) {
+    constructor(resourceManager, song, level, speed, keyBoardLag, playBackSpeed) {
 
         super(resourceManager) ;
 
-        this.speed = speed ;
+        this.playBackSpeed = playBackSpeed ;
 
         this.bpmList = song.getBMPs(level) ;
         this.scrollList = song.getScrolls(level) ;
+        this.stopsList = song.getStops(level) ;
+        this.delaysList = song.getDelays(level) ;
         this.song = song ;
         this.level = level ;
         this.keyBoardLag = keyBoardLag ;
+        this.customOffset = 0 ;
+        this.requiresResync = false ;
+
+
+        // new beatmanager
+
+        this.second2beat = new Second2Beat(this.bpmList) ;
+        this.second2displacement = new Second2Displacement(this.scrollList,this.bpmList,this.second2beat) ;
+        this.songTime2Second = new SongTime2Second(this.stopsList, this.delaysList, this.second2beat) ;
+        console.log('done') ;
+        this._speed = speed;
 
     }
 
     ready() {
 
-        this.currentAudioTime = 0 ;
-        this.currentAudioTimeReal = 0 ;
+        this._currentAudioTime = 0 ;
+        this._currentAudioTimeReal = 0 ;
+        this._currentChartAudioTime = 0 ;
+        this._currentChartAudioTimeReal = 0
         this.currentBPM = 0 ;
         this.currentYDisplacement = -100 ;
         this.currentBeat = 0 ;
@@ -31,25 +46,65 @@ class BeatManager extends GameObject {
 
     }
 
+    setNewPlayBackSpeed ( newPlayBackSpeed ) {
+        this.playBackSpeed = newPlayBackSpeed ;
+    }
+
+    updateOffset(offset) {
+        this.customOffset += offset ;
+        this.requiresResync = true ;
+    }
+
+
     update(delta) {
 
-        const songAudioTime = this.song.getCurrentAudioTime(this.level) ;
-        if ( songAudioTime < 0 ) {
-            this.currentAudioTime = songAudioTime - this.keyBoardLag;
-            this.currentAudioTimeReal = songAudioTime;
+        const songAudioTime = this.song.getCurrentAudioTime(this.level) - this.customOffset ;
+
+        if ( songAudioTime <= 0.0 || this.requiresResync) {
+        // if ( true ) {
+            this.requiresResync = false ;
+            this._currentAudioTime = songAudioTime - this.keyBoardLag;
+            this._currentAudioTimeReal = songAudioTime;
         } else {
-            this.currentAudioTime += delta ;
-            this.currentAudioTimeReal += delta;
+            this._currentAudioTime += delta * this.playBackSpeed ;
+            this._currentAudioTimeReal += delta * this.playBackSpeed;
 
         }
 
-        [this.currentYDisplacement, this.currentBeat] =
-            this.getYShiftAtCurrentAudioTime(this.currentAudioTime) ;
+        this._currentChartAudioTime = this.songTime2Second.scry(this._currentAudioTime).y ;
+        this._currentChartAudioTimeReal = this.songTime2Second.scry(this._currentAudioTimeReal).y ;
+
+
+        // [this.currentYDisplacement, this.currentBeat] =
+        //     this.getYShiftAtCurrentAudioTime(this.currentAudioTime) ;
+        //
+        // let [realDisp, realBeat] =
+        //     this.getYShiftAtCurrentAudioTime(this.currentAudioTime) ;
+
+
+        // console.log(this.scrollList)
+        this.currentYDisplacement = this.second2displacement.scry(this._currentChartAudioTime).y ;
+
+        this.currentBeat = this.second2beat.scry(this._currentChartAudioTime).y ;
+        // console.log(this.currentYDisplacement )
+
+
+
+        // console.log('time: '+ this.currentAudioTime +'\n dis: ' + this.currentYDisplacement + ' beat: '  + this.currentBeat +
+        // '\n rds: ' + realDisp + ' rbet: ' + realBeat) ;
 
         this.updateCurrentBPM() ;
 
         this.currentTickCount = this.song.getTickCountAtBeat(this.level, this.currentBeat) ;
 
+    }
+
+    get currentAudioTime () {
+        return this._currentChartAudioTime ;
+    }
+
+    get currentAudioTimeReal() {
+        return this._currentChartAudioTimeReal ;
     }
 
     updateCurrentBPM () {
@@ -84,214 +139,18 @@ class BeatManager extends GameObject {
         return last ;
     }
 
-    getScrollsInBeatInterval(lowerBound, upperBound) {
-        let lowerBoundScroll = this.getScrollAtBeat(lowerBound);
-        let list = [[lowerBound,lowerBoundScroll[1]]] ;
 
-        // list.push(this.getScrollValueAtBeat(lowerBound)) ;
-        const scrollList = this.scrollList ;
-
-        for ( var i = 0 ; i < scrollList.length ; i++ ) {
-
-            const beatInScroll = scrollList[i][0] ;
-            const nextBeatInScroll = scrollList[i+1] !== undefined ? scrollList[i+1][0] : undefined  ;
-
-            if ( (beatInScroll > lowerBound &&
-                ( beatInScroll < upperBound || upperBound ===undefined) )  &&
-                beatInScroll !==  lowerBoundScroll[0]  ) {
-                list.push(scrollList[i]) ;
-            } else if ( beatInScroll >= upperBound) {
-                break ;
-            }
-        }
-
-        return list ;
-
-    }
-
-
-    // this function calculates the YDisplacement and currentTime in song to construct the scene with the steps.
     getYShiftAndCurrentTimeInSongAtBeat( barIndex, noteInBarIndex, notesInBar ) {
-
-        let yShift = 0.0 ;
-        let currentTimeInSong = 0.0 ;
-
         // calculate current beat
         const beat = (4*barIndex + 4*noteInBarIndex/notesInBar) ;
 
-        // iterate all bpms
-        for (var i = 0 ; i < this.bpmList.length ; i++ ) {
+        let second = this.second2beat.reverseScry(beat).x ;
+        let songTime = this.songTime2Second.reverseScry(second).x ;
+        let yShift = -this.second2displacement.scry(second).y * this._speed;
 
 
+        return [yShift, second] ;
 
-            // const scrollBeat = this.scrollList[j][0] ;
-            // const scrollSpeed = this.scrollList[j][1] ;
-
-            // retrieve bpm and beat from the list
-            let bpmInfo = this.bpmList [i];
-            const beatInList = bpmInfo[0];
-
-            // also retrieve nextBeat from the list if possible.
-            let nextBeatInList = this.bpmList [i + 1] !== undefined ? this.bpmList [i + 1][0] : undefined;
-
-
-            // this condition is met when the beat corresponds to the current chunk of beats (beatInList, nextBeatInList)
-
-            //iterate scrolls
-            let scrollList = this.getScrollsInBeatInterval(beatInList, nextBeatInList) ;
-
-            if (beat >= beatInList && (beat < nextBeatInList || nextBeatInList === undefined)) {
-
-
-
-                // calculate contribution of each scroll in the position.
-                for ( var j = 0; j < scrollList.length ; j++ ) {
-                    const scroll = scrollList[j] ;
-                    const scrollBeat = scroll[0] ;
-                    const scrollValue = scroll [1] ;
-                    const nextScroll = scrollList[j+1] ;
-
-                    if ( nextScroll !== undefined && beat >= nextScroll[0] ) {
-                        yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
-                    } else {
-                        yShift += -(beat - scrollBeat) * this.speed * scrollValue ;
-                        break ;
-                    }
-
-                }
-
-                // we calculate the proportion of time and displacement that this bpm would contribute.
-                const secondsPerBeat = 60 / bpmInfo[1];
-
-                currentTimeInSong += (beat - beatInList) * secondsPerBeat;
-
-                break;
-
-                // otherwise, the whole chunk is contributed.
-            } else {
-
-                const secondsPerBeat = 60 / bpmInfo[1];
-
-
-                // calculate contribution of each scroll in the position.
-                for ( var j = 0; j < scrollList.length ; j++ ) {
-                    const scroll = scrollList[j] ;
-                    const scrollBeat = scroll[0] ;
-                    const scrollValue = scroll [1] ;
-                    const nextScroll = scrollList[j+1] ;
-
-                    // there is an error over here.
-                    if ( nextScroll === undefined ) {
-                        yShift += -(nextBeatInList - scrollBeat) * this.speed * scrollValue ;
-                    } else {
-                        yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
-                    }
-
-                    // this before
-                    // if ( nextScroll === undefined ) {
-                    //     yShift += -(nextScroll[0] - scrollBeat) * this.speed * scrollValue ;
-                    // } else {
-                    //     yShift += -(nextBeatInList - scrollBeat) * this.speed * scrollValue ;
-                    // }
-
-
-                }
-
-                // yShift += -(nextBeatInList - beatInList) * this.speed ;
-
-                currentTimeInSong += (nextBeatInList - beatInList) * secondsPerBeat;
-            }
-
-
-        }
-
-        return [yShift, currentTimeInSong] ;
-    }
-
-
-    // Note that YShift tells you exactly the current beat given the currentAudio time.
-    getYShiftAtCurrentAudioTime(currentAudioTime) {
-
-        // this is what we want to calculate.
-        let yShift = 0.0 ;
-        let currentBeat = 0.0 ;
-
-        let totalSeconds = 0.0 ;
-
-
-        for (var i = 0 ; i < this.bpmList.length ; i++ ) {
-            let bpmInfo = this.bpmList [i] ;
-
-
-            let nextBeatInList = this.bpmList [i+1] !== undefined ? this.bpmList [i+1][0] : undefined ;
-            const beatInList = bpmInfo[0] ;
-            const bpm = bpmInfo[1] ;
-
-
-            let secondsInSlot = ((nextBeatInList - beatInList) /  bpm) * 60 ;
-
-            //iterate scrolls
-            let scrollList = this.getScrollsInBeatInterval(beatInList, nextBeatInList) ;
-
-
-            if ( nextBeatInList  !== undefined && currentAudioTime >= secondsInSlot + totalSeconds ) {
-
-                // calculate contribution of each scroll in the position.
-                for ( var j = 0; j < scrollList.length ; j++ ) {
-                    const scroll = scrollList[j] ;
-                    const scrollBeat = scroll[0] ;
-                    const scrollValue = scroll [1] ;
-                    const nextScroll = scrollList[j+1] ;
-
-                    if ( nextScroll === undefined ) {
-                        yShift += (nextBeatInList - scrollBeat) * scrollValue ;
-
-                    } else {
-                        yShift += (nextScroll[0] - scrollBeat) * scrollValue ;
-                    }
-
-                }
-
-
-                currentBeat += (nextBeatInList - beatInList) ;
-
-
-            } else {
-
-
-                const elapseTime = currentAudioTime - totalSeconds ;
-                const beatElapse = (bpm / 60)*elapseTime ;
-
-
-                currentBeat += beatElapse ;
-
-
-                // calculate contribution of each scroll in the position.
-                for ( var j = 0; j < scrollList.length ; j++ ) {
-                    const scroll = scrollList[j] ;
-                    const scrollBeat = scroll[0] ;
-                    const scrollValue = scroll [1] ;
-                    const nextScroll = scrollList[j+1] ;
-
-                    if ( nextScroll !== undefined && currentBeat >= nextScroll[0] ) {
-                        yShift += (nextScroll[0] - scrollBeat) * scrollValue ;
-                    } else {
-                        yShift += (currentBeat - scrollBeat) * scrollValue ;
-                        break ;
-                    }
-
-                }
-
-                break ;
-            }
-
-            totalSeconds += ((nextBeatInList - beatInList) /  bpm) * 60 ;
-
-
-
-        }
-
-        return [yShift, currentBeat] ;
     }
 
 

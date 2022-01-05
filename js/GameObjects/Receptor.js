@@ -46,6 +46,11 @@ class Receptor extends GameObject {
         this.drBounce = this.setUpBounce('dr', this.drXPos) ;
 
 
+        this.dlStepNote = this.setUpStepNote('dl', this.dlXPos) ;
+        this.ulStepNote = this.setUpStepNote('ul', this.ulXPos) ;
+        this.cStepNote = this.setUpStepNote('c', this.cXPos) ;
+        this.urStepNote = this.setUpStepNote('ur', this.urXPos) ;
+        this.drStepNote = this.setUpStepNote('dr', this.drXPos) ;
 
 
         this.dlFX = this.setUpExplosion(this.dlXPos) ;
@@ -60,6 +65,13 @@ class Receptor extends GameObject {
         this.cTap = this.setUpTap('c',this.cXPos) ;
         this.urTap = this.setUpTap('ur',this.urXPos) ;
         this.drTap = this.setUpTap('dr',this.drXPos) ;
+
+
+        this.dlWhiteTap = this.setUpWhiteTap('dl',this.dlXPos) ;
+        this.ulWhiteTap = this.setUpWhiteTap('ul',this.ulXPos) ;
+        this.cWhiteTap = this.setUpWhiteTap('c',this.cXPos) ;
+        this.urWhiteTap = this.setUpWhiteTap('ur',this.urXPos) ;
+        this.drWhiteTap = this.setUpWhiteTap('dr',this.drXPos) ;
 
         this._object.add(this._receptor) ;
     }
@@ -87,10 +99,36 @@ class Receptor extends GameObject {
         return explosion ;
     }
 
+    setUpStepNote(kind, XPosition) {
+        let note = new StepNoteFX(this._resourceManager, kind) ;
+        note.object.position.x = XPosition ;
+        // tap.object.position.z = 0.01 ;
+        note.object.material.opacity = 0.0 ;
+
+        this._object.add(note.object) ;
+        engine.addToUpdateList(note) ;
+
+        return note ;
+
+    }
+
     setUpTap(kind, XPosition) {
         let tap = new Tap(this._resourceManager, kind) ;
         tap.object.position.x = XPosition ;
-        // tap.object.position.z = 1 ;
+        // tap.object.position.z = 0.01 ;
+        tap.object.material.opacity = 0.0 ;
+
+        this._object.add(tap.object) ;
+        engine.addToUpdateList(tap) ;
+
+        return tap ;
+
+    }
+
+    setUpWhiteTap(kind, XPosition) {
+        let tap = new WhiteTap(this._resourceManager, kind) ;
+        tap.object.position.x = XPosition ;
+        tap.object.position.z = 0.01 ;
         tap.object.material.opacity = 0.0 ;
 
         this._object.add(tap.object) ;
@@ -106,33 +144,40 @@ class Receptor extends GameObject {
 
         let tapEffect = null ;
         let explosion = null ;
+        let stepNote = null ;
         const kind = step.kind ;
         switch (kind) {
             case 'dl':
                 tapEffect = this.dlBounce
                 explosion = this.dlFX ;
+                stepNote = this.dlStepNote ;
                 break ;
             case 'ul':
                 tapEffect = this.ulBounce ;
                 explosion = this.ulFX ;
+                stepNote = this.ulStepNote ;
                 break ;
             case 'c':
                 tapEffect = this.cBounce ;
                 explosion = this.cFX ;
+                stepNote = this.cStepNote ;
                 break ;
             case 'ur':
                 tapEffect = this.urBounce ;
                 explosion = this.urFX ;
+                stepNote = this.urStepNote ;
                 break ;
             case 'dr':
                 tapEffect = this.drBounce ;
                 explosion = this.drFX ;
+                stepNote = this.drStepNote ;
                 break ;
         }
 
-
+        this.animateWhiteTap(kind)
         tapEffect.animate() ;
         explosion.animate() ;
+        // stepNote.animate() ;
 
     }
 
@@ -148,6 +193,7 @@ class Receptor extends GameObject {
         for ( const [kind, padId] of pressedKeys ) {
             if (padId === this._padId) {
                 this.animateTap(kind) ;
+                // this.animateWhiteTap(kind) ;
             }
         }
 
@@ -173,6 +219,30 @@ class Receptor extends GameObject {
                     break ;
             }
             tap.animate() ;
+    }
+
+    animateWhiteTap(kind) {
+
+
+        var tap = null ;
+        switch (kind) {
+            case 'dl':
+                tap = this.dlWhiteTap ;
+                break ;
+            case 'ul':
+                tap = this.ulWhiteTap ;
+                break ;
+            case 'c':
+                tap = this.cWhiteTap ;
+                break ;
+            case 'ur':
+                tap = this.urWhiteTap ;
+                break ;
+            case 'dr':
+                tap = this.drWhiteTap ;
+                break ;
+        }
+        tap.animate() ;
     }
 
 

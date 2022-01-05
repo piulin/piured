@@ -2,17 +2,19 @@
 
 
 
-class Pad {
+class Pad extends GameObject {
 
 
-    constructor(keyMap, padId) {
-
+    constructor(resourceManager, keyMap, padId) {
+        super(resourceManager) ;
         // Key maps
-        this.dlKey =  keyMap.dl ;
-        this.ulKey = keyMap.ul ;
-        this.cKey = keyMap.c ;
-        this.urKey = keyMap.ur ;
-        this.drKey = keyMap.dr ;
+        if (keyMap !== null) {
+            this.dlKey =  keyMap.dl.toLowerCase() ;
+            this.ulKey = keyMap.ul.toLowerCase() ;
+            this.cKey = keyMap.c.toLowerCase() ;
+            this.urKey = keyMap.ur.toLowerCase() ;
+            this.drKey = keyMap.dr.toLowerCase() ;
+        }
 
         this.dlKeyPressed = false ;
         this.ulKeyPressed = false ;
@@ -69,6 +71,29 @@ class Pad {
                 break ;
         }
     }
+
+    ready() {
+
+    }
+
+
+    update(delta) {
+        this.dlKeyPressed = false ;
+        // console.log('dl down: ' +key) ;
+
+        this.ulKeyPressed = false ;
+        // console.log('ul down : ' +key)
+
+        this.cKeyPressed = false ;
+        // console.log('c down: ' +key)
+
+        this.urKeyPressed = false ;
+        // console.log('ur down: ' +key)
+
+        this.drKeyPressed = false ;
+    }
+
+
 
 
 }

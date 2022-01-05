@@ -41,9 +41,9 @@ class Digit extends GameObject {
         const time = (5/60)*1000;
         this._mesh.material.opacity = 1.0;
 
-        new TWEEN.Tween( this._mesh.material ).to( {opacity: 0.8 } , diffuseTimeWait ).start();
+        new TWEEN.Tween( this._mesh.material ).to( {opacity: 0.7 } , diffuseTimeWait ).start();
 
-        this._mesh.material.opacity = 0.8 ;
+        this._mesh.material.opacity = 0.7 ;
         // we need to do this for each digit.
         this.opacityFadeTween = new TWEEN.Tween(this._mesh.material).to({opacity: 0.0}, diffuseAnimation).delay(diffuseTimeWait).start();
 

@@ -9,37 +9,101 @@ class PlayerStage extends GameObject {
     _stage ;
     _steps ;
     _receptors ;
-
+    _lifeBar ;
     _userSpeed ;
-
     _object ;
+    _scaled_object ;
+    _speedTween ;
+    playerConfig ;
 
-    constructor(resourceManager, song, keyListener, level, userSpeed, idLeftPad, idRightPad) {
+    constructor(resourceManager,
+                song,
+                playerConfig,
+                playBackSpeed,
+                lifebarOrientation = 'left2right') {
         super(resourceManager);
 
-        this.idLeftPad = idLeftPad ;
-        this.idRightPad = idRightPad ;
+        this.playerConfig = playerConfig ;
         this._song = song ;
-        this._level = level ;
-        this._userSpeed = userSpeed ;
+        this._level = playerConfig.level ;
+        this._userSpeed = playerConfig.speed ;
 
         this._object = new THREE.Object3D() ;
+        this._scaled_object = new THREE.Object3D() ;
+        this._scaled_object.add(this._object) ;
 
-        this.keyListener = keyListener ;
+        let [kl, ilp, irp] = this.configureInputPlayerStage(playerConfig.inputConfig) ;
+        this.keyListener = kl ;
+        this.idLeftPad = ilp ;
+        this.idRightPad = irp ;
+        this._object.add(kl.object) ;
+        engine.addToUpdateList(kl) ;
 
-        this.keyboardLag = 0.04;
+        this.keyboardLag = 0.07;
+
+        this.accuracyMargin = playerConfig.accuracyMargin ;
+        this.lifebarOrientation = lifebarOrientation ;
 
 
         this.beatManager = new BeatManager(this._resourceManager,
             this._song,
             this._level,
             this._userSpeed,
-            this.keyboardLag) ;
+            this.keyboardLag,
+            playBackSpeed) ;
 
         engine.addToUpdateList(this.beatManager) ;
 
     }
 
+    configureInputPlayerStage(inputConfig) {
+
+
+        if (inputConfig instanceof KeyInputConfig) {
+
+            let playerInput = new KeyInput(this._resourceManager)  ;
+            engine.addToUpdateList(playerInput) ;
+            engine.addToKeyDownList(playerInput) ;
+            engine.addToKeyUpList(playerInput) ;
+
+            let pad1Id = '0' ;
+            let pad2Id = '1' ;
+
+            playerInput.addPad(inputConfig.lpad, pad1Id) ;
+            playerInput.addPad(inputConfig.rpad, pad2Id) ;
+
+            return [playerInput, pad1Id, pad2Id ]  ;
+
+        } else if (inputConfig instanceof TouchInputConfig) {
+            let playerInput = new TouchInput(this._resourceManager) ;
+            engine.addToUpdateList(playerInput) ;
+            engine.addToTouchDownList(playerInput) ;
+            engine.addToTouchUpList(playerInput) ;
+
+            let pad1Id = '0' ;
+            let pad2Id = '1' ;
+
+            playerInput.addTouchPad(pad1Id) ;
+
+            if ( this._song.getLevelStyle(this._level) === 'pump-double' || this._song.getLevelStyle(this._level) === 'pump-halfdouble') {
+                playerInput.addTouchPad(pad2Id) ;
+            }
+            //
+            playerInput.setScale( inputConfig.scale ) ;
+            // playerInput.object.scale.y *= inputConfig.scale ;
+            playerInput.object.position.x += inputConfig.X ;
+            playerInput.object.position.y += inputConfig.Y ;
+
+
+
+            return [ playerInput, pad1Id, pad2Id ]  ;
+
+        }
+    }
+
+    setNewPlayBackSpeed ( newPlayBackSpeed ) {
+        this.beatManager.setNewPlayBackSpeed(newPlayBackSpeed) ;
+    }
 
     configureStepConstantsPositions () {
         // Depth of stage elements
@@ -64,8 +128,7 @@ class PlayerStage extends GameObject {
 
         this.receptorsApart = 1.96 ;
 
-        this.stepTextureAnimationRate = 25 ;
-
+        this.stepTextureAnimationRate = 30 ;
 
     }
 
@@ -79,7 +142,7 @@ class PlayerStage extends GameObject {
 
 
 
-        this.accuracyMargin = 0.15 ;
+
 
         this.configureStepConstantsPositions() ;
 
@@ -91,10 +154,9 @@ class PlayerStage extends GameObject {
 
 
 
-        this.judgment = new JudgmentScale(this._resourceManager, this.accuracyMargin ) ;
-        this.judgment.object.position.y = -2.5 ;
-        engine.addToUpdateList(this.judgment) ;
-        this._object.add(this.judgment.object) ;
+
+
+
 
         // this.bpms = this.song.levels[level].meta['BPMS'] ;
 
@@ -106,8 +168,14 @@ class PlayerStage extends GameObject {
         this.padSteps = { } ;
         this.padReceptors = { } ;
 
-        var [ Lsteps, Lreceptor ] =
-            this.composePad(0, this.idLeftPad) ;
+        var Lsteps, Lreceptor ;
+        if ( this._song.getLevelStyle(this._level) === 'pump-single' || this._song.getLevelStyle(this._level) === 'pump-double'  ) {
+            [Lsteps, Lreceptor] =
+                this.composePad(0, this.idLeftPad);
+        } else if ( this._song.getLevelStyle(this._level) === 'pump-halfdouble' ) {
+            [Lsteps, Lreceptor] =
+                this.composePad(-2, this.idLeftPad);
+        }
 
         this.padSteps[this.idLeftPad] = Lsteps ;
         this.padReceptors[this.idLeftPad] = Lreceptor ;
@@ -123,19 +191,42 @@ class PlayerStage extends GameObject {
             Lsteps.position.x = -this.receptorsApart ;
             Lreceptor.object.position.x = -this.receptorsApart;
 
-            var [Rsteps, Rreceptor ] =
-                this.composePad(5, this.idRightPad) ;
+
+            var Rsteps, Rreceptor ;
+
+            if ( this._song.getLevelStyle(this._level) === 'pump-double' ) {
+                [Rsteps, Rreceptor] =
+                    this.composePad(5, this.idRightPad);
+            } else if ( this._song.getLevelStyle(this._level) === 'pump-halfdouble' ) {
+                [Rsteps, Rreceptor] =
+                    this.composePad(3, this.idRightPad);
+            }
 
             this.padSteps[this.idRightPad] = Rsteps ;
             this.padReceptors[this.idRightPad] = Rreceptor ;
-
 
             Rsteps.position.x = this.receptorsApart ;
             Rreceptor.object.position.x = this.receptorsApart;
 
             this._steps.add(Rsteps) ;
             this._receptors.add(Rreceptor.object) ;
+
+            // lifebar
+            this._lifeBar = this.getLifeBar('double')
+        } else {
+            // lifebar
+
+            this._lifeBar = this.getLifeBar('single') ;
+
         }
+
+        this._lifeBar.object.position.y = 0.7 ;
+        this._object.add(this._lifeBar.object) ;
+
+        this.judgment = new JudgmentScale(this._resourceManager, this.accuracyMargin, this._lifeBar ) ;
+        this.judgment.object.position.y = -2.5 ;
+        engine.addToUpdateList(this.judgment) ;
+        this._object.add(this.judgment.object) ;
 
         this._object.add(this._steps) ;
         this._object.add(this._receptors) ;
@@ -143,6 +234,17 @@ class PlayerStage extends GameObject {
         this.stepQueue.cleanUpStepQueue() ;
 
 
+    }
+
+    getLifeBar(kind) {
+        let lifebar = new LifeBar(this._resourceManager, this.beatManager, kind ) ;
+
+        if (this.lifebarOrientation === 'left2right') {
+            return lifebar ;
+        } else if (this.lifebarOrientation === 'right2left') {
+            lifebar.object.scale.x *= -1 ;
+            return lifebar ;
+        }
     }
 
     composePad(stepDataOffset, padId) {
@@ -257,6 +359,7 @@ class PlayerStage extends GameObject {
             let stepMesh = step.object ;
 
             stepMesh.position.y = currentYPosition ;
+            stepMesh.originalYPos = currentYPosition ;
             stepMesh.position.x = XStepPosition ;
             stepMesh.position.z = this.stepNoteZDepth ;
 
@@ -291,11 +394,13 @@ class PlayerStage extends GameObject {
             engine.addToUpdateList( endNoteObject ) ;
 
             endNoteMesh.position.y = currentYPosition ;
+            endNoteMesh.originalYPos = currentYPosition ;
             endNoteMesh.position.x = XStepPosition ;
             endNoteMesh.position.z = this.holdEndNoteZDepth ;
 
             let holdExtensibleObject = new HoldExtensible(this._resourceManager, kind ) ;
             holdExtensibleObject.object.position.x = XStepPosition ;
+            holdExtensibleObject.object.originalYPos = -10000 ;
             holdExtensibleObject.object.position.z = this.holdZDepth ;
             engine.addToUpdateList( holdExtensibleObject ) ;
 
@@ -331,23 +436,31 @@ class PlayerStage extends GameObject {
         const [speed, measure, type] = this._song.getSpeedAndTimeAtBeat(this._level, beat) ;
         if (this.newTargetSpeed  !== speed ) {
 
-            console.log('speed change: ' + speed+  ' in secs: ' + measure) ;
+            // console.log('speed change: ' + speed+  ' in secs: ' + measure) ;
 
             // console.log('hola') ;
-            this.newTargetSpeed = speed ;
+            this.newTargetSpeed = speed;
             let time = measure * 1000;
             if (type === 0) {
                 time = (60 / this.beatManager.currentBPM) * measure * 1000;
             }
             // so it's not 0
-            const eps = 1 ;
-            new TWEEN.Tween(this).to({effectSpeed: speed}, time + eps).start();
+            const eps = 1.0 ;
+
+
+            // if (time === 0.0) {
+            //     this.effectSpeed = speed;
+            //     TWEEN.remove(this._speedTween) ;
+            // } else {
+                this._speedTween = new TWEEN.Tween(this).to({effectSpeed: speed}, time + eps).start();
+            // }
         }
     }
 
     animateSpeedChange() {
 
         if (this.lastEffectSpeed !== this.effectSpeed ) {
+            // console.log(this.effectSpeed);
 
             let lastEffectSpeed = this.lastEffectSpeed ;
             let effectSpeed = this.effectSpeed ;
@@ -359,10 +472,14 @@ class PlayerStage extends GameObject {
 
                 // steps, holds, and endNotes are meshes
                 if (child instanceof THREE.Mesh) {
+                    // const curr_position = child.position.y ;
                     // back to the original speed
-                    child.position.y *=(1/lastEffectSpeed);
+                    // console.log(child.originalYPos) ;
+                    child.position.y = child.originalYPos ;
                     // apply new speed
                     child.position.y *= effectSpeed ;
+
+                    // console.log('new speed: ' + effectSpeed +  ', last speed: ' + lastEffectSpeed + ' curr position: ' + curr_position + ' new position: ' + child.position.y) ;
 
                 }}) ;
 
@@ -401,9 +518,13 @@ class PlayerStage extends GameObject {
 
     }
 
+    setScale(scale) {
+        this._object.scale.x *= scale ;
+        this._object.scale.y *= scale ;
+    }
 
     get object() {
-        return this._object ;
+        return this._scaled_object ;
     }
 
     removeStep(step) {
@@ -415,6 +536,7 @@ class PlayerStage extends GameObject {
     animateReceptorFX(stepList) {
         for (var step of stepList) {
             this.padReceptors[step.padId].animateExplosionStep(step) ;
+            // this.padReceptors[step.padId].animateExplosionStep(step) ;
         }
     }
 

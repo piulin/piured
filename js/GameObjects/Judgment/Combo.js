@@ -52,9 +52,9 @@ class Combo extends GameObject {
             y: 0.0
         }, diffuseAnimation).delay(diffuseTimeWait).start();
 
-        new TWEEN.Tween( this._mesh.material ).to( { opacity: 0.8 } , diffuseTimeWait ).start();
+        new TWEEN.Tween( this._mesh.material ).to( { opacity: 0.7 } , diffuseTimeWait ).start();
 
-        this._mesh.material.opacity = 0.8 ;
+        this._mesh.material.opacity = 0.7 ;
 
         this.opacityFadeTween = new TWEEN.Tween(this._mesh.material).to({opacity: 0.0}, diffuseAnimation).delay(diffuseTimeWait).start();
 

@@ -29,6 +29,12 @@ class StepBounce extends GameObject {
         this._animationDelta = 0 ;
 
         this._mesh.material.map.repeat.set(1/3,1/2);
+
+        let scale = 1.0 ;
+
+        this._mesh.material.color.r = scale ;
+        this._mesh.material.color.g = scale ;
+        this._mesh.material.color.b = scale ;
     }
 
     animate() {

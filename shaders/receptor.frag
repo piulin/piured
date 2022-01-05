@@ -7,12 +7,12 @@ uniform float activeColorContribution ;
 void main() {
 
     // Position of the receptor in the texture
-    vec2 receptorUVOffset = vec2( 0, 1.0f/2.0f ) ;
-    vec2 receptorUVRepeat = vec2( 1, 1.0f/2.0f ) ;
+    vec2 receptorUVOffset = vec2( 0, 1.0/2.0 ) ;
+    vec2 receptorUVRepeat = vec2( 1, 1.0/2.0 ) ;
 
     // Position of the activeReceptor in the texture
     // vec2 activeReceptorUVOffset = vec2( 0, 0 ) ;
-    vec2 activeReceptorUVRepeat = vec2( 1, 1.0f/2.0f ) ;
+    vec2 activeReceptorUVRepeat = vec2( 1, 1.0/2.0 ) ;
 
     // Getting colors
     vec4 receptorColor = texture2D(textureReceptor, vUv*receptorUVRepeat + receptorUVOffset);
