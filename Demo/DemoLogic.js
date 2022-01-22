@@ -50,8 +50,8 @@ let rightKeyMap = {
 //
 // }, false);
 
-let resources = 'https://piulin.gentakojima.me/'
-// let resources = './'
+// let resources = 'https://piulin.gentakojima.me/'
+let resources = './'
 $(window).on('unload', function() {
     if (engine != null) {
         engine.song.closeBuff() ;
@@ -82,8 +82,23 @@ function getDancePadCurrentValue(pad, step) {
     }
 }
 
-function play(){
+function connect() {
+
+    window.open("https://www.w3schools.com");
+
     engine = new Engine() ;
+    const playerId = parseInt(document.getElementById('player').value) ;
+    setUpRemoteConnection(playerId, engine, play).then( mm => {
+        console.log('success') ;
+    }).catch(
+        () => console.error('fail')
+    );
+}
+
+
+function play(mm){
+
+
 
     document.getElementById('selector').style.display = 'none' ;
     document.getElementById('navbar').style.display = 'none' ;
@@ -95,21 +110,26 @@ function play(){
     let noteskin = document.getElementById('noteskin').value ;
     let touchpadSize = 1.2 - (document.getElementById('touchpadSize').value/10.0) ;
     let useTouchInput = document.getElementById("touchInput").checked ;
+    const playerId = parseInt(document.getElementById('player').value) ;
 
-    console.log(touchpadSize) ;
 
-    engine.configureStage(resources+sscpath,
-                        resources+mp3path,
-                                playback,
-                                offset,
-                                'piured-engine/',
-                                noteskin) ;
+    let stageConfig = new StageConfig(resources+sscpath,
+        resources+mp3path,
+        playback,
+        offset,
+        'piured-engine/',
+        noteskin,
+        () => {
+           mm.readyToStart() ;
+        }) ;
 
+    engine.configureStage(stageConfig) ;
     let p1InputConfig ;
     let accuracyMargin = 0.15 ;
 
     if (useTouchInput) {
 
+        accuracyMargin = 0.25 ;
         if (document.requestFullscreen) {
             document.requestFullscreen();
         } else if (document.webkitRequestFullscreen) { /* Safari */
@@ -131,8 +151,6 @@ function play(){
 
     } else {
 
-        accuracyMargin = 0.25 ;
-
         window.onkeydown = onKeyDown ;
         window.onkeyup = onKeyUp ;
 
@@ -144,11 +162,18 @@ function play(){
         speed,
         accuracyMargin) ;
 
+    let p2Config = new PlayerConfig(new RemoteInput(),
+        chart_level,
+        speed,
+        accuracyMargin) ;
 
-
-    engine.addPlayer(p1Config) ;
-
-
+    if (playerId === 1) {
+        let player1Id = engine.addPlayer(p1Config) ;
+        let player2Id = engine.addPlayer(p2Config) ;
+    } else {
+        let player2Id = engine.addPlayer(p2Config) ;
+        let player1Id = engine.addPlayer(p1Config) ;
+    }
 
 
     engine.addToDOM('container');
@@ -157,7 +182,11 @@ function play(){
 
     engine.stageCleared = stageCleared ;
 
+    engine.performReady() ;
+
     engine.start();
+
+
 }
 
 function discoverLevels( sscPath ) {
