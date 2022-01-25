@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style type="text/css">
+        /*html, body{       height: 100%;  }     */
+    /*.full-page{       height: 100vh;       width: 100vw;     }*/
+    .selector-height {
+        height: 400px;
+     }
+        body {
+            overflow: auto;
+        }
+    </style>
+
+    <title>Online Battle</title>
+    <script src="Demo/NTP/syncTime.js"></script>
+<!--    <script src="Demo/NTP/masterDate.js"></script>-->
+
+    <script src="Demo/RemoteConnection/Master.js"></script>
+    <script src="Demo/RemoteConnection/Slave.js"></script>
+    <script src="Demo/RemoteConnection/RemoteConnection.js"></script>
+    <script src="Demo/RemoteConnection/MessageManager.js"></script>
+    <script src="Demo/OnlineMultiplayer/ViewConnectionManager.js"></script>
+
+
+    <script src="piured-engine/js/Utils/FileReader.js"></script>
+    <script src="piured-engine/lib/stats.min.js"></script>
+    <script src="piured-engine/js/Song/SSCParser.js"></script>
+    <script src="piured-engine/js/Song/Song.js"></script>
+    <script src="piured-engine/js/Song/NoteData.js"></script>
+    <script src="Demo/SongPicker/Utils.js"></script>
+    <script src="Demo/Filter.js"></script>
+
+
+
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbar">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">PIURED</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="online-multiplayer.html">Battle</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="index.html">Local</a>
+                </li>
+
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="#">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="connectionContainer" class="container h-100">
+
+    <div class="row p-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Create a new Online Battle</h5>
+                <p class="card-text">To play with a friend you will need to create an online battle, unless you have an invite code. If you don't have one, please,
+                    press "Create Battle" and wait until a new invite code is generated. Then, share it somehow with the friend
+                you want to play with. He can use it to connect to your battle by typing/pasting the code into the card on the right. </p>
+                <button onclick="connectMaster()" id="masterButton" class="btn btn-primary" type="button">
+                    <span id="masterSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                    <span id="masterButtonLabel" class="sr-only">Create Battle</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row p-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Join an Online Battle</h5>
+                <p class="card-text">If you got an invite code, please, type/paste it in the form below and press "Accept Invite". A confirmation code
+                    will be generated after a few seconds. You will need to send the confirmation code back to the friend that sent you the invite. </p>
+
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="input-group me-2 has-validation">
+                        <div class="input-group-text">#</div>
+                        <input id="inviteCodeTextField" type="text" class="form-control" placeholder="Invite code" aria-label="Invite code" aria-describedby="inviteCodeTextField">
+                        <div id="validationInviteCode" class="invalid-feedback">
+                            Invalid invite code
+                        </div>
+                    </div>
+                    <button onclick="connectSlave($('#inviteCodeTextField').val())" id="slaveButton" class="btn btn-primary" type="button">
+                        <span id="slaveSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                        <span id="slaveButtonLabel" class="sr-only">Accept Invite</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="modal fade" id="createBattleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="createBattleModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Invite</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Here you have the invite code (#)! Send it to your friend somehow.
+                <div class="input-group me-2 p-3">
+                    <div class="input-group-text">#</div>
+                    <input id="generatedInviteCodeTextField" type="text" class="form-control" aria-label="Invite code" aria-describedby="generatedInviteCodeTextField" disabled>
+                </div>
+
+                You need to get a confirmation code (@) from your friend. Once you have it, please, type/paste it in the form below
+                and press the button "Connect".
+                <div class="input-group me-2 p-3">
+                    <div class="input-group-text has-validation" >@</div>
+                    <input id="confirmationCodeTextField" type="text" class="form-control" placeholder="Confirmation code" aria-label="Invite code" aria-describedby="confirmationCodeTextField">
+                    <div id="validationConfirmationCode" class="invalid-feedback">
+                        Invalid confirmation code
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="connectSlaveButton" onclick="addSlave($('#confirmationCodeTextField').val())" class="btn btn-primary" type="button">
+                    <span id="connectSlaveSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                    <span id="connectSlaveButtonLabel" class="sr-only">Connect</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="joinBattleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="createBattleModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Join</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Here you have the confirmation code (@)! Send it to your friend somehow.
+                <div class="input-group me-2 p-3">
+                    <div class="input-group-text">@</div>
+                    <input id="generatedConfirmationCodeTextField" type="text" class="form-control" value="code" aria-label="Invite code" aria-describedby="generatedConfirmationCodeTextField" disabled>
+                </div>
+
+                You should wait here until your friend introduces the confirmation code and the connection is established.
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

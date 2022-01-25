@@ -6,29 +6,35 @@ class Master {
     _localConnection ;
     _dc ;
 
-    constructor(onSDPReady) {
+    constructor() {
 
 
-
-        //you can specify a STUN server here
         const iceConfiguration = { }
         iceConfiguration.iceServers = [];
-        //turn server
-        // iceConfiguration.iceServers.push({
-        //                 urls: 'turn:my-turn-server.mycompany.com:19403',
-        //                 username: 'optional-username',
-        //                 credentials: 'auth-token'
-        //             })
-        //stun  server
+
+
         iceConfiguration.iceServers.push({
-                        urls: 'stun:stun4.l.google.com:19302'
-                    }) ;
-        // const localConnection = new RTCPeerConnection(iceConfiguration)
+            urls: 'turn:piulin.gentakojima.me:3478?transport=tcp',
+            credential: 'jwKfAooM69Pp8pAXojt',
+            username: 'piured'
+        }) ;
+
+        iceConfiguration.iceServers.push({
+            urls: 'stun:stun4.l.google.com:19302'
+        }) ;
+
+        iceConfiguration.iceServers.push({
+            urls: 'stun:stun2.l.google.com:19302'
+        }) ;
+
+        iceConfiguration.iceServers.push({
+            urls: 'stun:stunserver.org'
+        }) ;
 
 
 
-        // this._localConnection = new RTCPeerConnection(iceConfiguration) ;
-        this._localConnection = new RTCPeerConnection() ;
+        this._localConnection = new RTCPeerConnection(iceConfiguration) ;
+        // this._localConnection = new RTCPeerConnection() ;
         this._dc = this._localConnection.createDataChannel("dc");
         this._dc.onclose = e => console.log("Connection closed!");
 
@@ -70,13 +76,32 @@ class Master {
         this._dc.send(JSON.stringify(data)) ;
     }
 
-    addSlave(sdp) {
-        const answer = { "type":"answer","sdp": atob(sdp) } ;
+    addSlave(sdp, onSDPFail = undefined, onSDPOk = undefined) {
+        let answer ;
+        try {
+            answer = { "type":"answer","sdp": atob(sdp) } ;
+        } catch (e) {
+            onSDPFail() ;
+            return ;
+        }
+
         // this._localConnection.setRemoteDescription(answer).then(a=> console.log('SDP added')).catch(console.error('wrong sdp')) ;
-        this._localConnection.setRemoteDescription(answer).then(a=> console.log('SDP added')) ;
+        this._localConnection.setRemoteDescription(answer).then( () => {
+                if (onSDPOk !== undefined ) {
+                    onSDPOk () ;
+                }
+            }
+        ).catch( () => {
+            if (onSDPFail !== undefined ) {
+                onSDPFail() ;
+            }
+        }) ;
     }
 
 
+    onClose(func) {
+        this._dc.onclose = func ;
+    }
 
 
 

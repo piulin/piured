@@ -8,25 +8,40 @@ class Slave {
     onMessageFn ;
     onOpenFn ;
 
-    constructor(sdp) {
+    constructor(sdp, onSDPFail = undefined, onSDPOk = undefined) {
 
-        //you can specify a STUN server here
         const iceConfiguration = { }
         iceConfiguration.iceServers = [];
-        //turn server
-        // iceConfiguration.iceServers.push({
-        //                 urls: 'turn:my-turn-server.mycompany.com:19403',
-        //                 username: 'optional-username',
-        //                 credentials: 'auth-token'
-        //             })
-        //stun  server
+
+        iceConfiguration.iceServers.push({
+            urls: 'turn:piulin.gentakojima.me:3478?transport=tcp',
+            credential: 'jwKfAooM69Pp8pAXojt',
+            username: 'piured'
+        }) ;
+
         iceConfiguration.iceServers.push({
             urls: 'stun:stun4.l.google.com:19302'
         }) ;
 
-        const offer = { "type":"offer","sdp":atob(sdp) } ;
+        iceConfiguration.iceServers.push({
+            urls: 'stun:stun2.l.google.com:19302'
+        }) ;
+
+        iceConfiguration.iceServers.push({
+            urls: 'stun:stunserver.org'
+        }) ;
+
+        let offer ;
+        try {
+            offer = { "type":"offer","sdp":atob(sdp) } ;
+        } catch (e) {
+            onSDPFail() ;
+            return ;
+        }
+
 
         this._remoteConnection = new RTCPeerConnection(iceConfiguration) ;
+        // this._remoteConnection = new RTCPeerConnection() ;
 
         this._remoteConnection.ondatachannel = e => {
 
@@ -38,7 +53,16 @@ class Slave {
             this._dc.onopen = e => this.onOpenFn() ;
 
         }
-        this._remoteConnection.setRemoteDescription(offer).then(a=>console.log("done"))
+        this._remoteConnection.setRemoteDescription(offer).then( () => {
+                if (onSDPOk !== undefined ) {
+                    onSDPOk () ;
+                }
+            }
+            ).catch( () => {
+                if (onSDPFail !== undefined ) {
+                    onSDPFail() ;
+                }
+        }) ;
 
 
     }
@@ -79,6 +103,9 @@ class Slave {
         this._dc.send(JSON.stringify(data)) ;
     }
 
+    onClose(func) {
+        this._dc.onclose = func ;
+    }
 
 
 

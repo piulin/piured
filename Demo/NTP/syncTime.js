@@ -1,29 +1,58 @@
 function syncTime() {
     // Set up our time object, synced by the HTTP DATE header
     // Fetch the page over JS to get just the headers
-    console.log("syncing time")
-    var r = new XMLHttpRequest();
+    // console.log("syncing time")
+    let latency = 100000 ;
     let systemtime ;
-    var start = (new Date).getTime();
+    let i = 0 ;
+    while( latency > 100 && i < 10) {
+        var r = new XMLHttpRequest();
+        var start = (new Date).getTime();
 
-    r.open('HEAD', document.location, false);
-    r.onreadystatechange = function()
-    {
-        if (r.readyState != 4)
+        r.open('HEAD', document.location, false);
+        r.onreadystatechange = function()
         {
-            return;
-        }
-        var latency = (new Date).getTime() - start;
+            if (r.readyState != 4)
+            {
+                return;
+            }
+            latency = (new Date).getTime() - start;
 
-        var timestring = r.getResponseHeader("DATE");
+            var timestring = r.getResponseHeader("DATE");
 
-        // Set the time to the **slightly old** date sent from the
-        // server, then adjust it to a good estimate of what the
-        // server time is **right now**.
-        systemtime = new Date(timestring);
-        systemtime.setMilliseconds(systemtime.getMilliseconds() + (latency/2))
-        console.log('latency: '+ latency) ;
-    };
-    r.send(null);
+            // Set the time to the **slightly old** date sent from the
+            // server, then adjust it to a good estimate of what the
+            // server time is **right now**.
+            systemtime = new Date(timestring);
+            systemtime.setMilliseconds(systemtime.getMilliseconds() + (latency/2)) ;
+
+            i ++ ;
+            // console.log('latency: '+ latency) ;
+        };
+        r.send(null);
+    }
     return systemtime ;
+}
+
+function getAverageLatency () {
+
+    let latency = 0 ;
+
+    for (let i = 0 ; i < 3 ; i++) {
+        var r = new XMLHttpRequest();
+        var start = (new Date).getTime();
+        r.open('HEAD', document.location, false);
+        r.onreadystatechange = function()
+        {
+            if (r.readyState != 4)
+            {
+                return;
+            }
+            latency += (new Date).getTime() - start;
+            // console.log('latency: '+ latency) ;
+        };
+        r.send(null);
+    }
+
+    return latency /= 3.0 ;
 }

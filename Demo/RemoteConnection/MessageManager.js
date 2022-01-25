@@ -7,13 +7,25 @@ class MessageManager {
     hostReady = false ;
     guestReady = false ;
     _onSendDate = undefined ;
+    _onSelectedLevel = undefined ;
+    _onStageConfig = undefined ;
+    _onCancelStageConfig = undefined ;
+    _onReceiveDateDetails = undefined ;
+    _onReceiveHighLatency = undefined ;
     start ;
+    _engine ;
 
-    constructor(host, engine) {
+    constructor(host) {
         this._host = host ;
-        this.engine = engine ;
 
-        engine.onFrameLog = frameLog => {
+        this._host.onMessage(data => {
+            this.onMessage(data) ;
+        }) ;
+    }
+
+    set engine (val) {
+        this._engine = val ;
+        this._engine.onFrameLog = frameLog => {
             this.sendFrameLog(frameLog) ;
         } ;
     }
@@ -21,7 +33,7 @@ class MessageManager {
     onMessage(data) {
 
         if (data.action === 'logFrame') {
-            this.engine.logFrame(data.frameLog) ;
+            this._engine.logFrame(data.frameLog) ;
         } else if ( data.action === 'readyToStart' ) {
             this.guestReady = true ;
             if (this.areBothReady()) {
@@ -29,14 +41,95 @@ class MessageManager {
             }
         } else if (data.action === 'startDate') {
             let startDate = new Date(data.date) ;
-            console.log('current date: ' + syncTime() ) ;
+            // console.log('current date: ' + syncTime() ) ;
             console.log('date to start: ' + startDate) ;
             console.log('milis: '+ startDate.getMilliseconds() ) ;
-            this.engine.startPlayBack(startDate, syncTime) ;
+
+            // masterDate(this, (currentDate) => {
+            //
+            //     this._engine.startPlayBack(startDate, currentDate) ;
+            //
+            // }) ;
+
+            this._engine.startPlayBack(startDate, syncTime) ;
         } else if (data.action === 'requestDate') {
-            this.sendDate() ;
+
+            let slaveTimeStamp = new Date(data.slaveTimeStamp);
+            let masterTimeStamp = new Date();
+
+            let masterClientRequestDiffTime = masterTimeStamp - slaveTimeStamp;
+            console.log('slaveTimeStamp: ' + slaveTimeStamp) ;
+
+
+            this.sendDate(masterClientRequestDiffTime, masterTimeStamp);
+
+        } else if (data.action === 'sendDateDetails') {
+            if (this._onReceiveDateDetails !== undefined) {
+                this._onReceiveDateDetails(parseFloat(data.masterClientRequestDiffTime), new Date(data.masterTimeStamp)) ;
+            }
+
+        } else if (data.action === 'selectedLevel') {
+            if (this._onSelectedLevel !== undefined) {
+                this._onSelectedLevel(data.sscPath) ;
+            }
+        } else if (data.action === 'stageConfig') {
+            if (this._onStageConfig !== undefined) {
+                this._onStageConfig(data.config) ;
+            }
+        } else if (data.action === 'cancelStageConfig') {
+            if (this._onCancelStageConfig !== undefined) {
+                this._onCancelStageConfig() ;
+            }
+        } else if (data.action === 'highLatency') {
+            if (this._onReceiveHighLatency !== undefined) {
+                this._onReceiveHighLatency() ;
+            }
         }
 
+    }
+
+
+
+    set onSelectedLevel(val) {
+        this._onSelectedLevel = val ;
+    }
+
+    set onStageConfig(val) {
+        this._onStageConfig = val ;
+    }
+
+    set onCancelStageConfig(val) {
+        this._onCancelStageConfig = val ;
+    }
+
+    set onReceiveDateDetails(val) {
+        this._onReceiveDateDetails = val ;
+    }
+
+    set onReceiveHighLatency (val) {
+        this._onReceiveHighLatency = val ;
+    }
+
+    sendSelectedLevel(sscPath) {
+        this._host.send({
+
+            'action':'selectedLevel',
+            'sscPath':sscPath
+
+        }) ;
+    }
+
+    sendStageConfig(config) {
+        this._host.send({
+            'action':'stageConfig',
+            'config':config
+        }) ;
+    }
+
+    sendCancelStageConfig() {
+        this._host.send({
+            'action': 'cancelStageConfig'
+        }) ;
     }
 
     sendFrameLog(framelog) {
@@ -63,17 +156,19 @@ class MessageManager {
         }) ;
     }
 
-    requestDate() {
+    requestDate(slaveTimeStamp) {
         this._host.send( {
-            'action':'requestDate'
+            'action':'requestDate',
+            'slaveTimeStamp': slaveTimeStamp
         }) ;
     }
 
-    sendDate() {
+    sendDate(masterClientRequestDiffTime, masterTimeStamp) {
         this._host.send(
             {
-                'action':'currentDate',
-                'value': new Date()
+                'action':'sendDateDetails',
+                'masterTimeStamp': masterTimeStamp,
+                'masterClientRequestDiffTime': masterClientRequestDiffTime
             }
         ) ;
     }
@@ -92,20 +187,30 @@ class MessageManager {
 
     }
 
+    sendHighLatencyNotification() {
+        this._host.send({
+            'action': 'highLatency'
+        }) ;
+    }
+
     setUpStartSong() {
 
+        this.hostReady = false ;
+        this.guestReady = false ;
+
         if (this._host instanceof Master) {
-            // let currentDate = syncTime() ;
-            let currentDate = new Date();
+            let currentDate = syncTime() ;
+            // let currentDate = new Date();
             let startDate = new Date(currentDate) ;
-            startDate.setSeconds(currentDate.getSeconds() + 5.0) ;
+            startDate.setSeconds(currentDate.getSeconds() + 8.0) ;
             console.log('current date: ' + currentDate ) ;
             console.log('date to start: ' + startDate) ;
             console.log('milis: '+ startDate.getMilliseconds() ) ;
             this.sendStartDate(startDate) ;
-            this.engine.startPlayBack(startDate, () =>  { return new Date() }) ;
-            // this.engine.startPlayBack(startDate, syncTime) ;
+            // this._engine.startPlayBack(startDate, new Date()) ;
+            this._engine.startPlayBack(startDate, syncTime) ;
         }
+
     }
 
 

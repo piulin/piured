@@ -1,0 +1,398 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>PIURED Online Battle</title>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+<script src="Demo/SongPicker/DiscoverLevelMaster.js"></script>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbar">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">PIURED</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="online-multiplayer.html">Battle</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="index.html">Local</a>
+                </li>
+
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="#">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div id="masterContainer" class="container">
+
+
+    <div class="d-grid gap-3">
+        <div class="p-3">
+            <div class="row d-flex align-items-stretch">
+
+                <div class="col-12 col-lg-8 col-xl-9">
+                    <div class="p-3 card" style="height:100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">Song picker</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Choose song and level</h6>
+
+                            <div class="row">
+
+                                <div class="col-12 col-md-4 pb-2 px-0">
+                                    <div class="p-2 fw-bold">Choose stage</div>
+                                    <div class="selector-height overflow-auto list-group" role="tablist" id="stage">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4 pb-2 px-0">
+                                    <div class="p-2 fw-bold">Choose song</div>
+                                    <div class="selector-height overflow-auto list-group" id="online-song" role="tablist">
+                                    </div>
+                                    <form class="pt-2 d-flex">
+                                        <input class="form-control me-2" type="search" id="myInput" onkeyup="filter()" placeholder="Search songs..." aria-label="Search">
+                                    </form>
+                                </div>
+                                <div class="col-12 col-md-4 pb-2 px-0">
+                                    <div class="p-2 fw-bold">Choose level</div>
+                                    <div class="selector-height overflow-auto list-group" id="level" role="tablist">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 col-xl-3" style="height:100%;">
+                    <div class="p-3 card">
+                        <div class="card-body">
+                            <h5 class="card-title">Level details</h5>
+                            <!--							<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
+
+                            <table class="table">
+                                <tr>
+                                    <td>Title: </td>
+                                    <td id="t">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Artist: </td>
+                                    <td id="a">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Steps Type: </td>
+                                    <td id="st">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Description: </td>
+                                    <td id="d">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Meter: </td>
+                                    <td id="m">-</td>
+                                </tr>
+                                <tr>
+                                    <td>Credit: </td>
+                                    <td id="c">-</td>
+                                </tr>
+                                <tr>
+                                    <td>BPMs: </td>
+                                    <td id="b">-</td>
+                                </tr>
+                                <tr>
+                                    <td>SCROLLS: </td>
+                                    <td id="scrolls">-</td>
+                                </tr>
+                                <tr>
+                                    <td>SPEEDS: </td>
+                                    <td id="speeds">-</td>
+                                </tr>
+                                <tr>
+                                    <td>STOPS: </td>
+                                    <td id="stops">-</td>
+                                </tr>
+                                <tr>
+                                    <td>DELAYS: </td>
+                                    <td id="delays">-</td>
+                                </tr>
+                                <tr>
+                                    <td>PLAYABLE: </td>
+                                    <td id="playable">
+                                        <div id="playable-true" style="display: none ;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#097969" class="bi bi-check" viewBox="0 0 16 16">
+                                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                                            </svg>
+                                        </div>
+
+                                        <div id="playable-false" style="display: none;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#C70039" class="bi bi-x" viewBox="0 0 16 16">
+                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                            </svg>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="p-3 collapse" id="optionCard">
+            <!--		<div class="p-3" id="optionCard">-->
+
+            <div class="p-3 card">
+                <div class="card-body">
+                    <h5 class="card-title">Settings</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Tune how your level is displayed and remap your keys</h6>
+
+
+                    <div class="row">
+
+                        <div class="col">
+
+                            <div class="pb-2 fw-bold">Choose noteskin</div>
+                            <select class="form-select" size="10" aria-label="size 10 select example" id="noteskin">
+
+                                <option value="EXCEED2-FLOWERCARD">EXCEED2-FLOWERCARD</option>
+                                <option value="EXCEED2-OLD" selected>EXCEED2-OLD</option>
+                                <option value="FIESTA">FIESTA</option>
+                                <option value="FIESTA-DRUM">FIESTA-DRUM</option>
+                                <option value="FIESTA-LIGHTING">FIESTA-LIGHTING</option>
+                                <option value="FIESTA-MISSILE">FIESTA-MISSILE</option>
+                                <option value="FIESTA-SOCCER">FIESTA-SOCCER</option>
+                                <option value="FIESTA2">FIESTA 2</option>
+                                <option value="FIESTAEX-BASIC">FIESTA EX</option>
+                                <option value="NX">NX</option>
+                                <option value="NX2">NX2</option>
+                                <option value="NX2-DOG">NX2-DOG</option>
+                                <option value="NX2-E-FIRE">NX2-FIRE</option>
+                                <option value="NX2-E-ICE">NX2-ICE</option>
+                                <option value="NX2-E-WIND">NX2-WIND</option>
+                                <option value="NX2-GIRL">NX2-GIRL</option>
+                                <option value="NX2-SHEEP">NX2-SHEEP</option>
+                                <option value="NX2-YASANGMA">NX2-YASANGMA</option>
+                                <option value="NXA">NXA</option>
+                                <option value="PREMIERE">PREMIERE/ZERO</option>
+                                <option value="PRIME">PRIME</option>
+                                <option value="ZERO-CANOND">ZERO-CANOND</option>
+                                <option value="ZERO-EASY">ZERO-EASY</option>
+                                <option value="ZERO-MUSICAL">ZERO-MUSICAL</option>
+                                <option value="ZERO-POKER">ZERO-POKER</option>
+                                <option value="ZERO-SLIME">ZERO-SLIME</option>
+                            </select>
+
+                        </div>
+
+                        <div class="col">
+                            <div class="pb-2 fw-bold">Choose speed</div>
+                            <select class="form-select" size="10" aria-label="size 10 select example" id="speed" name="speed">
+
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="3.5">3.5</option>
+                                <option value="4" selected>4</option>
+                                <option value="4.5">4.5</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+
+                        <div class="col">
+
+                            <div class="pb-2 fw-bold">Left pad keymap:</div>
+                            <table>
+                                <tr>
+                                    <td >Down-left:</td>
+                                    <td><input class="form-control" type="text" id="ldlmap" value="Z" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dl')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Up-left:</td>
+                                    <td><input class="form-control" type="text" id="lulmap" value="Q" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ul')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Center:</td>
+                                    <td><input class="form-control" type="text" id="lcmap" value="S" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','c')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Up-right:</td>
+                                    <td><input class="form-control" type="text" id="lurmap" value="E" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ur')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Down-right:</td>
+                                    <td><input class="form-control" type="text" id="ldrmap" value="C" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dr')" ></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="col">
+                            <div class="pb-2 fw-bold">Right pad keymap:</div>
+                            <table>
+
+                                <tr>
+                                    <td>Down-left:</td>
+                                    <td><input class="form-control" type="text" id="rdlmap" value="V" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dl')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Up-left:</td>
+                                    <td><input class="form-control" type="text" id="rulmap" value="R" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ul')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Center:</td>
+                                    <td><input class="form-control" type="text" id="rcmap" value="G" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','c')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Up-right:</td>
+                                    <td><input class="form-control" type="text" id="rurmap" value="Y" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ur')" ></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Down-right:</td>
+                                    <td><input class="form-control" type="text" id="rdrmap" value="N" maxlength="1"
+                                               onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dr')" ></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="p-2 row">
+                        <div class="col">
+                            <div class="fw-bold">Tune song offset: </div>
+                            <input class="mw-25 form-control" type="text" id="offset" name="offset" value="0.0" >
+                            <label>The offset can be updated on the fly by pressing "," and "." to add and subtract offset, respectively.</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            </symbol>
+            <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+            </symbol>
+            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </symbol>
+        </svg>
+
+        <div id="opponentReadyAlert" class="p-3">
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                <div>
+                    Your opponent is ready to start!
+                </div>
+            </div>
+        </div>
+
+        <div id="highLatencyAlertGuest" class="p-3">
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <div>
+                    Your opponent's connection has a high latency. This may cause engines to be out of sync
+                </div>
+            </div>
+        </div>
+
+        <div class="p-3">
+
+            <button onclick="joinBattle()" id="joinBattle" class="btn btn-primary" type="button">
+                <span id="joinBattleSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                <span id="joinBattleButtonLabel" class="sr-only">Join battle!</span>
+            </button>
+
+<!--            <button type="button" class="btn btn-primary" onclick="$('#opponentReadyAlert').hide()">Join battle!</button>-->
+            <a class="btn btn-secondary" data-bs-toggle="collapse" href="#optionCard" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle Settings</a>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="waitingForOpponentModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="waitingForOpponentModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Starting the game...</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <p>Waiting for opponent to join...</p>
+
+
+                <div id="highLatencyAlertModal" class="p-3">
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <div>
+                            High latency detected. This may cause engines to be out of sync
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <div class="spinner-grow p-3" role="status"></div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="connectionClosedModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="connectionClosedModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Connection Closed!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Oh no! It seems like you are not longer connected to your opponent</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK bye</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="Demo/OnlineMultiplayer/MasterSongPicker.js"></script>
+<!--</body>-->
+<!--</html>-->
