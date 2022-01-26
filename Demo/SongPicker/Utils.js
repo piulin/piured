@@ -1,5 +1,5 @@
-// let resources = 'https://piulin.gentakojima.me/'
-let resources = './'
+let resources = 'https://piulin.gentakojima.me/'
+// let resources = './'
 
 
 

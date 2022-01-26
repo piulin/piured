@@ -48,6 +48,13 @@ engine.configureStage(stageConfig) ;
 let p1InputConfig ;
 let accuracyMargin = 0.15 ;
 
+let p1StageType = engine.queryStageType(P1chartLevel) ;
+let p2StageType = engine.queryStageType(P2chartLevel) ;
+
+if (p1StageType === 'pump-double' || p1StageType === 'pump-halfdouble' || p2StageType === 'pump-double' || p2StageType === 'pump-halfdouble' ) {
+    engine.setCameraPosition(0,-3.4,12) ;
+}
+
 window.onkeydown = onKeyDown ;
 window.onkeyup = onKeyUp ;
 

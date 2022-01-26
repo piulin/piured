@@ -86,6 +86,7 @@ let p1Config = new PlayerConfig(p1InputConfig,
 
 engine.addPlayer(p1Config) ;
 
+
 engine.addToDOM('container');
 
 window.addEventListener( 'resize', engine.onWindowResize.bind(engine), false );

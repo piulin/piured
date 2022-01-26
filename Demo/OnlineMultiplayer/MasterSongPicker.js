@@ -56,10 +56,18 @@ mm.onReceiveHighLatency = () => {
     $('#highLatencyAlertGuest').show() ;
 } ;
 
+mm.onPopUpBlocked = () => {
+    masterIsReady = false ;
+    if (gameWindow !== null) {
+        gameWindow.close() ;
+    }
+    $('#waitingForOpponentModal').modal('hide');
+}
+
 readSongList() ;
 
 function checkLatency() {
-    return getAverageLatency() <= 100.0;
+    return getAverageLatency() <= 50.0;
 
 }
 
@@ -109,6 +117,7 @@ function prepareBattle() {
 
     slaveIsReady = false;
     masterIsReady = false ;
+    mm.sendCancelStageConfig() ;
 
     let speed = parseInt(document.getElementById('speed').value) ;
     let playback = 1.0 ;
@@ -134,12 +143,27 @@ function prepareBattle() {
     } ;
 
     gameWindow = window.open("/piured/battleStage.html");
-    gameWindow.config = config ;
-    gameWindow.onGameHasEnded = () => {
+
+    if (gameWindow === null) {
+        mm.sendPopUpBlocked() ;
         $('#waitingForOpponentModal').modal('hide');
-        mm.sendCancelStageConfig() ;
-        gameWindow = null ;
+        $('#popUpWindowModal').modal('show');
+
+    } else {
+        gameWindow.config = config ;
+        gameWindow.onGameHasEnded = () => {
+            $('#waitingForOpponentModal').modal('hide');
+            mm.sendCancelStageConfig() ;
+            gameWindow = null ;
+        }
+
+        gameWindow.onbeforeunload = () => {
+            $('#waitingForOpponentModal').modal('hide');
+            mm.sendCancelStageConfig() ;
+            gameWindow = null ;
+        }
     }
+
 
 }
 

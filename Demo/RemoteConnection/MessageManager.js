@@ -12,6 +12,7 @@ class MessageManager {
     _onCancelStageConfig = undefined ;
     _onReceiveDateDetails = undefined ;
     _onReceiveHighLatency = undefined ;
+    _onPopUpBlocked = undefined ;
     start ;
     _engine ;
 
@@ -84,6 +85,10 @@ class MessageManager {
             if (this._onReceiveHighLatency !== undefined) {
                 this._onReceiveHighLatency() ;
             }
+        }else if (data.action === 'popUpBlocked') {
+            if (this._onPopUpBlocked !== undefined) {
+                this._onPopUpBlocked() ;
+            }
         }
 
     }
@@ -108,6 +113,11 @@ class MessageManager {
 
     set onReceiveHighLatency (val) {
         this._onReceiveHighLatency = val ;
+    }
+
+
+    set onPopUpBlocked(value) {
+        this._onPopUpBlocked = value;
     }
 
     sendSelectedLevel(sscPath) {
@@ -141,6 +151,12 @@ class MessageManager {
 
         }) ;
 
+    }
+
+    sendPopUpBlocked() {
+        this._host.send({
+            'action': 'popUpBlocked'
+        }) ;
     }
 
     sendReadyToStart() {
