@@ -16,7 +16,7 @@ In the demo webpage, you can:
 3. Choose from a variety of official [noteskins](https://github.com/cesarmades/piunoteskins).
 4. Tune your stepchart speed & beat offset.
 5. Select Keyboard or Touch as input methods.
-6. Play a tune!
+6. Play a tune alone or create a battle to play online with a friend!
 
 The default keymap is the following:
 - Pump-single: 'Q', 'E', 'S', 'Z', and 'C' keys for up-left, up-right, center, down-left and down-right steps,
