@@ -17,21 +17,20 @@
  *
  */
 
-let addOffsetKeyMap = '1' ;
-let subtractOffsetKeyMap = '2' ;
+let addOffsetKeyMap = ',' ;
+let subtractOffsetKeyMap = '.' ;
 
-let addPlayBackSpeedKeyMap = '3' ;
-let subtractPlayBackSpeedKeyMap = '4' ;
-
+let addPlayBackSpeedKeyMap = '+' ;
+let subtractPlayBackSpeedKeyMap = '-' ;
 
 function onKeyDown(event) {
 
     let key = event.key.toLowerCase() ;
 
     if ( key === addOffsetKeyMap) {
-        engine.updateOffset(1,0.01) ;
+        engine.updateOffset(0,0.01) ;
     } else if (key === subtractOffsetKeyMap ) {
-        engine.updateOffset(1,-0.01 ) ;
+        engine.updateOffset(0,-0.01 ) ;
     }
 
     else if ( key === addPlayBackSpeedKeyMap) {
