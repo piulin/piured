@@ -86,7 +86,7 @@ function play(){
         const perf = window.performanceMetric[0] ;
         $('#performance').collapse('show') ;
         window.scrollTo(0,0) ;
-        $('#performanceSong').html(selsong.meta.TITLE + " - " + selsong.meta.ARTIST + " - Lvl. " + chart_level ) ;
+        $('#performanceSong').html(selsong.meta.TITLE + " - " + selsong.meta.ARTIST + " - Lvl. " + selsong.meta.METER  ) ;
         $('#perfect').html(perf.p) ;
         $('#great').html(perf.gr) ;
         $('#good').html(perf.go) ;
