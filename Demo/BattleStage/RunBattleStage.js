@@ -19,7 +19,7 @@
 
 function stageCleared(performance) {
 
-    console.log(performance) ;
+    window.opener.performanceMetric = performance ;
     document.removeEventListener( 'touchstart', onTouchDown, false );
     document.removeEventListener( 'touchend', onTouchUp, false );
     engine = null ;

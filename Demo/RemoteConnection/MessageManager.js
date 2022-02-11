@@ -31,6 +31,7 @@ class MessageManager {
     _onReceiveDateDetails = undefined ;
     _onReceiveHighLatency = undefined ;
     _onPopUpBlocked = undefined ;
+    _onReceivePerformance = undefined ;
     start ;
     _engine ;
 
@@ -107,11 +108,18 @@ class MessageManager {
             if (this._onPopUpBlocked !== undefined) {
                 this._onPopUpBlocked() ;
             }
+        } else if ( data.action === 'performance') {
+            if ( this._onReceivePerformance !== undefined ) {
+                this._onReceivePerformance(data.performance) ;
+            }
         }
 
     }
 
 
+    set onReceivePerformance(value) {
+        this._onReceivePerformance = value;
+    }
 
     set onSelectedLevel(val) {
         this._onSelectedLevel = val ;
@@ -144,6 +152,13 @@ class MessageManager {
             'action':'selectedLevel',
             'sscPath':sscPath
 
+        }) ;
+    }
+
+    sendPerformance(performance) {
+        this._host.send({
+            'action':'performance',
+            'performance':performance
         }) ;
     }
 

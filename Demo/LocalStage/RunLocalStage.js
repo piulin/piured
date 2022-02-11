@@ -17,17 +17,6 @@
  *
  */
 
-function stageCleared(performance) {
-
-    console.log(performance) ;
-    document.removeEventListener( 'touchstart', onTouchDown, false );
-    document.removeEventListener( 'touchend', onTouchUp, false );
-    engine = null ;
-    window.close() ;
-
-
-}
-
 let config = window.config ;
 
 engine = new Engine() ;
@@ -109,6 +98,13 @@ engine.addToDOM('container');
 
 window.addEventListener( 'resize', engine.onWindowResize.bind(engine), false );
 
-engine.onStageCleared = stageCleared ;
+engine.onStageCleared = (performance) => {
+    console.log(performance) ;
+    window.opener.performanceMetric = performance ;
+    document.removeEventListener( 'touchstart', onTouchDown, false );
+    document.removeEventListener( 'touchend', onTouchUp, false );
+    engine = null ;
+    window.close() ;
+} ;
 
 engine.start();

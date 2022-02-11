@@ -47,28 +47,6 @@ let rightKeyMap = {
     dr: 'N'
 }
 
-//FOR IOS/MAC: https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
-// window.addEventListener('touchstart', function() {
-//
-//     let context = null ;
-//     if('webkitAudioContext' in window) {
-//         context = new webkitAudioContext();
-//     } else {
-//         context = new AudioContext();
-//     }
-//     // create empty buffer
-//     var buffer = context.createBuffer(1, 1, 22050);
-//     var source = context.createBufferSource();
-//     source.buffer = buffer;
-//
-//     // connect to output (your speakers)
-//     source.connect(context.destination);
-//
-//     // play the file
-//     source.noteOn(0);
-//
-// }, false);
-
 $(window).on('unload', function() {
     if (engine != null) {
         engine.song.closeBuff() ;
@@ -103,6 +81,21 @@ function play(){
 
     var w = window.open("/piured/localStage.html");
     w.config = config ;
+
+    w.onbeforeunload = () => {
+        const perf = window.performanceMetric[0] ;
+        $('#performance').collapse('show') ;
+        window.scrollTo(0,0) ;
+        $('#performanceSong').html(selsong.meta.TITLE + " - " + selsong.meta.ARTIST + " - Lvl. " + chart_level ) ;
+        $('#perfect').html(perf.p) ;
+        $('#great').html(perf.gr) ;
+        $('#good').html(perf.go) ;
+        $('#bad').html(perf.b) ;
+        $('#miss').html(perf.m) ;
+        $('#maxCombo').html(perf.maxCombo) ;
+        $('#score').html(perf.score) ;
+        $('#grade').html(perf.grade) ;
+    } ;
 
 }
 

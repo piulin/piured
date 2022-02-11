@@ -73,6 +73,18 @@ mm.onReceiveHighLatency = () => {
     $('#highLatencyAlertGuest').show() ;
 } ;
 
+mm.onReceivePerformance = (perf) =>  {
+    $('#P2performanceSong').html($('#t').html() + " - " + $('#a').html() + " - Lvl. " + slaveStageConfig.levelDifficulty ) ;
+    $('#P2perfect').html(perf.p) ;
+    $('#P2great').html(perf.gr) ;
+    $('#P2good').html(perf.go) ;
+    $('#P2bad').html(perf.b) ;
+    $('#P2miss').html(perf.m) ;
+    $('#P2maxCombo').html(perf.maxCombo) ;
+    $('#P2score').html(perf.score) ;
+    $('#P2grade').html(perf.grade) ;
+}
+
 mm.onPopUpBlocked = () => {
     masterIsReady = false ;
     if (gameWindow !== null) {
@@ -111,7 +123,8 @@ function joinBattle() {
         'offset': offset,
         'sscpath': sscpath,
         'mp3path': mp3path,
-        'chartLevel': chart_level
+        'chartLevel': chart_level,
+        'levelDifficulty': $('#m').html()
     } ;
 
     mm.sendStageConfig(config) ;
@@ -178,6 +191,20 @@ function prepareBattle() {
             $('#waitingForOpponentModal').modal('hide');
             mm.sendCancelStageConfig() ;
             gameWindow = null ;
+
+            const perf = window.performanceMetric[0] ;
+            mm.sendPerformance(perf) ;
+            $('#performance').collapse('show') ;
+            window.scrollTo(0,0) ;
+            $('#P1performanceSong').html( $('#t').html() + " - " + $('#a').html() + " - Lvl. " + $('#m').html() ) ;
+            $('#P1perfect').html(perf.p) ;
+            $('#P1great').html(perf.gr) ;
+            $('#P1good').html(perf.go) ;
+            $('#P1bad').html(perf.b) ;
+            $('#P1miss').html(perf.m) ;
+            $('#P1maxCombo').html(perf.maxCombo) ;
+            $('#P1score').html(perf.score) ;
+            $('#P1grade').html(perf.grade) ;
         }
     }
 

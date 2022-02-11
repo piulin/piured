@@ -61,29 +61,28 @@ function change_level(l) {
         document.getElementById('scrolls').innerHTML = 'NO' ;
     }
 
+    if ( song.getWARPS(l).length > 0  ) {
+        document.getElementById('warps').innerHTML = 'YES' ;
+    } else {
+        document.getElementById('warps').innerHTML = 'NO' ;
+    }
+
     if ( song.getSpeeds(l).length > 1  ) {
         document.getElementById('speeds').innerHTML = 'YES' ;
     } else {
         document.getElementById('speeds').innerHTML = 'NO' ;
     }
 
-    if (('WARPS' in level.meta && level.meta.WARPS[0].length > 1) ) {
-        document.getElementById('playable-false').style.display = '' ;
-        document.getElementById('playable-true').style.display = 'none' ;
 
-    } else {
+    if ( level.meta.STEPSTYPE === 'pump-single' || level.meta.STEPSTYPE === 'pump-double' || level.meta.STEPSTYPE === 'pump-halfdouble') {
         document.getElementById('playable-false').style.display = 'none' ;
         document.getElementById('playable-true').style.display = '' ;
-
-        if ( level.meta.STEPSTYPE === 'pump-single' || level.meta.STEPSTYPE === 'pump-double' || level.meta.STEPSTYPE === 'pump-halfdouble') {
-            document.getElementById('playable-false').style.display = 'none' ;
-            document.getElementById('playable-true').style.display = '' ;
-        } else {
-            document.getElementById('playable-false').style.display = '' ;
-            document.getElementById('playable-true').style.display = 'none' ;
-        }
-
+    } else {
+        document.getElementById('playable-false').style.display = '' ;
+        document.getElementById('playable-true').style.display = 'none' ;
     }
+
+
 
 
 
