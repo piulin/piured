@@ -212,7 +212,7 @@ function createListGroupLinkSubtitle(idx, title, aside, subtitle, onclick) {
 function readSongList() {
 
 
-    $.getJSON("songs.json", function(json) {
+    $.getJSON(resources+"songs.json", function(json) {
 
         let stages = json.children[0] ;
 
