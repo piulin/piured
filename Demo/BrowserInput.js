@@ -23,6 +23,8 @@ let subtractOffsetKeyMap = '.' ;
 let addPlayBackSpeedKeyMap = '+' ;
 let subtractPlayBackSpeedKeyMap = '-' ;
 
+let playbackSpeedKeyInput = 1.0 ;
+
 function onKeyDown(event) {
 
     let key = event.key.toLowerCase() ;
@@ -34,9 +36,14 @@ function onKeyDown(event) {
     }
 
     else if ( key === addPlayBackSpeedKeyMap) {
-        engine.tunePlayBackSpeed(0.05) ;
+        playbackSpeedKeyInput += 0.05 ;
+        engine.tunePlayBackSpeed(playbackSpeedKeyInput) ;
     } else if (key === subtractPlayBackSpeedKeyMap) {
-        engine.tunePlayBackSpeed( -0.05 ) ;
+        playbackSpeedKeyInput -= 0.05 ;
+        engine.tunePlayBackSpeed( playbackSpeedKeyInput ) ;
+    }
+    if (playbackSpeedKeyInput < 0.0) {
+        playbackSpeedKeyInput = 0.0 ;
     }
 
 

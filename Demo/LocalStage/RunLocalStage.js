@@ -98,6 +98,9 @@ engine.addToDOM('container');
 
 window.addEventListener( 'resize', engine.onWindowResize.bind(engine), false );
 
+// listen to "scroll" event
+
+
 engine.onStageCleared = (performance) => {
     console.log(performance) ;
     window.opener.performanceMetric = performance ;
@@ -108,3 +111,11 @@ engine.onStageCleared = (performance) => {
 } ;
 
 engine.start();
+let lastDelta = 1.0
+document.addEventListener('wheel', (e) => {
+    // let speed = checkScrollSpeed() ;
+    // console.log(speed) ;
+
+    engine.tweenPlayBackSpeed( 1.0 + e.deltaY/70.0 ) ;
+    // lastDelta = e.deltaY/100.0 ;
+}, false);

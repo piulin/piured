@@ -31,6 +31,11 @@ let mp3path = null
 let sscpath = null
 let selsong = null
 
+// document.addEventListener('wheel', (e) => {
+//     console.log(e.deltaX,e.deltaY,e.deltaZ,e.deltaMode,e.detail) ;
+//     // engine.tunePlayBackSpeed( 1.0 + speed/100.0 ) ;
+// }, false);
+
 let leftKeyMap = {
     dl: 'Z',
     ul : 'Q',
