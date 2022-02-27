@@ -116,7 +116,7 @@ function joinBattle() {
     let speed = parseInt(document.getElementById('speed').value) ;
     let playback = 1.0 ;
     let offset = parseFloat(document.getElementById('offset').value) ;
-
+    let noteskin = document.getElementById('noteskin').value ;
     let config = {
         'speed': speed,
         'playback': playback,
@@ -124,6 +124,7 @@ function joinBattle() {
         'sscpath': sscpath,
         'mp3path': mp3path,
         'chartLevel': chart_level,
+        'noteskin': noteskin,
         'levelDifficulty': $('#m').html()
     } ;
 
@@ -161,7 +162,8 @@ function prepareBattle() {
         'P2speed': slaveStageConfig.speed,
         'playback': playback,
         'offset': offset,
-        'noteskin': noteskin,
+        'P1noteskin': noteskin,
+        'P2noteskin': slaveStageConfig.noteskin,
         'resources': resources,
         'sscpath': sscpath,
         'mp3path': mp3path,

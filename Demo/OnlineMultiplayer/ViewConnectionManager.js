@@ -20,9 +20,9 @@
 let m ;
 let s ;
 
+// let URLbattleServer = 'http://localhost:8001'
+let URLbattleServer = 'https://piulin.gentakojima.me:8001'
 async function connectMaster() {
-
-
 
     createBattleButtonWorking() ;
 
@@ -38,8 +38,20 @@ async function connectMaster() {
 
     m.onIceCompleted(()=>{
         resetCreateBattleButton() ;
-        $('#generatedInviteCodeTextField').val(m.sdp) ;
-        $('#createBattleModal').modal('show');
+        $.ajax({
+            method: 'POST',
+            url: URLbattleServer + '/setSDP',
+            data: {'sdp': m.sdp},
+            dataType: 'json',
+            crossDomain: true,
+            async: false,
+            success: (res) => {
+                const {id} = res ;
+                $('#generatedInviteCodeTextField').val(id) ;
+                $('#createBattleModal').modal('show');
+            }
+        });
+
     }) ;
 
     await m.init() ;
@@ -71,46 +83,80 @@ function resetConnectButton() {
     $('#connectSlaveButtonLabel').text('Connect');
 }
 
-function addSlave(remoteSDP) {
+function addSlave(remoteId) {
     connectingButtonWorking() ;
-    m.addSlave(remoteSDP, () => {
-        resetConnectButton() ;
-        $('#confirmationCodeTextField').addClass('is-invalid') ;
-    },
-        () => {
-            $('#confirmationCodeTextField').removeClass('is-invalid') ;
-        }) ;
+    $.ajax({
+        method: 'POST',
+        url: URLbattleServer + '/getSDP',
+        data: {'id': remoteId },
+        dataType: 'json',
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            let remoteSDP = res.sdp ;
+            m.addSlave(remoteSDP, () => {
+                    resetConnectButton() ;
+                    $('#confirmationCodeTextField').addClass('is-invalid') ;
+                },
+                () => {
+                    $('#confirmationCodeTextField').removeClass('is-invalid') ;
+                }) ;
+        }
+    });
+
+
 }
 
-async function connectSlave(remoteSDP) {
+function connectSlave(remoteId) {
+    $.ajax({
+        method: 'POST',
+        url: URLbattleServer + '/getSDP',
+        data: {'id': remoteId },
+        dataType: 'json',
+        crossDomain: true,
+        async: false,
+        success: async function (res) {
+            let remoteSDP = res.sdp ;
+            inviteButtonWorking() ;
+
+            s = new Slave(remoteSDP, () => {
+                resetInviteButton() ;
+                $('#inviteCodeTextField').addClass('is-invalid') ;
+            }) ;
 
 
+            s.onOpen(() => {
+                console.log('opened!');
+                $('#joinBattleModal').modal('hide');
+                readFileContent('online-multiplayer-slave.html', function (content) {
+                    $('body').html(content) ;
+                }) ;
+            }) ;
 
-    inviteButtonWorking() ;
+            s.onIceCompleted(() => {
+                $('#inviteCodeTextField').removeClass('is-invalid') ;
 
-    s = new Slave(remoteSDP, () => {
-        resetInviteButton() ;
-        $('#inviteCodeTextField').addClass('is-invalid') ;
-    }) ;
+                $.ajax({
+                    method: 'POST',
+                    url: URLbattleServer + '/setSDP',
+                    data: {'sdp': s.sdp},
+                    dataType: 'json',
+                    crossDomain: true,
+                    async: false,
+                    success: (res) => {
+                        const {id} = res ;
+                        $('#generatedConfirmationCodeTextField').val(id) ;
+                        resetInviteButton() ;
+                        $('#joinBattleModal').modal('show');
+                    }
+                });
 
+            }) ;
 
-    s.onOpen(() => {
-        console.log('opened!');
-        $('#joinBattleModal').modal('hide');
-        readFileContent('online-multiplayer-slave.html', function (content) {
-            $('body').html(content) ;
-        }) ;
-    }) ;
+            await s.init() ;
+        }
+    });
 
-    s.onIceCompleted(() => {
-        $('#inviteCodeTextField').removeClass('is-invalid') ;
-        $('#generatedConfirmationCodeTextField').val(s.sdp) ;
-        resetInviteButton() ;
-        $('#joinBattleModal').modal('show');
-
-    }) ;
-
-    await s.init() ;
 
 }
 

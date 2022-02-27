@@ -65,61 +65,61 @@
     </div>
 </nav>
 
-<!--<div id="connectionContainer" class="container h-100">-->
-
-<!--    <div class="row p-3">-->
-<!--        <div class="card">-->
-<!--            <div class="card-body">-->
-<!--                <h5 class="card-title">Create a new Online Battle</h5>-->
-<!--                <p class="card-text">To play with a friend you will need to create an online battle, unless you have an invite code. If you don't have one, please,-->
-<!--                    press "Create Battle" and wait until a new invite code is generated. Then, share it somehow with the friend-->
-<!--                you want to play with. He can use it to connect to your battle by typing/pasting the code into the card down below. </p>-->
-<!--                <p>If you don't have friends, consider joining <a href="https://discord.gg/5pJbcEvvMj">PIURED's discord server</a> to find a mate to play with.</p>-->
-<!--                <button onclick="connectMaster()" id="masterButton" class="btn btn-primary" type="button">-->
-<!--                    <span id="masterSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>-->
-<!--                    <span id="masterButtonLabel" class="sr-only">Create Battle</span>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <div class="row p-3">-->
-<!--        <div class="card">-->
-<!--            <div class="card-body">-->
-<!--                <h5 class="card-title">Join an Online Battle</h5>-->
-<!--                <p class="card-text">If you got an invite code, please, type/paste it in the form below and press "Accept Invite". A confirmation code-->
-<!--                    will be generated after a few seconds. You will need to send the confirmation code back to the friend that sent you the invite. </p>-->
-
-<!--                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">-->
-<!--                    <div class="input-group me-2 has-validation">-->
-<!--                        <div class="input-group-text">#</div>-->
-<!--                        <input id="inviteCodeTextField" type="text" class="form-control" placeholder="Invite code" aria-label="Invite code" aria-describedby="inviteCodeTextField">-->
-<!--                        <div id="validationInviteCode" class="invalid-feedback">-->
-<!--                            Invalid invite code-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <button onclick="connectSlave($('#inviteCodeTextField').val())" id="slaveButton" class="btn btn-primary" type="button">-->
-<!--                        <span id="slaveSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>-->
-<!--                        <span id="slaveButtonLabel" class="sr-only">Accept Invite</span>-->
-<!--                    </button>-->
-
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--</div>-->
-
 <div id="connectionContainer" class="container h-100">
+
     <div class="row p-3">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Battle disabled temporarily</h5>
-                <p class="card-text"> Stay tuned for new updates at <a href="https://discord.gg/5pJbcEvvMj">PIURED's discord server.</a></p>
+                <h5 class="card-title">Create a new Online Battle</h5>
+                <p class="card-text">To play with a friend you will need to create an online battle, unless you have an invite code. If you don't have one, please,
+                    press "Create Battle" and wait until a new invite code is generated. Then, share it somehow with the friend
+                you want to play with. He can use it to connect to your battle by typing/pasting the code into the card down below. </p>
+                <p>If you don't have friends, consider joining <a href="https://discord.gg/5pJbcEvvMj">PIURED's discord server</a> to find a mate to play with.</p>
+                <button onclick="connectMaster()" id="masterButton" class="btn btn-primary" type="button">
+                    <span id="masterSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                    <span id="masterButtonLabel" class="sr-only">Create Battle</span>
+                </button>
             </div>
         </div>
     </div>
+
+    <div class="row p-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Join an Online Battle</h5>
+                <p class="card-text">If you got an invite code, please, type/paste it in the form below and press "Accept Invite". A confirmation code
+                    will be generated after a few seconds. You will need to send the confirmation code back to the friend that sent you the invite. </p>
+
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="input-group me-2 has-validation">
+                        <div class="input-group-text">#</div>
+                        <input id="inviteCodeTextField" type="text" class="form-control" placeholder="Invite code" aria-label="Invite code" aria-describedby="inviteCodeTextField">
+                        <div id="validationInviteCode" class="invalid-feedback">
+                            Invalid invite code
+                        </div>
+                    </div>
+                    <button onclick="connectSlave($('#inviteCodeTextField').val())" id="slaveButton" class="btn btn-primary" type="button">
+                        <span id="slaveSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                        <span id="slaveButtonLabel" class="sr-only">Accept Invite</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<!--<div id="connectionContainer" class="container h-100">-->
+<!--    <div class="row p-3">-->
+<!--        <div class="card">-->
+<!--            <div class="card-body">-->
+<!--                <h5 class="card-title">Battle disabled temporarily</h5>-->
+<!--                <p class="card-text"> Stay tuned for new updates at <a href="https://discord.gg/5pJbcEvvMj">PIURED's discord server.</a></p>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
 
 
@@ -131,7 +131,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Here you have the invite code (#)! Send it to your friend somehow.
+                Here you have the invite code (#)! Send it to your friend somehow. This code is valid for 5 minutes only.
                 <div class="input-group me-2 p-3">
                     <div class="input-group-text">#</div>
                     <input id="generatedInviteCodeTextField" type="text" class="form-control" aria-label="Invite code" aria-describedby="generatedInviteCodeTextField" disabled>
@@ -167,7 +167,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Here you have the confirmation code (@)! Send it to your friend somehow.
+                Here you have the confirmation code (@)! Send it to your friend somehow. This code is valid for 5 minutes only.
                 <div class="input-group me-2 p-3">
                     <div class="input-group-text">@</div>
                     <input id="generatedConfirmationCodeTextField" type="text" class="form-control" value="code" aria-label="Invite code" aria-describedby="generatedConfirmationCodeTextField" disabled>
@@ -188,7 +188,7 @@
 <!-- Footer -->
 <footer class="text-center text-lg-start bg-light text-muted">
     <div class="text-center p-4" style="background-color: white;">
-        PIURED v1.1.2 <hr>
+        PIURED v1.1.3 <hr>
         <a href="https://github.com/piulin/piured" class="text-reset text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
         </svg></a>

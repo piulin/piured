@@ -40,7 +40,8 @@ let P1speed = config.P1speed ;
 let P2speed = config.P2speed ;
 let playback = 1.0 ;
 let offset = config.offset ;
-let noteskin = config.noteskin ;
+let P1noteskin = config.P1noteskin ;
+let P2noteskin = config.P2noteskin ;
 let resources = config.resources ;
 let sscpath = config.sscpath ;
 let mp3path = config.mp3path ;
@@ -57,7 +58,7 @@ let stageConfig = new StageConfig(resources+sscpath,
     playback,
     offset,
     'piured-engine/',
-    noteskin,
+    [P1noteskin,P2noteskin],
     () => {
         mm.readyToStart() ;
     }) ;
@@ -79,11 +80,13 @@ window.onkeyup = onKeyUp ;
 p1InputConfig = new KeyInputConfig(leftKeyMap, rightKeyMap) ;
 
 let p1Config = new PlayerConfig(p1InputConfig,
+    P1noteskin,
     P1chartLevel,
     P1speed,
     accuracyMargin) ;
 
 let p2Config = new PlayerConfig(new RemoteInput(),
+    P2noteskin,
     P2chartLevel,
     P2speed,
     accuracyMargin) ;

@@ -41,7 +41,7 @@ let stageConfig = new StageConfig(resources+sscpath,
     playback,
     offset,
     resourcePath,
-    noteskin,
+    [noteskin],
     () => {
         let dateToStart = new Date() ;
         // delay of 2 secs
@@ -86,6 +86,7 @@ if (useTouchInput) {
 }
 
 let p1Config = new PlayerConfig(p1InputConfig,
+    noteskin,
     chartLevel,
     speed,
     accuracyMargin) ;
