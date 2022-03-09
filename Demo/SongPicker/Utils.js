@@ -35,12 +35,12 @@ function change_level(l) {
     let song = selsong ;
     let level = song.levels[l] ;
 
-    document.getElementById('st').innerHTML = level.meta.STEPSTYPE ;
+    document.getElementById('st').innerHTML = level.STEPSTYPE ;
     document.getElementById('t').innerHTML = song.meta.TITLE ;
     document.getElementById('a').innerHTML = song.meta.ARTIST ;
-    document.getElementById('d').innerHTML = level.meta.DESCRIPTION ;
-    document.getElementById('m').innerHTML = level.meta.METER ;
-    document.getElementById('c').innerHTML = level.meta.CREDIT ;
+    document.getElementById('d').innerHTML = level.DESCRIPTION ;
+    document.getElementById('m').innerHTML = level.METER ;
+    document.getElementById('c').innerHTML = level.CREDIT ;
     document.getElementById('b').innerHTML = song.getBMPs(l)[0][1];
 
     if ( song.getStops(l).length > 0  ) {
@@ -74,12 +74,28 @@ function change_level(l) {
     }
 
 
-    if ( level.meta.STEPSTYPE === 'pump-single' || level.meta.STEPSTYPE === 'pump-double' || level.meta.STEPSTYPE === 'pump-halfdouble') {
+    if ( level.STEPSTYPE === 'pump-single' || level.STEPSTYPE === 'pump-double' || level.STEPSTYPE === 'pump-halfdouble') {
         document.getElementById('playable-false').style.display = 'none' ;
         document.getElementById('playable-true').style.display = '' ;
+        document.getElementById('playable-unknown').style.display = 'none' ;
+
+        if ( level.SPECIALNOTES.size !== 0 ) {
+            document.getElementById('playable-false').style.display = 'none';
+            document.getElementById('playable-true').style.display = 'none';
+            document.getElementById('playable-unknown').style.display = '';
+        }
+
     } else {
         document.getElementById('playable-false').style.display = '' ;
         document.getElementById('playable-true').style.display = 'none' ;
+        document.getElementById('playable-unknown').style.display = 'none' ;
+
+    }
+
+    if ( level.SPECIALNOTES.size !== 0 ) {
+        document.getElementById('trickNotes').innerHTML = [...level.SPECIALNOTES].join(', ');
+    } else {
+        document.getElementById('trickNotes').innerHTML = 'NO' ;
     }
 
 

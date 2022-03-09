@@ -28,7 +28,7 @@ function discoverLevels( sscPath ) {
         let level = song.levels[i] ;
 
 
-        let a = createListGroupLinkSubtitle(i, level.meta.METER + " - " + level.meta.DESCRIPTION, level.meta.STEPSTYPE, level.meta.CREDIT, function () {
+        let a = createListGroupLinkSubtitle(i, level.METER + " - " + level.DESCRIPTION, level.STEPSTYPE, level.CREDIT, function () {
             change_level(i) ;
         }) ;
 
