@@ -117,8 +117,8 @@ function changeOnlineSong(i){
     let song = songsJson.children[stageIndex].children[i] ;
 
 
-    let x=/^[^.]+\.(mp3|wav|ogg)$/i;
-    let y=/^[^.]+\.ssc$/i;
+    let x=/^.+\.(mp3|wav|ogg|MP3|WAV|OGG)/i;
+    let y=/^.+\.(ssc|SSC)/i;
 
     mp3path = null
     sscpath = null
@@ -128,6 +128,8 @@ function changeOnlineSong(i){
         let attr = song.children[i] ;
         if ( JSON.parse(localStorage.getItem("last_lpad")) !== null ) {
         }
+
+
         if (x.test(attr.name)) {
             mp3path = attr.path ;
         }
@@ -135,6 +137,7 @@ function changeOnlineSong(i){
         if (y.test(attr.name)) {
             sscpath = attr.path ;
         }
+
     }
 
 
