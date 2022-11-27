@@ -1,443 +1,111 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
-	<!-- CSS only -->
-	<style>
-		.selector-height {
-			height: 500px;
-		}
+    <!-- CSS only -->
+    <style>
+    .img-fluid {
+        max-width: 5%;
+        height: auto;
+    }
+    .logo-bg {
+        background-color: #fff8e0ff;
+    }
+    </style>
+    <!--	<script src="Demo/lib/jquery/jquery.min.js"></script>-->
+    <!--	<script src="Demo/lib/bootstrap/bootstrap.min.js" crossorigin="anonymous"></script>-->
 
-		.sortable-handler {
-			touch-action: none;
-		}
-	</style>
-<!--	<script src="Demo/lib/jquery/jquery.min.js"></script>-->
-<!--	<script src="Demo/lib/bootstrap/bootstrap.min.js" crossorigin="anonymous"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-
-
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-
-	<script src="piured-engine/js/Utils/FileReader.js"></script>
-	<script src="piured-engine/lib/stats.min.js"></script>
-	<script src="piured-engine/js/pegjs-ssc-parser/parser/SSCParserClient.js"></script>
-	<script src="piured-engine/js/Song/Song.js"></script>
-	<script src="piured-engine/js/Song/NoteData.js"></script>
-
-	<script src="Demo/Filter.js"></script>
-	<script src="Demo/BrowserInput.js"></script>
-	<script src="Demo/SongPicker/Utils.js"></script>
-	<script src="Demo/SongPicker/DiscoverLevelLocal.js"></script>
-
-
-<!--	<link href="css/bootstrap.min.css" rel="stylesheet">-->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!--	<link href="css/bootstrap.min.css" rel="stylesheet">-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbar">
-	<div class="container-fluid">
-		<span class="navbar-brand mb-0 h1">PIURED</span>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				<li class="nav-item">
-					<a class="nav-link" aria-current="page" href="online-multiplayer.html">Battle</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link active" aria-current="page" href="index.html">Local</a>
-				</li>
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+            <img src="imgs/logo-flat-mono-white.png" class="img-fluid mx-auto d-block" alt="PIURED" style="height: 50px;">
+        </span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="online-multiplayer.html">Battle</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="local.html">Local</a>
+                </li>
 
-			</ul>
-			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-				<li class="nav-item">
-					<a class="nav-link" aria-current="page" href="about.html">About</a>
-				</li>
-			</ul>
-		</div>
-	</div>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="about.html">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
 
-<div class="container" id="selector">
-
-
-
-	<div class="d-grid gap-3">
-		<div id="performance" class="col-12 p-3 collapse">
-			<div class="p-3 card">
-				<div class="card-body">
-					<h5 class="card-title">Performance results</h5>
-					<h6 class="card-subtitle mb-2 text-muted" id="performanceSong"></h6>
-					<table class="table">
-						<tr>
-							<td>Perfect: </td>
-							<td id="perfect">-</td>
-						</tr>
-						<tr>
-							<td>Great: </td>
-							<td id="great">-</td>
-						</tr>
-						<tr>
-							<td>Good: </td>
-							<td id="good">-</td>
-						</tr>
-						<tr>
-							<td>Bad: </td>
-							<td id="bad">-</td>
-						</tr>
-						<tr>
-							<td>Miss: </td>
-							<td id="miss">-</td>
-						</tr>
-						<tr>
-							<td>Max Combo: </td>
-							<td id="maxCombo">-</td>
-						</tr>
-						<tr>
-							<td>Score: </td>
-							<td id="score">-</td>
-						</tr>
-						<tr>
-							<td>Grade: </td>
-							<td id="grade">-</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-		</div>
-
-
-		<div class="p-3">
-			<div class="row d-flex align-items-stretch">
-
-				<div class="col-12 col-lg-8 col-xl-9">
-					<div class="p-3 card" style="height:100%;">
-						<div class="card-body">
-							<h5 class="card-title">Song picker</h5>
-							<h6 class="card-subtitle mb-2 text-muted">Choose song and level</h6>
-
-							<div class="row">
-
-								<div class="col-12 col-md-4 pb-2 px-0">
-									<div class="p-2 fw-bold">Choose stage</div>
-									<div class="selector-height overflow-auto list-group" role="tablist" id="stage">
-									</div>
-								</div>
-								<div class="col-12 col-md-4 pb-2 px-0">
-									<div class="p-2 fw-bold">Choose song</div>
-									<div class="selector-height overflow-auto list-group" id="online-song" role="tablist">
-									</div>
-									<form class="pt-2 d-flex">
-										<input class="form-control me-2" type="search" id="myInput" onkeyup="filter()" placeholder="Search songs..." aria-label="Search">
-									</form>
-								</div>
-								<div class="col-12 col-md-4 pb-2 px-0">
-									<div class="p-2 fw-bold">Choose level</div>
-									<div class="selector-height overflow-auto list-group" id="level" role="tablist">
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-12 col-lg-4 col-xl-3" style="height:100%;">
-					<div class="p-3 card">
-						<div class="card-body">
-							<h5 class="card-title">Level details</h5>
-<!--							<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
-
-							<table class="table">
-								<tr>
-									<td>Title: </td>
-									<td id="t">-</td>
-								</tr>
-								<tr>
-									<td>Artist: </td>
-									<td id="a">-</td>
-								</tr>
-								<tr>
-									<td>Steps Type: </td>
-									<td id="st">-</td>
-								</tr>
-								<tr>
-									<td>Description: </td>
-									<td id="d">-</td>
-								</tr>
-								<tr>
-									<td>Meter: </td>
-									<td id="m">-</td>
-								</tr>
-								<tr>
-									<td>Credit: </td>
-									<td id="c">-</td>
-								</tr>
-								<tr>
-									<td>BPMs: </td>
-									<td id="b">-</td>
-								</tr>
-								<tr>
-									<td>SCROLLS: </td>
-									<td id="scrolls">-</td>
-								</tr>
-								<tr>
-									<td>SPEEDS: </td>
-									<td id="speeds">-</td>
-								</tr>
-								<tr>
-									<td>STOPS: </td>
-									<td id="stops">-</td>
-								</tr>
-								<tr>
-									<td>DELAYS: </td>
-									<td id="delays">-</td>
-								</tr>
-								<tr>
-									<td>WARPS: </td>
-									<td id="warps">-</td>
-								</tr>
-								<tr>
-									<td>TRICK NOTES: </td>
-									<td id="trickNotes">-</td>
-								</tr>
-								<tr>
-									<td>PLAYABLE: </td>
-									<td id="playable">
-										<div id="playable-true" style="display: none ;">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#097969" class="bi bi-check" viewBox="0 0 16 16">
-												<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-											</svg>
-										</div>
-
-										<div id="playable-false" style="display: none;">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#C70039" class="bi bi-x" viewBox="0 0 16 16">
-												<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-											</svg>
-										</div>
-										<div id="playable-unknown" style="display: none;">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
-												<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-												<path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-											</svg>
-										</div>
-									</td>
-								</tr>
-							</table>
-						</div>
-					</div>
-
-				</div>
-
-			</div>
-		</div>
-
-
-		<div class="p-3 collapse" id="optionCard">
-<!--		<div class="p-3" id="optionCard">-->
-
-			<div class="p-3 card">
-				<div class="card-body">
-					<h5 class="card-title">Settings</h5>
-					<h6 class="card-subtitle mb-2 text-muted">Tune how your level is displayed and remap your keys</h6>
-
-
-					<div class="row">
-
-						<div class="col">
-
-							<div class="pb-2 fw-bold">Choose noteskin</div>
-							<select class="form-select" size="10" aria-label="size 10 select example" id="noteskin">
-
-								<option value="EXCEED2-FLOWERCARD">EXCEED2-FLOWERCARD</option>
-								<option value="EXCEED2-OLD" selected>EXCEED2-OLD</option>
-								<option value="FIESTA">FIESTA</option>
-								<option value="FIESTA-DRUM">FIESTA-DRUM</option>
-								<option value="FIESTA-LIGHTING">FIESTA-LIGHTING</option>
-								<option value="FIESTA-MISSILE">FIESTA-MISSILE</option>
-								<option value="FIESTA-SOCCER">FIESTA-SOCCER</option>
-								<option value="FIESTA2">FIESTA 2</option>
-								<option value="FIESTAEX-BASIC">FIESTA EX</option>
-								<option value="NX">NX</option>
-								<option value="NX2">NX2</option>
-								<option value="NX2-DOG">NX2-DOG</option>
-								<option value="NX2-E-FIRE">NX2-FIRE</option>
-								<option value="NX2-E-ICE">NX2-ICE</option>
-								<option value="NX2-E-WIND">NX2-WIND</option>
-								<option value="NX2-GIRL">NX2-GIRL</option>
-								<option value="NX2-SHEEP">NX2-SHEEP</option>
-								<option value="NX2-YASANGMA">NX2-YASANGMA</option>
-								<option value="NXA">NXA</option>
-								<option value="PREMIERE">PREMIERE/ZERO</option>
-								<option value="PRIME">PRIME</option>
-								<option value="ZERO-CANOND">ZERO-CANOND</option>
-								<option value="ZERO-EASY">ZERO-EASY</option>
-								<option value="ZERO-MUSICAL">ZERO-MUSICAL</option>
-								<option value="ZERO-POKER">ZERO-POKER</option>
-								<option value="ZERO-SLIME">ZERO-SLIME</option>
-<!--								<option value="XX">XX</option>-->
-<!--								<option value="PRIME2">PRIME 2</option>-->
-							</select>
-
-						</div>
-
-						<div class="col">
-							<div class="pb-2 fw-bold">Choose speed</div>
-							<select class="form-select" size="10" aria-label="size 10 select example" id="speed" name="speed">
-
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="2.5">2.5</option>
-								<option value="3">3</option>
-								<option value="3.5">3.5</option>
-								<option value="4" selected>4</option>
-								<option value="4.5">4.5</option>
-								<option value="5">5</option>
-								<option value="5.5">5.5</option>
-								<option value="6">6</option>
-								<option value="7">7</option>
-								<option value="8">8</option>
-							</select>
-						</div>
-
-						<div class="col">
-
-							<div class="pb-2 fw-bold">Left pad keymap:</div>
-							<table>
-								<tr>
-									<td >Down-left:</td>
-									<td><input class="form-control" type="text" id="ldlmap" value="Z" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dl')" ></td>
-								</tr>
-
-								<tr>
-									<td>Up-left:</td>
-									<td><input class="form-control" type="text" id="lulmap" value="Q" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ul')" ></td>
-								</tr>
-
-								<tr>
-									<td>Center:</td>
-									<td><input class="form-control" type="text" id="lcmap" value="S" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','c')" ></td>
-								</tr>
-
-								<tr>
-									<td>Up-right:</td>
-									<td><input class="form-control" type="text" id="lurmap" value="E" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ur')" ></td>
-								</tr>
-
-								<tr>
-									<td>Down-right:</td>
-									<td><input class="form-control" type="text" id="ldrmap" value="C" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dr')" ></td>
-								</tr>
-							</table>
-						</div>
-
-						<div class="col">
-							<div class="pb-2 fw-bold">Right pad keymap:</div>
-							<table>
-
-								<tr>
-									<td>Down-left:</td>
-									<td><input class="form-control" type="text" id="rdlmap" value="V" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dl')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dl')" ></td>
-								</tr>
-
-								<tr>
-									<td>Up-left:</td>
-									<td><input class="form-control" type="text" id="rulmap" value="R" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ul')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ul')" ></td>
-								</tr>
-
-								<tr>
-									<td>Center:</td>
-									<td><input class="form-control" type="text" id="rcmap" value="G" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','c')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','c')" ></td>
-								</tr>
-
-								<tr>
-									<td>Up-right:</td>
-									<td><input class="form-control" type="text" id="rurmap" value="Y" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','ur')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','ur')" ></td>
-								</tr>
-
-								<tr>
-									<td>Down-right:</td>
-									<td><input class="form-control" type="text" id="rdrmap" value="N" maxlength="1"
-											   onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('r','dr')" onkeydown="this.value=''" onkeyup="keyMapChanged(this,'r','dr')" ></td>
-								</tr>
-							</table>
-						</div>
-
-					</div>
-
-
-
-
-					<div class="p-2 row">
-						<div class="col">
-							<div class="fw-bold">Tune song offset: </div>
-							<input class="mw-25 form-control" type="text" id="offset" name="offset" value="0.0" >
-							<label>The offset can be updated on the fly by pressing "," and "." to add and subtract offset, respectively.</label>
-						</div>
-
-						<div class="col">
-							<div class="fw-bold">Tune playback rate:  </div>
-							<label>It can be updated on the fly by pressing "+" and "-" to speed up or slow down the song, respectively.
-								Note that once the playback rate is updated, the offset must not be tuned again.</label>
-						</div>
-
-						<div class="col">
-							<div class="fw-bold">Touch input  </div>
-							<div class="form-check form-switch">
-								<input class="form-check-input" type="checkbox" id="touchInput">
-								<label class="form-check-label" for="touchInput">Enable touch input</label>
-								<br>
-								<label for="touchpadSize" class="form-label">TouchPad size:</label>
-								<input type="range" class="form-range" min="0" max="6" id="touchpadSize">
-							</div>
-
-						</div>
-					</div>
-
-
-
-				</div>
-			</div>
-
-		</div>
-
-		<div class="p-3">
-			<button type="button" class="btn btn-primary" onclick="play()">Play!</button>
-			<a class="btn btn-secondary" data-bs-toggle="collapse" href="#optionCard" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Toggle Settings</a>
-		</div>
-
-
-
-	</div>
-
+<div class="logo-bg">
+    <img src="imgs/logo-color-256.png" class="img-fluid mx-auto d-block" alt="PIURED">
+</div>
+<div class="container pt-4 mx-auto">
+<div class="row justify-content-center">
+    <div class="col-12 text-center">
+        <h1 class="text-center fs-2">Welcome to PIURED!</h1>
+        <p class="text-center">PIURED is an open-source pump it up engine made entirely in Javascript. What you are seeing right now is web-demo that allows anyone to use the engine to play pump it up songs. To begin, please
+            decide wether you want to play on your own (local) or play with some one else (online battle).</p>
+    </div>
 </div>
 
+<div class="row align-items-end">
+    <div class="col-sm-6 text-center">
+        <a id="btnSingle" class="btn btn-md center-block" Style="width: 200px;" href="local.html" onmouseover="hover('s');" onmouseout="unhover('s');" >
+            <img id="imgSingle" src="imgs/upright-mono-black.png" class="img-fluid mx-auto d-block" alt="PIURED">
+            Play Local
+        </a>
+    </div>
+    <div class="col-sm-6 text-center">
+    <a id="btnClear" class="btn btn-md center-block" Style="width: 300px;" href="online-multiplayer.html" onmouseover="hover('d');" onmouseout="unhover('d');">
+             <img id="imgDouble" src="imgs/uprightdownleft-mono-black.png" class="img-fluid mx-auto d-block" alt="PIURED">
+             Play Online Battle
+         </a>
+     </div>
+</div>
+</div>
 <!-- Footer -->
 <footer class="text-center text-lg-start bg-light text-muted">
-	 <div class="text-center p-4" style="background-color: white;">
-		PIURED v1.1.4 <hr>
-		 <a href="https://github.com/piulin/piured" class="text-reset text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
-		<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-	</svg></a>
-		 <a href="https://discord.gg/5pJbcEvvMj" class="text-reset text-decoration-none p-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-discord" viewBox="0 0 16 16">
-			 <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
-		 </svg></a>
-	</div>
+    <div class="text-center p-4" style="background-color: white;">
+        PIURED v1.1.4 <hr>
+        <a href="https://github.com/piulin/piured" class="text-reset text-decoration-none"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+        </svg></a>
+        <a href="https://discord.gg/5pJbcEvvMj" class="text-reset text-decoration-none p-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-discord" viewBox="0 0 16 16">
+            <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
+        </svg></a>
+    </div>
 </footer>
 
+<script>
+    function hover(attr) {
+        if (attr === 's') {
+            $('#imgSingle').attr('src', 'imgs/upright-mono-white.png')
+        } else {
+            $('#imgDouble').attr('src', 'imgs/uprightdownleft-mono-white.png')
+        }
+}
 
+function unhover(attr) {
+    if (attr === 's') {
+        $('#imgSingle').attr('src', 'imgs/upright-mono-black.png')
+    } else {
+        $('#imgDouble').attr('src', 'imgs/uprightdownleft-mono-black.png')
+    }
+}
+</script>
 
-		<script src="Demo/DemoLogic.js"></script>
 </body>
 </html>

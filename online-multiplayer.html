@@ -12,8 +12,22 @@
         height: 400px;
      }
         body {
+            padding-top: 120px;
             overflow: auto;
+            background-image: url('imgs/bg.png');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
         }
+        .chat-card {
+            height: 400px;
+        }
+
+        .scrollable {
+            overflow-y: auto;
+            height: 350px;
+        }
+
     </style>
 
     <title>Online Battle</title>
@@ -23,7 +37,6 @@
     <script src="Demo/RemoteConnection/Master.js"></script>
     <script src="Demo/RemoteConnection/Slave.js"></script>
     <script src="Demo/RemoteConnection/MessageManager.js"></script>
-    <script src="Demo/OnlineMultiplayer/ViewConnectionManager.js"></script>
 
 
     <script src="piured-engine/js/Utils/FileReader.js"></script>
@@ -39,10 +52,11 @@
 
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbar">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark" id="navbar">
     <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">PIURED</span>
+        <a href="index.html" class="navbar-brand mb-0 h1">
+            <img src="imgs/logo-flat-mono-white.png" class="img-fluid mx-auto d-block" alt="PIURED" style="height: 50px;">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -52,7 +66,7 @@
                     <a class="nav-link active" aria-current="page" href="online-multiplayer.html">Battle</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="index.html">Local</a>
+                    <a class="nav-link" aria-current="page" href="local.html">Local</a>
                 </li>
 
             </ul>
@@ -65,47 +79,74 @@
     </div>
 </nav>
 
+<div class="logo-bg p-3">
+    <img src="imgs/online-battle-color.png" class="img-fluid mx-auto d-block" alt="PIURED" style="width: 820px;">
+</div>
 <div id="connectionContainer" class="container h-100">
+    <div class="row align-items-baseline">
 
-    <div class="row p-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Create a new Online Battle</h5>
-                <p class="card-text">To play with a friend you will need to create an online battle, unless you have an invite code. If you don't have one, please,
-                    press "Create Battle" and wait until a new invite code is generated. Then, share it somehow with the friend
-                you want to play with. He can use it to connect to your battle by typing/pasting the code into the card down below. </p>
-                <p>If you don't have friends, consider joining <a href="https://discord.gg/5pJbcEvvMj">PIURED's discord server</a> to find a mate to play with.</p>
-                <button onclick="connectMaster()" id="masterButton" class="btn btn-primary" type="button">
-                    <span id="masterSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
-                    <span id="masterButtonLabel" class="sr-only">Create Battle</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="row p-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Join an Online Battle</h5>
-                <p class="card-text">If you got an invite code, please, type/paste it in the form below and press "Accept Invite". A confirmation code
-                    will be generated after a few seconds. You will need to send the confirmation code back to the friend that sent you the invite. </p>
-
-                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="input-group me-2 has-validation">
-                        <div class="input-group-text">#</div>
-                        <input id="inviteCodeTextField" type="text" class="form-control" placeholder="Invite code" aria-label="Invite code" aria-describedby="inviteCodeTextField">
-                        <div id="validationInviteCode" class="invalid-feedback">
-                            Invalid invite code
-                        </div>
-                    </div>
-                    <button onclick="connectSlave($('#inviteCodeTextField').val())" id="slaveButton" class="btn btn-primary" type="button">
-                        <span id="slaveSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
-                        <span id="slaveButtonLabel" class="sr-only">Accept Invite</span>
+        <div class="col-sm-12">
+            <div class="card col-sm-12 m-4">
+                <div class="card-header fs-4">
+                    Automatic Player Matching
+                    <span class="badge bg-secondary">New</span>
+                </div>
+                <div class="card-body p-5">
+                    <p class="card-text">If you don't feel like sharing invite codes, go ahead and press "Find Mate".
+                        You will be added to a waiting list. If someone else is available, the system will create a battle automatically.</p>
+                    <button onclick="findMate()" id="findMate" class="btn btn-primary" type="button">
+                        <span id="findMateButtonLabel" class="sr-only">Find Mate</span>
                     </button>
+                   <span class="badge rounded-pill bg-light text-dark m-3">#Waiting: <span id="noPlayersWaiting"></span></span>
+                    <span class="badge rounded-pill bg-light text-dark">#Matches: <span id="noOnlineMatches"></span></span>
+<!--                   <button  class="btn btn-secondary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">No. Players waiting: <span id="noPlayersWaiting">1</span></button>-->
+<!--                    <button  class="btn btn-secondary btn-lg disabled" tabindex="-1" role="button" aria-disabled="true">No. Online matches: <span id="noOnlineMatches">2</span></button>-->
 
                 </div>
             </div>
+
         </div>
+        <div class="col-sm-12">
+            <div class="card col-sm-12 m-4">
+                    <div class="card-header fs-4">
+                        Play against a friend via invite sharing
+                    </div>
+                    <div class="row">
+                        <div class="card-body col-sm-6 p-5">
+                            <h5 class="card-title">Create a new Online Battle</h5>
+                            <p class="card-text">To play with a friend you will need to create an online battle, unless you have an invite code. If you don't have one, please,
+                                press "Create Battle" and wait until a new invite code is generated. Then, share it somehow with the friend
+                                you want to play with. He can use it to connect to your battle by typing/pasting the code into the card to the right. </p>
+                            <p>If you don't have friends, consider joining <a href="https://discord.gg/5pJbcEvvMj">PIURED's discord server</a> to find a mate to play with.</p>
+                            <button onclick="connectMaster()" id="masterButton" class="btn btn-primary" type="button">
+                                <span id="masterSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                                <span id="masterButtonLabel" class="sr-only">Create Battle</span>
+                            </button>
+                        </div>
+                        <div class="card-body col-sm-6 p-5">
+                            <h5 class="card-title">Join an Online Battle</h5>
+                            <p class="card-text">If you got an invite code, please, type/paste it in the form below and press "Accept Invite". A confirmation code
+                                will be generated after a few seconds. You will need to send the confirmation code back to the friend that sent you the invite. </p>
+
+                            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="input-group me-2 has-validation">
+                                    <div class="input-group-text">#</div>
+                                    <input id="inviteCodeTextField" type="text" class="form-control" placeholder="Invite code" aria-label="Invite code" aria-describedby="inviteCodeTextField">
+                                    <div id="validationInviteCode" class="invalid-feedback">
+                                        Invalid invite code
+                                    </div>
+                                </div>
+                                <button onclick="connectSlave($('#inviteCodeTextField').val())" id="slaveButton" class="btn btn-primary" type="button">
+                                    <span id="slaveSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none ;"></span>
+                                    <span id="slaveButtonLabel" class="sr-only">Accept Invite</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+
     </div>
 
 </div>
@@ -185,6 +226,26 @@
 </div>
 
 
+<div class="modal fade" id="findMateModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="createBattleModal" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Finding mate...</h5>
+            </div>
+            <div class="modal-body">
+                <p id="findMateStatus">Finding players...</p>
+                 <br>
+                You should wait here until we find an opponent for you. <br>
+                The connection will be established automatically.
+            </div>
+
+            <div class="modal-footer">
+                <span id="findMateSpinner" class="spinner-border spinner-border-sm" role="status"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer class="text-center text-lg-start bg-light text-muted">
     <div class="text-center p-4" style="background-color: white;">
@@ -199,4 +260,5 @@
 </footer>
 
 </body>
+<script src="Demo/OnlineMultiplayer/ViewConnectionManager.js"></script>
 </html>

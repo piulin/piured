@@ -17,6 +17,18 @@
  *
  */
 
+// if (serverId !== undefined) {
+//     intervalId = setInterval(() => {
+//         $.ajax({
+//             method: 'POST',
+//             url: URLbattleServer + '/alive',
+//             data: {'id': serverId},
+//             dataType: 'json',
+//             crossDomain: true,
+//             async: true,
+//         });
+//     }, 3000)
+// }
 let leftKeyMap = {
     dl: 'Z',
     ul : 'Q',
@@ -104,6 +116,10 @@ mm.onReceivePerformance = (perf) =>  {
 mm.onReceiveHighLatency = () => {
     $('#highLatencyAlertGuest').show() ;
 } ;
+
+mm.onIncomingMessage = (message) => {
+    receiveMessage(message)
+}
 
 function checkLatency() {
     return getAverageLatency() <= 50.0;

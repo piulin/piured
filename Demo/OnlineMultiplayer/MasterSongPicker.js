@@ -17,6 +17,18 @@
  *
  */
 
+// if (serverId !== undefined) {
+//     intervalId = setInterval(() => {
+//         $.ajax({
+//             method: 'POST',
+//             url: URLbattleServer + '/alive',
+//             data: {'id': serverId},
+//             dataType: 'json',
+//             crossDomain: true,
+//             async: true,
+//         });
+//     }, 3000)
+// }
 
 let leftKeyMap = {
     dl: 'Z',
@@ -91,6 +103,10 @@ mm.onPopUpBlocked = () => {
         gameWindow.close() ;
     }
     $('#waitingForOpponentModal').modal('hide');
+}
+
+mm.onIncomingMessage = (message) => {
+    receiveMessage(message)
 }
 
 readSongList() ;

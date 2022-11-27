@@ -8,9 +8,13 @@
 <!--</head>-->
 <!--<body>-->
 <script src="Demo/SongPicker/DiscoverLevelMaster.js"></script>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbar">
+
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark" id="navbar">
     <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">PIURED</span>
+        <a href="index.html" class="navbar-brand mb-0 h1">
+            <img src="imgs/logo-flat-mono-white.png" class="img-fluid mx-auto d-block" alt="PIURED" style="height: 50px;">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -20,7 +24,7 @@
                     <a class="nav-link active" aria-current="page" href="online-multiplayer.html">Battle</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="index.html">Local</a>
+                    <a class="nav-link" aria-current="page" href="local.html">Local</a>
                 </li>
 
             </ul>
@@ -140,7 +144,7 @@
                             <div class="row">
 
                                 <div class="col-12 col-md-4 pb-2 px-0">
-                                    <div class="p-2 fw-bold">Choose stage</div>
+                                    <div class="p-2 fw-bold">Choose mix</div>
                                     <div class="selector-height overflow-auto list-group" role="tablist" id="stage">
                                     </div>
                                 </div>
@@ -246,6 +250,22 @@
                         </div>
                     </div>
 
+                </div>
+
+
+
+                <div class="col-12 col-lg-12 col-xl-12 mt-3">
+                    <div class="p-4 card chat-card">
+                        <h5 class="card-title">Chat</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Say something nice to your rival!</h6>
+                        <div id="messages" class="scrollable">
+                        </div>
+                        <div class="input-group mb-3">
+                            <input id="messageInput" type="text" class="form-control" placeholder="Write a message..."
+                                   aria-label="Write a message..." aria-describedby="button-send-message">
+                            <button class="btn btn-outline-primary" type="button" id="button-send-message" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -532,6 +552,7 @@
 </footer>
 
 
+<script src="Demo/chat.js"></script>
 <script src="Demo/OnlineMultiplayer/MasterSongPicker.js"></script>
 <!--</body>-->
 <!--</html>-->

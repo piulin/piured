@@ -32,6 +32,7 @@ class MessageManager {
     _onReceiveHighLatency = undefined ;
     _onPopUpBlocked = undefined ;
     _onReceivePerformance = undefined ;
+    _onIncomingMessage = undefined ;
     start ;
     _engine ;
 
@@ -54,6 +55,10 @@ class MessageManager {
 
         if (data.action === 'logFrame') {
             this._engine.logFrame(data.frameLog) ;
+        } else if (data.action === 'incomingMessage') {
+            if(this._onIncomingMessage !== undefined) {
+                this._onIncomingMessage(data.message)
+            }
         } else if ( data.action === 'readyToStart' ) {
             this.guestReady = true ;
             if (this.areBothReady()) {
@@ -116,6 +121,9 @@ class MessageManager {
 
     }
 
+    set onIncomingMessage(value) {
+        this._onIncomingMessage = value ;
+    }
 
     set onReceivePerformance(value) {
         this._onReceivePerformance = value;
@@ -144,6 +152,13 @@ class MessageManager {
 
     set onPopUpBlocked(value) {
         this._onPopUpBlocked = value;
+    }
+
+    sendMessage(message) {
+        this._host.send({
+            'action': 'incomingMessage',
+            'message': message
+        })
     }
 
     sendSelectedLevel(sscPath) {
